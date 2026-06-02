@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physics of RF Sensing: From Maxwell Equations to AI Pose Estimation</title>
+<script src="https://cdn.tailwindcss.com"></script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background-color:#0f172a;color:#f8fafc;}
+canvas{background-color:#1e293b;border-radius:0.5rem;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);width:100%;}
+.math-block{background:#1e293b;padding:1rem;border-radius:0.5rem;border-left:4px solid #3b82f6;margin-bottom:1rem;font-size:0.95rem;}
+.section-container{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:4rem;align-items:start;}
+@media (max-width:1024px){.section-container{grid-template-columns:1fr;}}
+input[type=range]{width:100%;accent-color:#3b82f6;}
+.highlight{color:#60a5fa;font-weight:bold;}
+</style>
+</head>
+<body class="p-6 md:p-12">
+<div class="max-w-7xl mx-auto">
+<header class="mb-12 border-b border-gray-700 pb-6">
+<h1 class="text-4xl font-bold mb-4 text-blue-400">Physics of RF Sensing: From Maxwell Equations to AI Pose Estimation</h1>
+<p class="text-xl text-gray-300 mb-8">Understanding AI wireless sensing entirely through JEE Advanced Physics. From Maxwell to Matrices to Gradient Descent.</p>
+<div class="bg-slate-800 rounded-xl p-8 border border-slate-600 shadow-2xl relative overflow-hidden">
+<div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+<div>
+<h2 class="text-3xl font-serif font-bold text-amber-400 mb-4 tracking-wide">Preface: The Universal Illusion</h2>
+<p class="text-gray-300 mb-4 leading-relaxed">In his profound analyses of electromagnetism and the finite speed of light, Henri Poincaré confronted a fundamental crisis in physics: if a distant star emits light that takes millions of years to reach Earth, where does that energy exist in the meantime? To avoid "action at a distance" and preserve the principle of locality, 19th-century physicists invented the <em>aether</em>—a medium to hold the energy in the void.</p>
+<p class="text-gray-300 mb-4 leading-relaxed">Poincaré noted that if we instead assume direct interaction between distant bodies without a medium, the state of a system <em>here</em> depends directly on the <em>past states</em> of a system <em>there</em>. This introduces time delays into our mathematics, fundamentally changing the nature of our differential equations from simple local PDEs to complex retarded delay equations. To avoid this mathematical nightmare, we use the concept of a "field." Though relativity discarded the aether, the modern electromagnetic "field" serves the exact same mathematical purpose: it is an imaginary construct used to retain locality across the gap of space. He famously wrote:</p>
+<blockquote class="border-l-4 border-amber-500 pl-4 italic text-lg text-gray-300 mb-6 bg-slate-900/50 p-4 rounded-r-lg">"The equations express relations, and if the equations remain true, it is because the relations preserve their reality. They teach us now, as they did then, that there is such and such a relation between some thing and some other thing; only, the some thing which we then called <strong>motion</strong>, we now call <strong>electric current</strong>. But these are merely names of the images we substituted for the real objects which Nature will hide for ever from our eyes. The true relations between these real objects are the only reality we can attain." <br><span class="text-sm text-amber-500 font-semibold block mt-2">— Henri Poincaré, <em>Science and Hypothesis</em> (1902)</span></blockquote>
+<p class="text-gray-300 mb-6 leading-relaxed">Today, this classical problem of time delay and field propagation is the absolute foundation of RF sensing. A WiFi router reconstructing a human pose is simply measuring the delayed, retarded potentials of scattered waves. Whether we call it aether or a field, the physical image is secondary to the mathematical delay. The differential equations are identical.</p>
+<div class="bg-blue-900/30 border border-blue-500/30 p-5 rounded-lg">
+<h3 class="text-xl font-bold text-blue-300 mb-2">The Abstract (Eagle-Eye View)</h3>
+<p class="text-gray-300 text-sm leading-relaxed">This interactive treatise bridges ancient mechanics, classical physics, and the bleeding edge of Artificial Intelligence. You are about to see how a standard $50 WiFi router acts as an advanced radar. By treating a living room as a giant wave-interference experiment, we can use Maxwell's equations, Fourier transforms, and Bayesian inference to literally "see" through walls and reconstruct 3D human skeletons. This is the entire Physics-to-AI pipeline, visualized in 51 interactive, mathematically accurate simulations.</p>
+</div>
+</div>
+<div class="relative"><canvas id="canvas-preface" height="400" class="rounded-xl border border-slate-600 shadow-lg w-full bg-black"></canvas><p class="text-xs text-center text-gray-400 mt-3 font-mono">Simulation 0: Retarded Potentials and the Mathematical Construct of the "Field".</p></div>
+</div>
+</div>
+</header>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">1. EM Waves & Wavelength</h2><p class="mb-4 text-gray-300">WiFi signals are Electromagnetic waves. The fundamental wave equation from Maxwell is \( c = f\lambda \).</p><div class="math-block"><p><strong>Numerical Calculation:</strong></p><p>Frequency (\(f\)): <span id="val-freq">5</span> GHz = \( 5 \times 10^9 \) Hz</p><p>Speed of Light (\(c\)): \( 3 \times 10^8 \) m/s</p><p>Wavelength (\(\lambda\)) = \( \frac{c}{f} = \frac{3 \times 10^8}{5 \times 10^9} = \) <span class="highlight" id="val-lambda">0.060</span> m = <span class="highlight" id="val-lambda-cm">6.0</span> cm</p></div><p class="mb-4 text-gray-300">Because human body parts (arms, legs: 20cm - 100cm) are larger than the 6cm wavelength, significant <strong>scattering and reflection</strong> occurs, just like macroscopic objects block visible light.</p><label class="block mb-2 text-sm text-gray-400">Adjust Frequency (GHz): <span id="slider-freq-val">5</span></label><input type="range" id="slider-freq" min="2.4" max="10" step="0.1" value="5"></div><div><canvas id="canvas-em" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Traveling \( E \)-field. \( E(x,t) = E_0 \cos(kx - \omega t) \)</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">2. Multipath Superposition (Interference)</h2><p class="mb-4 text-gray-300">A room contains multiple reflection paths. The receiver observes the <strong>Superposition</strong> of all waves: \( E_{total} = \sum E_i \). This is purely Coordinate Geometry and Trigonometry.</p><div class="math-block"><p><strong>Path Difference (\(\Delta x\)):</strong></p><p>Direct Path (\(d_1\)): <span id="val-d1">5.00</span> m</p><p>Reflected Path (\(d_2\)): <span id="val-d2">7.20</span> m</p><p>\(\Delta x = d_2 - d_1 = \) <span id="val-dx" class="highlight">2.20</span> m</p><p>Phase Difference \( \phi = \frac{2\pi \Delta x}{\lambda} = \) <span id="val-phase" class="highlight">230.38</span> rad</p><p>Resulting Intensity \( I \propto \cos^2(\frac{\phi}{2}) \): <span id="val-intensity" class="highlight">0.85</span></p></div><label class="block mb-2 text-sm text-gray-400">Move Person (Y-axis):</label><input type="range" id="slider-person-y" min="0" max="4" step="0.01" value="2"></div><div><canvas id="canvas-multipath" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Top-down room view. Move the slider to change the reflection path.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">3. Phase Shifts & Breathing Detection</h2><p class="mb-4 text-gray-300">How can WiFi see breathing? If the chest moves by just \(\Delta d\), the round-trip wave travels an extra \( 2\Delta d \). This tiny change creates a huge, measurable phase shift.</p><div class="math-block"><p><strong>Micro-Interference Calculation:</strong></p><p>Chest Displacement (\(\Delta d\)): <span id="val-breath-d">3.0</span> mm</p><p>Round-trip distance change: \( 2 \times 3.0 = 6.0 \) mm = \(0.006\) m</p><p>\(\lambda = 0.06\) m</p><p>Phase shift \( \Delta\phi = \frac{2\pi(2\Delta d)}{\lambda} = \frac{4\pi(0.003)}{0.06} = \) <span id="val-breath-phase" class="highlight">0.628</span> rad</p></div><p class="text-gray-300 mb-4">A shift of 0.628 radians (\( \approx 36^\circ \)) drastically alters the received signal amplitude over time, creating a breathing sine wave.</p><label class="block mb-2 text-sm text-gray-400">Chest Movement Amplitude (mm): <span id="slider-breath-val">3.0</span></label><input type="range" id="slider-breath" min="0" max="10" step="0.1" value="3.0"></div><div><canvas id="canvas-breathing" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Real-time Received Signal Intensity as chest oscillates.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">4. Doppler Effect & Walking</h2><p class="mb-4 text-gray-300">When a person walks, the reflected waves get compressed (walking towards) or expanded (walking away). This creates a Doppler shift in frequency.</p><div class="math-block"><p><strong>Doppler Shift Calculation (Radar Equation):</strong></p><p>Walking speed (\(v\)): <span id="val-vel">1.2</span> m/s</p><p>Wavelength (\(\lambda\)): 0.06 m</p><p>Doppler Frequency \( f_D = \frac{2v}{\lambda} = \frac{2 \times 1.2}{0.06} = \) <span id="val-doppler" class="highlight">40.0</span> Hz</p></div><p class="text-gray-300 mb-4">Different body parts (legs vs torso) move at different speeds, creating a <strong>micro-Doppler signature</strong> (a fingerprint of motion).</p><label class="block mb-2 text-sm text-gray-400">Walking Velocity (m/s): <span id="slider-vel-val">1.2</span></label><input type="range" id="slider-vel" min="-3" max="3" step="0.1" value="1.2"></div><div><canvas id="canvas-doppler" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Tx Wave (Blue) vs Doppler-Shifted Reflected Wave (Red).</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">5. Phasors & Matrices (The Inverse Problem)</h2><p class="mb-4 text-gray-300">The received signal is the sum of reflections from Head, Torso, and Legs. In AC circuits, we use <strong>phasors</strong> to add sine waves. Euler's relation \( e^{j\phi} = \cos\phi + j\sin\phi \).</p><div class="math-block"><p><strong>Complex Signal Addition:</strong></p><p>\( S_{total} = \sum A_i e^{j\phi_i} = \mathbf{H}\mathbf{X} \)</p><p>Head: \( A_1 e^{j\phi_1} \)</p><p>Torso: \( A_2 e^{j\phi_2} \)</p><p>Legs: \( A_3 e^{j\phi_3} \)</p></div><p class="text-gray-300 mb-4">The AI Neural Network acts as the ultimate reverse-engineer. It takes this complex resultant matrix \( \mathbf{Y} \) and maps it back to 3D spatial coordinates \((x,y,z)\).</p></div><div><canvas id="canvas-phasor" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Complex Plane vector addition of reflecting body parts.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">6. Standing Waves (Room Resonance)</h2><p class="mb-4 text-gray-300">When WiFi reflects between two parallel walls, it forms a <strong>Standing Wave</strong>: \( y(x,t) = 2A \sin(kx) \cos(\omega t) \).</p><div class="math-block"><p><strong>Standing Wave Nodes:</strong></p><p>Nodes occur where \( \sin(kx) = 0 \), meaning \( x = \frac{n\lambda}{2} \).</p><p>If a person stands at a <strong>node</strong>, they reflect very little signal. If they stand at an <strong>antinode</strong>, reflection is maximum.</p><p>Harmonic (\(n\)): <span id="val-harmonic" class="highlight">3</span></p></div><p class="text-gray-300 mb-4">This is exactly like waves on a stretched string in JEE. WiFi creates invisible zones of high and low intensity throughout the room.</p><label class="block mb-2 text-sm text-gray-400">Change Room Harmonic (Wave Mode): <span id="slider-harmonic-val">3</span></label><input type="range" id="slider-harmonic" min="1" max="10" step="1" value="3"></div><div><canvas id="canvas-standing" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Standing wave nodes and antinodes between two walls.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">7. Signal Processing (Fourier Transform)</h2><p class="mb-4 text-gray-300">A real radar receives a messy combination of frequencies (e.g., slow breathing + fast walking). The <strong>Fourier Transform</strong> separates this mixed wave into pure frequencies.</p><div class="math-block"><p><strong>Frequency Decomposition:</strong></p><p>\( F(\omega) = \int [A_1\sin(\omega_1 t) + A_2\sin(\omega_2 t)] e^{-j\omega t}dt \)</p><p>Signal 1 (Breathing) Freq: <span id="val-f1" class="highlight">1.0</span> Hz</p><p>Signal 2 (Walking) Freq: <span id="val-f2" class="highlight">5.0</span> Hz</p></div><p class="text-gray-300 mb-4">This isolates the human's breathing from their gross motor movements.</p><label class="block mb-2 text-sm text-gray-400">Breathing Freq (Hz):</label><input type="range" id="slider-f1" min="0.1" max="3.0" step="0.1" value="1.0" class="mb-4"><label class="block mb-2 text-sm text-gray-400">Walking Freq (Hz):</label><input type="range" id="slider-f2" min="3.0" max="10.0" step="0.1" value="5.0"></div><div><canvas id="canvas-fourier" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Top (Time Domain mixture), Bottom (Frequency Domain peaks).</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">8. Coordinate Geometry (Localization)</h2><p class="mb-4 text-gray-300">How do we find the exact \((x,y)\) position of the person? By using multiple antennas and Time-of-Flight, we solve a system of circle equations.</p><div class="math-block"><p><strong>Trilateration Equations:</strong></p><p>\( (x - x_1)^2 + (y - y_1)^2 = d_1^2 \)</p><p>\( (x - x_2)^2 + (y - y_2)^2 = d_2^2 \)</p><p>\( (x - x_3)^2 + (y - y_3)^2 = d_3^2 \)</p><p>Target Position: (\(<span id="val-loc-x" class="highlight">0.0</span>\), \(<span id="val-loc-y" class="highlight">0.0</span>\))</p></div><p class="text-gray-300 mb-4">The intersection of these circles pinpoints the human in 2D space.</p><label class="block mb-2 text-sm text-gray-400">Move Person X:</label><input type="range" id="slider-loc-x" min="0.1" max="0.9" step="0.01" value="0.5" class="mb-4"><label class="block mb-2 text-sm text-gray-400">Move Person Y:</label><input type="range" id="slider-loc-y" min="0.1" max="0.9" step="0.01" value="0.5"></div><div><canvas id="canvas-localization" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Intersection of 3 distance radii finding the target coordinate.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">9. Diffraction (Huygens' Principle)</h2><p class="mb-4 text-gray-300">Why can WiFi detect thin fingers but not perfectly block shadows like light? Because at \( \lambda = 6 \) cm, waves <strong>diffract</strong> around objects of comparable size.</p><div class="math-block"><p><strong>Wave Optics (Fraunhofer Diffraction):</strong></p><p>\( a \sin \theta = n\lambda \)</p><p>Object/Slit Width (\(a\)): <span id="val-slit" class="highlight">6.0</span> cm</p><p>Wavelength (\(\lambda\)): 6.0 cm</p><p>Spread Angle (\(\theta\)): \(\approx\) <span id="val-spread" class="highlight">90</span>&deg;</p></div><p class="text-gray-300 mb-4">If a body part is much larger than \( \lambda \) (e.g., Torso), it creates a sharp RF shadow. If it's smaller, the wave bends around it.</p><label class="block mb-2 text-sm text-gray-400">Body Part / Slit Width (cm): <span id="slider-slit-val">6.0</span></label><input type="range" id="slider-slit" min="2.0" max="20.0" step="0.5" value="6.0"></div><div><canvas id="canvas-diffraction" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Plane waves diffracting based on obstacle aperture size.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">10. Inverse Square Law & Attenuation</h2><p class="mb-4 text-gray-300">The further the wave travels, the weaker it gets. This is the <strong>Inverse Square Law</strong> combined with exponential absorption.</p><div class="math-block"><p><strong>Friis Transmission & Beer-Lambert Law:</strong></p><p>\( P_r \propto \frac{1}{r^2} \cdot e^{-\alpha x} \)</p><p>Distance (\(r\)): <span id="val-dist" class="highlight">3.0</span> m</p><p>Intensity: <span id="val-p-rec" class="highlight">11.1</span>%</p></div><label class="block mb-2 text-sm text-gray-400">Target Distance (m): <span id="slider-dist-val">3.0</span></label><input type="range" id="slider-dist" min="1.0" max="10.0" step="0.1" value="3.0"></div><div><canvas id="canvas-attenuation" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Graph of Signal Intensity vs Distance (\( 1/r^2 \)).</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">11. The AI Inverse Problem (Gradient Descent)</h2><p class="mb-4 text-gray-300">Physics gives us the forward equation. The Neural Network solves the Inverse equation using <strong>Error Minimization</strong> (Gradient Descent).</p><div class="math-block"><p><strong>Machine Learning Optimization:</strong></p><p>\( Cost(J) = \sum (Y_{pred} - Y_{true})^2 \)</p><p>\( \theta_{n+1} = \theta_n - \alpha \nabla J(\theta) \)</p><p>Current Error: <span id="val-ai-error" class="highlight text-red-400">High</span></p></div><button id="btn-run-ai" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded w-full">Run AI Optimizer (Find Pose)</button></div><div><canvas id="canvas-ai" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Gradient descent searching the error landscape.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">12. Polarization (Malus's Law)</h2><p class="mb-4 text-gray-300">Electromagnetic waves are <strong>transverse</strong>. A WiFi antenna emits a polarized Electric Field. The receiving antenna must align with it to capture full intensity.</p><div class="math-block"><p><strong>Malus's Law:</strong></p><p>\( I = I_0 \cos^2(\theta) \)</p><p>Antenna Angle (\(\theta\)): <span id="val-theta" class="highlight">0</span>&deg;</p><p>Received Intensity: <span id="val-pol-intensity" class="highlight">100.0</span>%</p></div><p class="text-gray-300 mb-4">If a person's body reflects the wave and twists its polarization, the receiver sees a drop in intensity, providing another feature for the AI to track.</p><label class="block mb-2 text-sm text-gray-400">Receiver Antenna Angle (\(\theta\)): <span id="slider-theta-val">0</span>&deg;</label><input type="range" id="slider-theta" min="0" max="90" step="1" value="0"></div><div><canvas id="canvas-polarization" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Polarized E-Field projecting onto a tilted antenna.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">13. Refraction (Snell's Law through Walls)</h2><p class="mb-4 text-gray-300">How can WiFi see through walls? Walls are dielectrics. The wave enters, slows down, and bends. The AI must mathematically "un-bend" the rays to locate you.</p><div class="math-block"><p><strong>Snell's Law:</strong></p><p>\( n_1 \sin(\theta_1) = n_2 \sin(\theta_2) \)</p><p>Wall Refractive Index (\(n_2\)): <span id="val-n2" class="highlight">1.50</span></p><p>Incidence Angle: 45&deg; | Refracted Angle: <span id="val-refract-angle" class="highlight">28.1</span>&deg;</p><p>Velocity in Wall: \( v = \frac{c}{n_2} \)</p></div><label class="block mb-2 text-sm text-gray-400">Wall Density / Refractive Index (\(n\)): <span id="slider-n2-val">1.5</span></label><input type="range" id="slider-n2" min="1.0" max="3.0" step="0.1" value="1.5"></div><div><canvas id="canvas-refraction" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Wavefronts compressing and bending inside a denser medium.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">14. Beat Frequencies (Multi-Target Doppler)</h2><p class="mb-4 text-gray-300">If your chest breathes (\(f_1\)) and your arm moves (\(f_2\)), the radar receives the <strong>Superposition</strong> of two slightly different frequencies, creating a Beat pattern.</p><div class="math-block"><p><strong>Beat Frequency:</strong></p><p>\( y = \cos(\omega_1 t) + \cos(\omega_2 t) = 2 \cos(\frac{\Delta\omega}{2}t)\cos(\bar{\omega}t) \)</p><p>\( f_1 = 5.0 \) Hz, \( f_2 = \) <span id="val-beat-f2" class="highlight">5.5</span> Hz</p><p>Beat Frequency (\( |f_1 - f_2| \)): <span id="val-beat-freq" class="highlight">0.5</span> Hz</p></div><p class="text-gray-300 mb-4">The low-frequency "envelope" contains information about the relative speeds of different body parts moving simultaneously.</p><label class="block mb-2 text-sm text-gray-400">Frequency Difference (\(\Delta f\)): <span id="slider-beat-val">0.5</span></label><input type="range" id="slider-beat" min="0.0" max="2.0" step="0.1" value="0.5"></div><div><canvas id="canvas-beats" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Two similar frequencies combining to form a Beat Envelope.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">15. Beamforming (Phased Arrays)</h2><p class="mb-4 text-gray-300">Modern WiFi uses multiple antennas. By applying a deliberate phase shift (\(\alpha\)) between antennas, the <strong>Constructive Interference</strong> pattern steers like a flashlight. This is the \(N\)-Slit interference pattern from Wave Optics.</p><div class="math-block"><p><strong>Array Factor Equation:</strong></p><p>\( AF = \frac{\sin(N\psi/2)}{N\sin(\psi/2)} \), where \( \psi = \frac{2\pi d}{\lambda}\cos(\theta) + \alpha \)</p><p>Antennas (\(N\)): 4</p><p>Phase Shift (\(\alpha\)): <span id="val-beam-alpha" class="highlight">0</span>&deg;</p></div><p class="text-gray-300 mb-4">AI uses this to electronically steer RF beams directly at a moving human, maximizing the reflected signal strength without moving any mechanical parts.</p><label class="block mb-2 text-sm text-gray-400">Phase Shift \(\alpha\) (Steering): <span id="slider-beam-val">0</span>&deg;</label><input type="range" id="slider-beam" min="-180" max="180" step="1" value="0"></div><div><canvas id="canvas-beamforming" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Polar radiation pattern. Adjust phase to steer the main lobe.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">16. Brewster's Angle (Polarized Reflection)</h2><p class="mb-4 text-gray-300">When an EM wave hits a dielectric (like a concrete floor), the reflected wave's polarization changes. At a specific angle of incidence, <strong>p-polarized</strong> light is completely transmitted (zero reflection).</p><div class="math-block"><p><strong>Brewster's Law:</strong></p><p>\( \tan(\theta_B) = \frac{n_2}{n_1} \)</p><p>Refractive Index of Wall (\(n_2\)): 1.5</p><p>Brewster's Angle (\(\theta_B\)): <span class="highlight">56.3</span>&deg;</p><p>Current Incidence Angle: <span id="val-brewster-theta" class="highlight">45</span>&deg;</p></div><p class="text-gray-300 mb-4">If the AI detects a sudden deep drop in reflection intensity, it uses this physical law to instantly calculate the angle to a wall or surface.</p><label class="block mb-2 text-sm text-gray-400">Angle of Incidence (\(\theta_i\)): <span id="slider-brewster-val">45</span>&deg;</label><input type="range" id="slider-brewster" min="0" max="90" step="1" value="45"></div><div><canvas id="canvas-brewster" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Reflectance (\(R_p\)) drops to absolute zero at Brewster's Angle.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">17. The Skin Effect (EM Penetration)</h2><p class="mb-4 text-gray-300">WiFi doesn't just bounce perfectly off skin. Human tissue acts as a lossy conductor. The wave penetrates slightly, decaying exponentially. This is called the <strong>Skin Depth (\(\delta\))</strong>.</p><div class="math-block"><p><strong>Exponential Decay:</strong></p><p>\( E(z) = E_0 e^{-z/\delta} \cos(kz - \omega t) \)</p><p>\( \delta \propto \frac{1}{\sqrt{\sigma}} \) (where \(\sigma\) = tissue conductivity)</p><p>Conductivity (\(\sigma\)): <span id="val-skin-sigma" class="highlight">Moderate</span></p></div><p class="text-gray-300 mb-4">Because blood is highly conductive, the subtle rushing of blood from a heartbeat slightly changes the tissue's conductivity. AI can pick up these micro-variations!</p><label class="block mb-2 text-sm text-gray-400">Tissue Conductivity (Fat -> Muscle/Blood):</label><input type="range" id="slider-skin" min="1" max="10" step="0.1" value="5"></div><div><canvas id="canvas-skin" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: EM wave decaying exponentially inside a lossy medium.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">18. Trigonometry (Angle of Arrival)</h2><p class="mb-4 text-gray-300">How do antennas know where a signal comes from? By measuring the phase difference between two antennas separated by a distance \(L\).</p><div class="math-block"><p><strong>Path Difference & Phase:</strong></p><p>\(\Delta d = L \sin(\theta)\)</p><p>\(\phi = \frac{2\pi \Delta d}{\lambda}\)</p><p>Arrival Angle (\(\theta\)): <span id="val-aoa-theta" class="highlight">30</span>&deg;</p><p>Phase Diff (\(\phi\)): <span id="val-aoa-phase" class="highlight">0.0</span> rad</p></div><p class="text-gray-300 mb-4">This is exactly Young's Double Slit experiment in reverse. By solving this trigonometric equation, the AI finds your angular position.</p><label class="block mb-2 text-sm text-gray-400">Angle of Arrival (\(\theta\)): <span id="slider-aoa-val">30</span>&deg;</label><input type="range" id="slider-aoa" min="-90" max="90" step="1" value="30"></div><div><canvas id="canvas-aoa" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Plane wave hitting a 2-antenna array at an angle.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">19. Probability & Gaussian Noise</h2><p class="mb-4 text-gray-300">Real signals are never perfect. They are corrupted by thermal noise and scattering, universally modeled as a <strong>Gaussian probability distribution</strong>.</p><div class="math-block"><p><strong>Gaussian Distribution:</strong></p><p>\( P(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}} \)</p><p>Noise Standard Deviation (\(\sigma\)): <span id="val-noise-var" class="highlight">0.20</span></p><p>Signal-to-Noise Ratio: <span id="val-noise-snr" class="highlight">Good</span></p></div><p class="text-gray-300 mb-4">The AI must use statistical methods (like Kalman filters or neural network layers) to extract the true sine wave from this noisy environment.</p><label class="block mb-2 text-sm text-gray-400">Noise Level (\(\sigma\)):</label><input type="range" id="slider-noise" min="0" max="1" step="0.05" value="0.2"></div><div><canvas id="canvas-noise" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: True signal vs. Measured signal with Gaussian Noise.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">20. Fourier Series (Gait Synthesis)</h2><p class="mb-4 text-gray-300">A human walking signal is messy, not a pure sine wave. According to <strong>Fourier</strong>, any periodic signal is just a sum of multiple pure sine waves (harmonics).</p><div class="math-block"><p><strong>Harmonic Addition:</strong></p><p>\( f(t) = a_0 + \sum_{n=1}^{N} (a_n\cos(n\omega t) + b_n\sin(n\omega t)) \)</p><p>Harmonics Active (\(N\)): <span id="val-fourier-terms" class="highlight">3</span></p></div><p class="text-gray-300 mb-4">By analyzing the coefficients \(a_n, b_n\), the AI can uniquely identify <em>who</em> is walking (Gait Recognition) just from their RF reflection.</p><label class="block mb-2 text-sm text-gray-400">Number of Harmonics (\(N\)): <span id="slider-fseries-val">3</span></label><input type="range" id="slider-fseries" min="1" max="15" step="2" value="3"></div><div><canvas id="canvas-fseries" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Adding \(N\) odd harmonics to construct a complex gait wave.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">21. Differentiation & SHM (Breathing)</h2><p class="mb-4 text-gray-300">Breathing is roughly <strong>Simple Harmonic Motion (SHM)</strong>. Radar Doppler shift depends strictly on velocity (\(v\)), which is the time derivative of displacement (\(x\)).</p><div class="math-block"><p><strong>Kinematics of Chest Wall:</strong></p><p>\( x(t) = A\sin(\omega t) \) (Phase shift)</p><p>\( v(t) = \frac{dx}{dt} = A\omega\cos(\omega t) \) (Doppler shift)</p><p>\( a(t) = \frac{dv}{dt} = -A\omega^2\sin(\omega t) \)</p><p>Breathing Freq (\(\omega\)): <span id="val-shm-w" class="highlight">1.0</span> rad/s</p></div><p class="text-gray-300 mb-4">Notice that velocity is \(90^\circ\) (\(\pi/2\)) out of phase with displacement. AI uses these derivative relationships to verify if a signal is truly human breathing or just random noise.</p><label class="block mb-2 text-sm text-gray-400">Breathing Rate (\(\omega\)): <span id="slider-shm-val">1.0</span></label><input type="range" id="slider-shm" min="0.5" max="3" step="0.1" value="1.0"></div><div><canvas id="canvas-shm" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Synchronized graphs of \(x(t)\), \(v(t)\), and \(a(t)\).</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">22. 3D Coordinate Geometry (Spheres)</h2><p class="mb-4 text-gray-300">To find a person's 3D pose, 2D circles aren't enough. We use the geometry of <strong>3D Spheres</strong>. The intersection of 3 spheres gives exactly two points; a 4th antenna isolates the exact \((x,y,z)\).</p><div class="math-block"><p><strong>Spherical Equation:</strong></p><p>\( (x - x_i)^2 + (y - y_i)^2 + (z - z_i)^2 = r_i^2 \)</p><p>Target Z-Height: <span id="val-3d-z" class="highlight">1.5</span> m</p></div><p class="text-gray-300 mb-4">This is the math behind WiTrack and RF-Pose estimating the height of your hand when you wave.</p><label class="block mb-2 text-sm text-gray-400">Target Height (\(z\)): <span id="slider-3d-val">1.5</span> m</label><input type="range" id="slider-3d" min="-2" max="2" step="0.1" value="1.5"></div><div><canvas id="canvas-3dspheres" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Isometric 3D view of intersecting spherical distance shells.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">23. Determinants & Matrix Inversion</h2><p class="mb-4 text-gray-300">The core AI equation is \( \mathbf{Y} = \mathbf{H}\mathbf{X} \). To find the human (\(\mathbf{X}\)), the system must calculate \( \mathbf{X} = \mathbf{H}^{-1}\mathbf{Y} \).</p><div class="math-block"><p><strong>Channel Matrix (\(\mathbf{H}\)) Invertibility:</strong></p><p>\( \det(H) = (h_{11}h_{22} - h_{12}h_{21}) \)</p><p>Angle between multipath vectors: <span id="val-det-angle" class="highlight">90</span>&deg;</p><p>\( \det(H) \): <span id="val-det-val" class="highlight">1.00</span></p></div><p class="text-gray-300 mb-4">If the paths are too similar (vectors overlap), \( \det(H) \to 0 \). The geometric space collapses (Area = 0), making the matrix <strong>singular</strong>. The AI loses the ability to "see" you.</p><label class="block mb-2 text-sm text-gray-400">Collapse Multipath Vectors (\(\theta\)):</label><input type="range" id="slider-det" min="0" max="90" step="1" value="90"></div><div><canvas id="canvas-det" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: 2D Transformation mapping. Watch the area (determinant) shrink.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">24. AC Circuits & Resonance</h2><p class="mb-4 text-gray-300">How does the WiFi router generate a perfect 5 GHz EM wave? The antenna is fundamentally an <strong>LCR Resonant Circuit</strong>.</p><div class="math-block"><p><strong>Resonant Frequency (\(\omega_0\)):</strong></p><p>\( X_L = X_C \implies \omega L = \frac{1}{\omega C} \)</p><p>\( f_0 = \frac{1}{2\pi\sqrt{LC}} \)</p><p>Current Capacitance: <span id="val-lcr-c" class="highlight">1.0</span> pF</p><p>Resonant Freq: <span id="val-lcr-f" class="highlight">5.0</span> GHz</p></div><p class="text-gray-300 mb-4">The router maximizes transmission power only when the driving frequency exactly matches the natural resonant frequency of the antenna, minimizing impedance \(Z\).</p><label class="block mb-2 text-sm text-gray-400">Adjust Tuning Capacitor (\(C\)):</label><input type="range" id="slider-lcr" min="0.5" max="2.0" step="0.1" value="1.0"></div><div><canvas id="canvas-lcr" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Frequency response curve (Power vs Freq). Tune to maximize.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">25. Poynting Vector (Energy Flow)</h2><p class="mb-4 text-gray-300">Just as \( \vec{p} = m\vec{v} \) describes mechanical momentum, the <strong>Poynting Vector</strong> describes the flow of Electromagnetic Energy.</p><div class="math-block"><p><strong>Power Flow Density:</strong></p><p>\( \vec{S} = \vec{E} \times \vec{H} \)</p><p>Magnitude: \( |\vec{S}| = EH = \frac{E^2}{\mu_0 c} \)</p><p>Energy Flow Direction: <span class="highlight">Forward (X-Axis)</span></p></div><p class="text-gray-300 mb-4">Electric (\(\vec{E}\)) and Magnetic (\(\vec{H}\)) fields are mutually perpendicular. Their cross product points exactly in the direction of wave propagation.</p></div><div><canvas id="canvas-poynting" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: 3D vector cross product \( \vec{E} \) (Blue) \( \times \) \( \vec{H} \) (Red) = \( \vec{S} \) (Green).</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">26. Fresnel Reflection (Wave Impedance)</h2><p class="mb-4 text-gray-300">Why does concrete reflect more WiFi than wood? It depends on the <strong>Impedance Mismatch</strong> at the boundary.</p><div class="math-block"><p><strong>Normal Incidence Reflection:</strong></p><p>\( r = \frac{n_1 - n_2}{n_1 + n_2} \) &nbsp;&nbsp;&nbsp; \( R = |r|^2 \)</p><p>Medium 2 Index (\(n_2\)): <span id="val-fresnel-n2" class="highlight">1.5</span></p><p>Reflected Power (\(R\)): <span id="val-fresnel-r" class="highlight">4.0</span>%</p></div><p class="text-gray-300 mb-4">A perfect match (\(n_1 = n_2\)) yields zero reflection. A large mismatch (like air to metal or concrete) causes massive reflection.</p><label class="block mb-2 text-sm text-gray-400">Wall Refractive Index (\(n_2\)): <span id="slider-fresnel-val">1.5</span></label><input type="range" id="slider-fresnel" min="1.0" max="10.0" step="0.5" value="1.5"></div><div><canvas id="canvas-fresnel" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Incident wave splitting into Transmitted and Reflected components.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">27. Radar Equation (RCS)</h2><p class="mb-4 text-gray-300">How "visible" is an object to WiFi? It depends on its <strong>Radar Cross Section (\(\sigma\))</strong>. A torso reflects vastly more energy than a finger.</p><div class="math-block"><p><strong>Two-Way Radar Equation:</strong></p><p>\( P_r = \frac{P_t G^2 \lambda^2 \sigma}{(4\pi)^3 R^4} \)</p><p>Target RCS (\(\sigma\)): <span id="val-rcs-sigma" class="highlight">1.0</span> m&sup2;</p><p>Distance (\(R\)): <span id="val-rcs-dist" class="highlight">2.0</span> m</p><p>Received Power \(\propto \frac{1}{R^4}\)</p></div><p class="text-gray-300 mb-4">Notice the punishing \(1/R^4\) drop-off! Because the wave expands on the way there (\(1/R^2\)), hits the object, and expands again on the way back (\(1/R^2\)).</p><label class="block mb-2 text-sm text-gray-400">Target Size (\(\sigma\)): <span id="slider-rcs-val">1.0</span></label><input type="range" id="slider-rcs" min="0.1" max="3.0" step="0.1" value="1.0"></div><div><canvas id="canvas-rcs" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: The \(1/R^4\) power drop curve based on target size.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">28. Dipole Antenna (Oscillating Current)</h2><p class="mb-4 text-gray-300">WiFi antennas are essentially oscillating electric dipoles (\( I = I_0 \sin(\omega t) \)). For maximum radiation efficiency, the physical length must match the standing wave.</p><div class="math-block"><p><strong>Half-Wave Dipole:</strong></p><p>\( L = \frac{\lambda}{2} \)</p><p>Antenna Length (\(L\)): <span id="val-dipole-len" class="highlight">3.0</span> cm</p><p>Optimal Length: <span class="highlight">3.0</span> cm (for 5GHz, \(\lambda=6cm\))</p></div><p class="text-gray-300 mb-4">When tuned perfectly to \(\lambda/2\), the current nodes form exactly at the tips of the antenna, maximizing radiated EM fields.</p><label class="block mb-2 text-sm text-gray-400">Antenna Physical Length (cm):</label><input type="range" id="slider-dipole" min="1.0" max="6.0" step="0.1" value="3.0"></div><div><canvas id="canvas-dipole" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Standing current wave inside the antenna rod.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">29. Nyquist Sampling Theorem</h2><p class="mb-4 text-gray-300">Before AI can analyze WiFi CSI, the continuous wave must be converted to digital numbers. If sampled too slowly, high-speed motions (like gestures) create ghost frequencies.</p><div class="math-block"><p><strong>Nyquist Limit:</strong></p><p>\( f_s > 2 f_{max} \)</p><p>Signal Frequency (\(f_{max}\)): 2.0 Hz</p><p>Sampling Rate (\(f_s\)): <span id="val-nyq-fs" class="highlight">5.0</span> Hz</p><p>Status: <span id="val-nyq-status" class="highlight text-green-400">Valid</span></p></div><p class="text-gray-300 mb-4">This phenomenon is called <strong>Aliasing</strong>. It limits how fast of a motion a given WiFi card can accurately track.</p><label class="block mb-2 text-sm text-gray-400">Sampling Rate (\(f_s\)): <span id="slider-nyq-val">5.0</span></label><input type="range" id="slider-nyq" min="1.0" max="10.0" step="0.1" value="5.0"></div><div><canvas id="canvas-nyquist" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: True signal (Blue) vs Reconstructed alias from samples (Red).</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">30. Convolution (Multipath Math)</h2><p class="mb-4 text-gray-300">The equation \( Y = HX \) is a simplified matrix form. Physically, the room applies a <strong>Convolution</strong> to the signal over time, smearing echoes together.</p><div class="math-block"><p><strong>Continuous Convolution:</strong></p><p>\( y(t) = (h * x)(t) = \int_{-\infty}^{\infty} h(\tau) x(t - \tau) d\tau \)</p></div><p class="text-gray-300 mb-4">The input wave \( x(t) \) slides over the room's impulse response \( h(\tau) \) (the reflections). The output \( y(t) \) is the mathematical overlap area.</p></div><div><canvas id="canvas-convolution" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: A square pulse sliding across room echoes to create output.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">31. Range Resolution & Bandwidth</h2><p class="mb-4 text-gray-300">Why can't standard WiFi separate two fingers 1cm apart? Because physical resolution is strictly limited by the signal's <strong>Frequency Bandwidth (\(B\))</strong>.</p><div class="math-block"><p><strong>Uncertainty / Resolution Limit:</strong></p><p>\( \Delta R = \frac{c}{2B} \)</p><p>Bandwidth (\(B\)): <span id="val-res-b" class="highlight">20</span> MHz</p><p>Resolution Limit (\(\Delta R\)): <span id="val-res-dr" class="highlight">7.5</span> m</p></div><p class="text-gray-300 mb-4">Narrow bandwidth = long, sloppy pulses in the time domain that overlap. Wide bandwidth (like Ultra-Wideband UWB) = sharp pulses that can separate close objects.</p><label class="block mb-2 text-sm text-gray-400">Bandwidth \(B\) (MHz): <span id="slider-res-val">20</span></label><input type="range" id="slider-res" min="20" max="500" step="10" value="20"></div><div><canvas id="canvas-resolution" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Two overlapping reflection pulses. Increase bandwidth to resolve them.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">32. Maxwell's Equations (The Source)</h2><p class="mb-4 text-gray-300">The entire universe of RF sensing originates from these four partial differential equations. They dictate how charges create divergence, and how changing fields create curl.</p><div class="math-block"><p><strong>Gauss & Faraday Laws:</strong></p><p>\( \nabla \cdot \vec{E} = \frac{\rho}{\varepsilon_0} \) (Divergence / Source)</p><p>\( \nabla \times \vec{E} = -\frac{\partial \vec{B}}{\partial t} \) (Curl / Circulation)</p></div><p class="text-gray-300 mb-4">When a human enters a room, their body acts as a boundary condition containing bounded charges and currents (\( \rho, \vec{J} \)), fundamentally twisting the solutions to these equations.</p></div><div><canvas id="canvas-maxwell" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Left (Gauss Divergence), Right (Faraday Curl from changing B-field).</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">33. The EM Wave Equation</h2><p class="mb-4 text-gray-300">By taking the curl of Maxwell's curl equations, we derive the <strong>Wave Equation</strong>. It states that the spatial curvature (\( \nabla^2 \)) is proportional to the time acceleration (\( \partial^2/\partial t^2 \)).</p><div class="math-block"><p><strong>The Universal Wave PDE:</strong></p><p>\( \nabla^2 \vec{E} = \frac{1}{c^2} \frac{\partial^2 \vec{E}}{\partial t^2} \)</p><p>Speed of light: \( c = \frac{1}{\sqrt{\mu_0 \varepsilon_0}} \)</p></div><p class="text-gray-300 mb-4">This guarantees that electromagnetic disturbances must travel at speed \(c\), creating the time-of-flight delays that RF sensing exploits.</p></div><div><canvas id="canvas-waveeq" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Highlighting spatial curvature (Laplacian) vs time acceleration.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">34. Energy Density of EM Waves</h2><p class="mb-4 text-gray-300">The Poynting vector tells us how power flows, but <strong>Energy Density (\(u\))</strong> tells us where energy is physically stored at any moment in space.</p><div class="math-block"><p><strong>Volumetric Energy Storage:</strong></p><p>\( u = \frac{1}{2}\varepsilon_0 E^2 + \frac{1}{2\mu_0} B^2 \)</p><p>Since \( E = cB \), then \( u_E = u_B \)</p></div><p class="text-gray-300 mb-4">Energy is equally shared between the Electric and Magnetic fields, oscillating between zero and maximum (always positive) as the wave passes through a room.</p></div><div><canvas id="canvas-energydensity" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Plotting E, B, and the strictly positive total Energy Density \( u \).</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">35. Lorentz Reciprocity Principle</h2><p class="mb-4 text-gray-300">A profound law of electromagnetics: If antenna A transmits to antenna B, the channel response is identical if B transmits to A. The room geometry is symmetric.</p><div class="math-block"><p><strong>Channel Matrix Symmetry:</strong></p><p>\( H_{AB} = H_{BA} \)</p><p>Current Direction: <span id="val-recip-dir" class="highlight">A &rarr; B</span></p></div><p class="text-gray-300 mb-4">This allows modern routers to measure the CSI of your phone transmitting an ACK packet, and use that exact same \(H\) matrix to focus a beam back at your phone.</p></div><div><canvas id="canvas-reciprocity" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Multipath interference pattern remains identical when Tx/Rx swap.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">36. Shannon Information Theory</h2><p class="mb-4 text-gray-300">How much pose data can we mathematically extract from a WiFi signal? It is strictly bounded by <strong>Shannon's Channel Capacity</strong>.</p><div class="math-block"><p><strong>Shannon-Hartley Theorem:</strong></p><p>\( C = B \log_2(1 + SNR) \)</p><p>Bandwidth (\(B\)): <span id="val-shannon-b" class="highlight">20</span> MHz</p><p>SNR: <span id="val-shannon-snr" class="highlight">10</span></p><p>Capacity (\(C\)): <span id="val-shannon-c" class="highlight">69.2</span> Mbps</p></div><p class="text-gray-300 mb-4">You can linearly increase capacity with Bandwidth (hence 5GHz/6GHz WiFi), but increasing SNR only gives diminishing logarithmic returns.</p><label class="block mb-2 text-sm text-gray-400">Signal-to-Noise Ratio (SNR): <span id="slider-shannon-snr-val">10</span></label><input type="range" id="slider-shannon-snr" min="0" max="100" step="1" value="10"></div><div><canvas id="canvas-shannon" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Logarithmic capacity curve. Data bounds for RF sensing.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">37. Singular Value Decomposition (SVD)</h2><p class="mb-4 text-gray-300">How does WiFi handle the \(H\) matrix? It decomposes it into <strong>Eigenmodes</strong> using SVD. This creates independent mathematical "pipes" through the air.</p><div class="math-block"><p><strong>Matrix Factorization:</strong></p><p>\( H = U \Sigma V^T \)</p><p>\( V^T \): Initial Rotation (Pre-coding)</p><p>\( \Sigma \): Scaling (Singular values/Channel Gains)</p><p>\( U \): Final Rotation (Receiver decoding)</p></div><p class="text-gray-300 mb-4">This transforms messy multipath interference into clean, parallel communication streams. The AI reads the \( \Sigma \) values to understand body blockage.</p></div><div><canvas id="canvas-svd" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: A unit circle mapped to an ellipse. SVD decomposes the shear.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">38. Kalman Filtering (Tracking)</h2><p class="mb-4 text-gray-300">Before deep learning, radar tracked humans using <strong>Kalman Filters</strong>. It continuously balances a physics prediction against noisy RF measurements.</p><div class="math-block"><p><strong>Predict & Correct:</strong></p><p>Predict: \( \hat{x}_{k|k-1} = A\hat{x}_{k-1} \)</p><p>Correct: \( \hat{x}_k = \hat{x}_{k|k-1} + K_k(z_k - H\hat{x}_{k|k-1}) \)</p><p>Kalman Gain (\(K\)): Balances trust.</p></div><p class="text-gray-300 mb-4">If the physics model is highly certain, \(K\) is low (ignores noise). If the measurement is highly certain, \(K\) is high (snaps to measurement).</p></div><div><canvas id="canvas-kalman" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: True Path (Blue) vs Noisy Sensor (Red) vs Kalman Smoothing (Green).</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">39. Inverse Scattering Theory</h2><p class="mb-4 text-gray-300">When an EM plane wave hits a human body, it forces electrons to oscillate. The body becomes a secondary antenna, radiating a <strong>spherical scattered wave</strong>.</p><div class="math-block"><p><strong>Scattered Field:</strong></p><p>\( E_s = f(\theta, \phi) \frac{e^{ikr}}{r} \)</p><p>\( f(\theta, \phi) \): Complex scattering amplitude.</p></div><p class="text-gray-300 mb-4">RF-Pose is fundamentally an <em>inverse scattering problem</em>: Given the scattered spherical waves \(E_s\) arriving at the router, deduce the biological shape \(f(\theta)\) that caused them.</p></div><div><canvas id="canvas-scattering" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Plane wave (Tx) inducing spherical scattered waves from a target.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">40. Uncertainty / Gabor Limit</h2><p class="mb-4 text-gray-300">Just like Heisenberg's Uncertainty in quantum mechanics, classical waves have an inescapable trade-off between <strong>Time resolution and Frequency resolution</strong>.</p><div class="math-block"><p><strong>Fourier Uncertainty Principle:</strong></p><p>\( \Delta t \Delta f \gtrsim 1 \)</p></div><p class="text-gray-300 mb-4">A short RF pulse gives excellent distance accuracy (\(\Delta t\)), but poor Doppler/velocity accuracy (\(\Delta f\)). A long continuous wave gives excellent Doppler, but you don't know where the object is!</p><label class="block mb-2 text-sm text-gray-400">Pulse Width (\(\Delta t\)):</label><input type="range" id="slider-uncertainty" min="0.1" max="5.0" step="0.1" value="1.0"></div><div><canvas id="canvas-uncertainty" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Top (Time Domain Gaussian), Bottom (Frequency Domain FFT).</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">41. Eigenmodes of a Room</h2><p class="mb-4 text-gray-300">Instead of tracing bouncing rays, the deepest physical view is that a room is a <strong>Giant Microwave Cavity Resonator</strong>. It has natural 3D resonant frequencies.</p><div class="math-block"><p><strong>Cavity Resonance Modes:</strong></p><p>\( E_{m,n}(x,y) = E_0 \sin(\frac{m\pi x}{L}) \sin(\frac{n\pi y}{W}) \cos(\omega t) \)</p><p>Current Mode: \( (m=2, n=3) \)</p></div><p class="text-gray-300 mb-4">When a human walks in, they change the boundary conditions, shifting the natural eigenmodes of the entire room. CSI is literally reading the shifting harmonic states of this cavity.</p></div><div><canvas id="canvas-eigenmodes" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: 2D contour heatmap of a resonant room eigenmode (Standing Waves in 2D).</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">42. Eigenfunctions & Helmholtz Equation</h2><p class="mb-4 text-gray-300">When we factor out time from the wave equation, we get the <strong>Helmholtz Equation</strong>. It turns the continuum of space into a set of discrete, valid "eigenstates" (like standing waves on a string).</p><div class="math-block"><p><strong>Helmholtz Equation:</strong></p><p>\( \nabla^2 E + k^2 E = 0 \)</p><p>Allowed Wavenumbers: \( k_n = \frac{n\pi}{L} \)</p></div><p class="text-gray-300 mb-4">This mathematically bridges the physical standing waves in a room with the linear algebra concepts of Eigenvalues and Eigenvectors used in SVD.</p></div><div><canvas id="canvas-helmholtz" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: The discrete valid eigenfunctions (modes) of a bounded cavity.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">43. MIMO Spatial Multiplexing</h2><p class="mb-4 text-gray-300">Modern WiFi routers don't just use one antenna. They use Multiple-Input Multiple-Output (MIMO) arrays, creating a massive, interwoven web of signals.</p><div class="math-block"><p><strong>MIMO Equation:</strong></p><p>\( \mathbf{y} = \mathbf{H}\mathbf{x} + \mathbf{n} \)</p><p>Tx Antennas: <span class="highlight">4</span> | Rx Antennas: <span class="highlight">4</span></p><p>Total Paths in \( \mathbf{H} \): <span class="highlight">16</span></p></div><p class="text-gray-300 mb-4">By analyzing how a human blocks or shifts specific paths within this \( 4 \times 4 \) matrix, the AI can reconstruct a highly detailed 3D skeleton.</p></div><div><canvas id="canvas-mimo" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: A 4x4 MIMO array tracking multipath signals simultaneously.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">44. Bayesian Inference</h2><p class="mb-4 text-gray-300">Modern pose estimation is probabilistic. The AI updates its belief of your position by multiplying its previous guess (Prior) with the new noisy radar data (Likelihood).</p><div class="math-block"><p><strong>Bayes' Theorem:</strong></p><p>\( P(H|D) = \frac{P(D|H)P(H)}{P(D)} \)</p><p>Posterior \( \propto \) Likelihood \( \times \) Prior</p></div><p class="text-gray-300 mb-4">Multiplying two wide Gaussian distributions results in a much narrower, taller Gaussian. The more data the AI collects, the sharper and more certain its prediction becomes.</p></div><div><canvas id="canvas-bayes" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Prior (Blue) × Likelihood (Red) = Sharper Posterior (Green).</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">45. Optimization & Damped SHM</h2><p class="mb-4 text-gray-300">Neural networks use optimizers like Adam or Momentum, which mathematically behave exactly like a ball rolling in a valley with friction (Damped Harmonic Motion).</p><div class="math-block"><p><strong>Momentum Update Rule:</strong></p><p>\( v_{n+1} = \beta v_n - \alpha \nabla J \)</p><p>\( \theta_{n+1} = \theta_n + v_{n+1} \)</p><p>\( \beta \) (Friction/Momentum): <span class="highlight">0.9</span></p></div><p class="text-gray-300 mb-4">Instead of zigzagging wildly (standard gradient descent), momentum accumulates velocity to power through small noisy bumps and settle efficiently at the true minimum error.</p></div><div><canvas id="canvas-momentum" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: AI Optimizer behaving like a ball under gravity and friction.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">46. The Resolution-Uncertainty Synthesis</h2><p class="mb-4 text-gray-300">We arrive at the grand synthesis. Radar range resolution (\( \Delta R \)) and the Fourier uncertainty principle are two faces of the exact same physical law.</p><div class="math-block"><p><strong>The Universal Connection:</strong></p><p>\( \Delta R = \frac{c}{2B} \) &nbsp;&nbsp; AND &nbsp;&nbsp; \( \Delta t \Delta f \gtrsim 1 \)</p><p>Short Time Pulse (\( \Delta t \downarrow \)) \( \implies \) Wide Bandwidth (\( \Delta f \uparrow \)) \( \implies \) High Resolution (\( \Delta R \downarrow \))</p></div><p class="text-gray-300 mb-4">To pinpoint a human precisely (tiny \( \Delta R \)), you must fire an extremely short pulse. But Nature dictates that a short pulse mathematically <em>contains</em> a massive frequency bandwidth.</p><label class="block mb-2 text-sm text-gray-400">Pulse Bandwidth (\(B\)): <span id="slider-uncertsynth-val">20</span> MHz</label><input type="range" id="slider-uncertsynth" min="20" max="500" step="10" value="20"></div><div><canvas id="canvas-uncertsynth" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Increasing Bandwidth sharpens both the Pulse and the Spatial Resolution.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">47. Retarded Potentials (The Delay)</h2><p class="mb-4 text-gray-300">Returning to the Preface: How does the universe handle the finite speed of light? By ensuring the field observed <em>here</em> depends entirely on what the source was doing in the <em>past</em>.</p><div class="math-block"><p><strong>Retarded Potential Integral:</strong></p><p>\( \phi(\mathbf{r}, t) = \frac{1}{4\pi\varepsilon_0} \int \frac{\rho(\mathbf{r}', t - R/c)}{R} \,d^3r' \)</p></div><p class="text-gray-300 mb-4">When a person moves their arm, the WiFi router doesn't see their arm where it <em>is</em>; it calculates based on where the arm <em>was</em> at time \(t - R/c\). This delay is the true source of all radar phase shifts.</p></div><div><canvas id="canvas-retarded" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Expanding field ripples originate from the <em>past</em> positions of a moving charge.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">48. Green's Functions (The Impulse)</h2><p class="mb-4 text-gray-300">What is the mathematical bridge connecting the Wave Equation to Scattering Theory? The <strong>Green's Function</strong>. It represents the "impulse response" of the empty universe.</p><div class="math-block"><p><strong>Point Source Equation:</strong></p><p>\( (\nabla^2 + k^2)G(\mathbf{r}, \mathbf{r}') = -\delta(\mathbf{r} - \mathbf{r}') \)</p><p>Solution (Free Space): \( G(r) = \frac{e^{ikr}}{4\pi r} \)</p></div><p class="text-gray-300 mb-4">By taking the Dirac delta \( \delta \) (a single point in space/time) and convolving its rippling result \( G(r) \) across the entire shape of a human body, we calculate the exact scattered WiFi wave.</p></div><div><canvas id="canvas-greens" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: A Dirac delta 'tap' propagating outward as the fundamental Green's kernel.</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">49. Variational Principle (Action vs AI)</h2><p class="mb-4 text-gray-300">There is a profound analogy uniting classical physics and machine learning. Both operate by minimizing a fundamental quantity over a path.</p><div class="math-block"><p><strong>Physics (Principle of Least Action):</strong></p><p>\( \delta S = \delta \int L \,dt = 0 \) (Nature finds the easiest path)</p><p><strong>AI (Gradient Descent):</strong></p><p>\( \nabla J = 0 \) (Algorithm finds the path of least error)</p></div><p class="text-gray-300 mb-4">Whether it is an EM wave refracting to minimize travel time (Fermat's Principle) or a Neural Network minimizing coordinate error, the universe fundamentally optimizes.</p></div><div><canvas id="canvas-variational" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Fermat's Least Time (Light Bending) vs AI Least Error (Curve settling).</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">50. Noether's Theorem & Symmetries</h2><p class="mb-4 text-gray-300">Why does Fourier Analysis work on RF signals? Because frequencies are stable. Why are they stable? Because of <strong>Noether's Theorem</strong>, which links continuous symmetry to conservation laws.</p><div class="math-block"><p><strong>Symmetry &rarr; Conservation:</strong></p><p>Time Translation Invariance \( \implies \) Energy (\(E = hf\))</p><p>Spatial Translation Invariance \( \implies \) Momentum (\(p = h/\lambda\))</p><p>Rotational Invariance \( \implies \) Angular Momentum</p></div><p class="text-gray-300 mb-4">If the physical laws of the room changed second-by-second, energy would not be conserved, frequencies would drift, and RF CSI processing would be mathematically impossible.</p></div><div><canvas id="canvas-noether" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: Rotational symmetry guaranteeing a conserved constant area (Kepler/Noether).</p></div></section>
+<section class="section-container"><div><h2 class="text-2xl font-bold mb-4 text-white border-b border-gray-600 pb-2">51. Information Geometry (The Ultimate Limit)</h2><p class="mb-4 text-gray-300">What is the absolute, unbreachable theoretical limit of tracking a human pose? It is governed by <strong>Fisher Information</strong> and the Cramér-Rao bound.</p><div class="math-block"><p><strong>Fisher Information (\(I\)):</strong></p><p>\( I(\theta) = \mathbb{E}\left[ \left( \frac{\partial}{\partial\theta} \ln p(x|\theta) \right)^2 \right] \)</p><p><strong>Cramér-Rao Bound (Error Limit):</strong> \( \text{Var}(\hat{\theta}) \ge \frac{1}{I(\theta)} \)</p><p>Fisher Info (Curvature): <span id="val-fisher-i" class="highlight">High</span></p></div><p class="text-gray-300 mb-4">Fisher Information measures the "sharpness" or curvature of the probability distribution. High noise flattens the curve, decreasing Information, and permanently raising the physical limit on accuracy.</p><label class="block mb-2 text-sm text-gray-400">Signal Certainty (Inversely proportional to Noise):</label><input type="range" id="slider-fisher" min="0.1" max="2.0" step="0.1" value="1.0"></div><div><canvas id="canvas-fisher" height="300"></canvas><p class="text-sm text-gray-400 mt-2 text-center">Simulation: The curvature of Log-Likelihood defining the physical bound of accuracy.</p></div></section>
+</div>
+<script>
+let time=0;
+function drawGrid(ctx,w,h){ctx.strokeStyle='#334155';ctx.lineWidth=1;for(let x=0;x<w;x+=50){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}for(let y=0;y<h;y+=50){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}}
+const canvasPreface=document.getElementById('canvas-preface');const ctxPreface=canvasPreface?canvasPreface.getContext('2d'):null;
+function drawPreface(){
+    if(!canvasPreface)return;const w=canvasPreface.width=canvasPreface.offsetWidth;const h=canvasPreface.height=400;ctxPreface.clearRect(0,0,w,h);
+    const grad=ctxPreface.createRadialGradient(w/2,h/2,0,w/2,h/2,w);grad.addColorStop(0,'#0f172a');grad.addColorStop(1,'#020617');ctxPreface.fillStyle=grad;ctxPreface.fillRect(0,0,w,h);
+    const cx1=70;const cx2=w-70;const cy=h/2;ctxPreface.strokeStyle='rgba(51,65,85,0.4)';ctxPreface.lineWidth=1;
+    for(let i=0;i<w;i+=30){ctxPreface.beginPath();ctxPreface.moveTo(i,0);ctxPreface.lineTo(i,h);ctxPreface.stroke();}
+    const txGlow=ctxPreface.createRadialGradient(cx1,cy,5,cx1,cy,30);txGlow.addColorStop(0,'rgba(251,191,36,1)');txGlow.addColorStop(1,'rgba(251,191,36,0)');
+    ctxPreface.fillStyle=txGlow;ctxPreface.beginPath();ctxPreface.arc(cx1,cy,30,0,Math.PI*2);ctxPreface.fill();
+    ctxPreface.fillStyle='white';ctxPreface.beginPath();ctxPreface.arc(cx1,cy,10,0,Math.PI*2);ctxPreface.fill();ctxPreface.fillText("Distant Star / Tx",cx1-40,cy+45);
+    const rxGlow=ctxPreface.createRadialGradient(cx2,cy,5,cx2,cy,30);rxGlow.addColorStop(0,'rgba(59,130,246,1)');rxGlow.addColorStop(1,'rgba(59,130,246,0)');
+    ctxPreface.fillStyle=rxGlow;ctxPreface.beginPath();ctxPreface.arc(cx2,cy,30,0,Math.PI*2);ctxPreface.fill();
+    ctxPreface.fillStyle='white';ctxPreface.beginPath();ctxPreface.arc(cx2,cy,10,0,Math.PI*2);ctxPreface.fill();ctxPreface.fillText("Earth / Rx",cx2-30,cy+45);
+    const dist=cx2-cx1;const speed=2.5;const packetX=cx1+(time*speed)%(dist+150);
+    if(packetX>cx1&&packetX<cx2){
+        ctxPreface.beginPath();ctxPreface.strokeStyle='#10b981';ctxPreface.lineWidth=3;
+        for(let i=-40;i<=40;i++){const px=packetX+i;const py=cy-50*Math.exp(-Math.pow(i/15,2))*Math.cos(i*0.4-time*0.2);if(i===-40)ctxPreface.moveTo(px,py);else ctxPreface.lineTo(px,py);}
+        ctxPreface.stroke();ctxPreface.fillStyle='#10b981';ctxPreface.font="bold 14px Arial";ctxPreface.fillText("Energy suspended in the 'Field'",packetX-100,cy-70);ctxPreface.font="12px Arial";
+    }
+    ctxPreface.beginPath();ctxPreface.strokeStyle='#ef4444';ctxPreface.setLineDash([5,5]);ctxPreface.lineWidth=2;ctxPreface.moveTo(cx1,cy-130);ctxPreface.lineTo(cx2,cy-130);ctxPreface.stroke();
+    ctxPreface.fillStyle='#ef4444';ctxPreface.font="bold 14px Arial";ctxPreface.fillText("Direct Interaction Model: E_rx(t) = E_tx(t - R/c)",w/2-145,cy-145);ctxPreface.font="12px Arial";ctxPreface.fillText("(Requires complex Time-Delay Equations across the void)",w/2-150,cy-115);
+    ctxPreface.beginPath();ctxPreface.strokeStyle='#3b82f6';ctxPreface.setLineDash([]);ctxPreface.moveTo(cx1,cy+130);ctxPreface.lineTo(cx2,cy+130);ctxPreface.stroke();
+    ctxPreface.fillStyle='#3b82f6';ctxPreface.font="bold 14px Arial";ctxPreface.fillText("Local Field Model: ∇²E = (1/c²) ∂²E/∂t²",w/2-120,cy+120);ctxPreface.font="12px Arial";ctxPreface.fillText("(Energy resides in continuous space / Aether / Field)",w/2-135,cy+150);
+}
+const canvasEM=document.getElementById('canvas-em');const ctxEM=canvasEM?canvasEM.getContext('2d'):null;const sliderFreq=document.getElementById('slider-freq');
+function drawEM(){
+    if(!canvasEM)return;const w=canvasEM.width=canvasEM.offsetWidth;const h=canvasEM.height=300;ctxEM.clearRect(0,0,w,h);drawGrid(ctxEM,w,h);
+    const freq=parseFloat(sliderFreq.value);const lambda=3/freq;const k=(2*Math.PI)/(lambda*50);const omega=freq*1.5;
+    ctxEM.beginPath();ctxEM.strokeStyle='#3b82f6';ctxEM.lineWidth=3;
+    for(let x=0;x<w;x++){const y=h/2+60*Math.cos(k*x-omega*time*0.05);if(x===0)ctxEM.moveTo(x,y);else ctxEM.lineTo(x,y);}
+    ctxEM.stroke();const x1=(omega*time*0.05)/k;const x2=x1+(2*Math.PI)/k;
+    ctxEM.strokeStyle='#10b981';ctxEM.beginPath();ctxEM.moveTo(x1%w,h/2+80);ctxEM.lineTo((x1%w),h/2+100);ctxEM.lineTo((x2%w),h/2+100);ctxEM.lineTo((x2%w),h/2+80);ctxEM.stroke();
+    ctxEM.fillStyle='#10b981';ctxEM.font="16px Arial";ctxEM.fillText("λ",(x1%w+x2%w)/2-5,h/2+120);
+    document.getElementById('slider-freq-val').innerText=freq.toFixed(1);document.getElementById('val-freq').innerText=freq.toFixed(1);
+    const rL=(3/freq)*0.1;document.getElementById('val-lambda').innerText=rL.toFixed(3);document.getElementById('val-lambda-cm').innerText=(rL*100).toFixed(1);
+}
+const canvasMP=document.getElementById('canvas-multipath');const ctxMP=canvasMP?canvasMP.getContext('2d'):null;const sliderMPY=document.getElementById('slider-person-y');
+function drawMultipath(){
+    if(!canvasMP)return;const w=canvasMP.width=canvasMP.offsetWidth;const h=canvasMP.height=300;ctxMP.clearRect(0,0,w,h);drawGrid(ctxMP,w,h);
+    const tx={x:50,y:h/2};const rx={x:w-50,y:h/2};const pyR=parseFloat(sliderMPY.value)/4;const p={x:w/2,y:50+pyR*(h-100)};
+    const d1px=Math.abs(rx.x-tx.x);const d2px=Math.hypot(p.x-tx.x,p.y-tx.y)+Math.hypot(rx.x-p.x,rx.y-p.y);
+    ctxMP.beginPath();ctxMP.strokeStyle='rgba(255,255,255,0.4)';ctxMP.lineWidth=2;ctxMP.setLineDash([5,5]);ctxMP.moveTo(tx.x,tx.y);ctxMP.lineTo(rx.x,rx.y);ctxMP.stroke();
+    ctxMP.beginPath();ctxMP.strokeStyle='#ef4444';ctxMP.setLineDash([]);ctxMP.moveTo(tx.x,tx.y);ctxMP.lineTo(p.x,p.y);ctxMP.lineTo(rx.x,rx.y);ctxMP.stroke();
+    ctxMP.fillStyle='#3b82f6';ctxMP.beginPath();ctxMP.arc(tx.x,tx.y,10,0,Math.PI*2);ctxMP.fill();
+    ctxMP.fillStyle='#10b981';ctxMP.beginPath();ctxMP.arc(rx.x,rx.y,10,0,Math.PI*2);ctxMP.fill();
+    ctxMP.fillStyle='#f59e0b';ctxMP.beginPath();ctxMP.arc(p.x,p.y,12,0,Math.PI*2);ctxMP.fill();
+    const sc=5.0/d1px;const d1=d1px*sc;const d2=d2px*sc;const ph=(2*Math.PI*(d2-d1))/0.06;const int=Math.pow(Math.cos(ph/2),2);
+    document.getElementById('val-d1').innerText=d1.toFixed(2);document.getElementById('val-d2').innerText=d2.toFixed(2);
+    document.getElementById('val-dx').innerText=(d2-d1).toFixed(3);document.getElementById('val-phase').innerText=ph.toFixed(2);document.getElementById('val-intensity').innerText=int.toFixed(3);
+}
+const canvasBr=document.getElementById('canvas-breathing');const ctxBr=canvasBr?canvasBr.getContext('2d'):null;const sliderBr=document.getElementById('slider-breath');const brHist=[];
+function drawBreathing(){
+    if(!canvasBr)return;const w=canvasBr.width=canvasBr.offsetWidth;const h=canvasBr.height=300;ctxBr.clearRect(0,0,w,h);drawGrid(ctxBr,w,h);
+    const a=parseFloat(sliderBr.value);document.getElementById('slider-breath-val').innerText=a.toFixed(1);document.getElementById('val-breath-d').innerText=a.toFixed(1);
+    const ph=(4*Math.PI*(a/1000))/0.06;document.getElementById('val-breath-phase').innerText=ph.toFixed(3);
+    const cPh=ph*Math.sin(time*0.05);brHist.push(Math.pow(Math.cos(cPh/2),2));if(brHist.length>w)brHist.shift();
+    ctxBr.beginPath();ctxBr.strokeStyle='#f43f5e';ctxBr.lineWidth=3;
+    for(let i=0;i<brHist.length;i++){const y=h-(brHist[i]*h*0.8)-10;if(i===0)ctxBr.moveTo(w-brHist.length+i,y);else ctxBr.lineTo(w-brHist.length+i,y);}
+    ctxBr.stroke();
+}
+const canvasDop=document.getElementById('canvas-doppler');const ctxDop=canvasDop?canvasDop.getContext('2d'):null;const sliderVel=document.getElementById('slider-vel');
+function drawDoppler(){
+    if(!canvasDop)return;const w=canvasDop.width=canvasDop.offsetWidth;const h=canvasDop.height=300;ctxDop.clearRect(0,0,w,h);drawGrid(ctxDop,w,h);
+    const v=parseFloat(sliderVel.value);document.getElementById('slider-vel-val').innerText=v.toFixed(1);document.getElementById('val-vel').innerText=v.toFixed(1);
+    document.getElementById('val-doppler').innerText=((2*v)/0.06).toFixed(1);
+    const ktx=0.1;const wtx=0.5;const krx=ktx*(1+v*0.2);const wrx=wtx*(1+v*0.2);
+    ctxDop.lineWidth=2;ctxDop.beginPath();ctxDop.strokeStyle='#3b82f6';
+    for(let x=0;x<w;x++){const y=h/3+30*Math.sin(ktx*x-wtx*time*0.1);if(x===0)ctxDop.moveTo(x,y);else ctxDop.lineTo(x,y);}ctxDop.stroke();
+    ctxDop.beginPath();ctxDop.strokeStyle='#ef4444';
+    for(let x=0;x<w;x++){const y=2*h/3+30*Math.sin(krx*x+wrx*time*0.1);if(x===0)ctxDop.moveTo(x,y);else ctxDop.lineTo(x,y);}ctxDop.stroke();
+}
+const canvasPh=document.getElementById('canvas-phasor');const ctxPh=canvasPh?canvasPh.getContext('2d'):null;
+function drawPhasors(){
+    if(!canvasPh)return;const w=canvasPh.width=canvasPh.offsetWidth;const h=canvasPh.height=300;ctxPh.clearRect(0,0,w,h);
+    const cx=w/2;const cy=h/2;ctxPh.strokeStyle='#334155';ctxPh.lineWidth=1;
+    ctxPh.beginPath();ctxPh.moveTo(0,cy);ctxPh.lineTo(w,cy);ctxPh.stroke();ctxPh.beginPath();ctxPh.moveTo(cx,0);ctxPh.lineTo(cx,h);ctxPh.stroke();
+    const p=[{r:40,w:0.02,c:'#f59e0b'},{r:70,w:0.01,c:'#3b82f6'},{r:50,w:0.05,c:'#10b981'}];
+    let cX=cx;let cY=cy;
+    p.forEach(pt=>{
+        const nX=cX+pt.r*Math.cos(time*pt.w);const nY=cY-pt.r*Math.sin(time*pt.w);
+        ctxPh.beginPath();ctxPh.strokeStyle=pt.c;ctxPh.lineWidth=2;ctxPh.moveTo(cX,cY);ctxPh.lineTo(nX,nY);ctxPh.stroke();
+        ctxPh.beginPath();ctxPh.fillStyle=pt.c;ctxPh.arc(nX,nY,4,0,Math.PI*2);ctxPh.fill();cX=nX;cY=nY;
+    });
+    ctxPh.beginPath();ctxPh.strokeStyle='white';ctxPh.lineWidth=3;ctxPh.setLineDash([5,5]);ctxPh.moveTo(cx,cy);ctxPh.lineTo(cX,cY);ctxPh.stroke();ctxPh.setLineDash([]);
+}
+const canvasStand=document.getElementById('canvas-standing');const ctxStand=canvasStand?canvasStand.getContext('2d'):null;const slHarm=document.getElementById('slider-harmonic');
+function drawStandingWaves(){
+    if(!canvasStand)return;const w=canvasStand.width=canvasStand.offsetWidth;const h=canvasStand.height=300;ctxStand.clearRect(0,0,w,h);drawGrid(ctxStand,w,h);
+    const n=parseInt(slHarm.value);document.getElementById('slider-harmonic-val').innerText=n;document.getElementById('val-harmonic').innerText=n;
+    const k=(n*Math.PI)/w;const amp=60;
+    ctxStand.fillStyle='#475569';ctxStand.fillRect(0,0,10,h);ctxStand.fillRect(w-10,0,10,h);
+    ctxStand.beginPath();ctxStand.strokeStyle='rgba(16,185,129,0.3)';ctxStand.setLineDash([5,5]);
+    for(let x=0;x<=w;x++){const y=h/2+amp*Math.sin(k*x);if(x===0)ctxStand.moveTo(x,y);else ctxStand.lineTo(x,y);}
+    for(let x=w;x>=0;x--){const y=h/2-amp*Math.sin(k*x);if(x===w)ctxStand.moveTo(x,y);else ctxStand.lineTo(x,y);}
+    ctxStand.stroke();ctxStand.setLineDash([]);ctxStand.beginPath();ctxStand.strokeStyle='#10b981';ctxStand.lineWidth=3;
+    for(let x=0;x<=w;x++){const y=h/2+amp*Math.sin(k*x)*Math.cos(time*0.1);if(x===0)ctxStand.moveTo(x,y);else ctxStand.lineTo(x,y);}ctxStand.stroke();
+}
+const canvasFour=document.getElementById('canvas-fourier');const ctxFour=canvasFour?canvasFour.getContext('2d'):null;const slF1=document.getElementById('slider-f1');const slF2=document.getElementById('slider-f2');
+function drawFourier(){
+    if(!canvasFour)return;const w=canvasFour.width=canvasFour.offsetWidth;const h=canvasFour.height=300;ctxFour.clearRect(0,0,w,h);drawGrid(ctxFour,w,h);
+    const f1=parseFloat(slF1.value);const f2=parseFloat(slF2.value);document.getElementById('val-f1').innerText=f1.toFixed(1);document.getElementById('val-f2').innerText=f2.toFixed(1);
+    ctxFour.beginPath();ctxFour.strokeStyle='#a855f7';ctxFour.lineWidth=2;
+    for(let x=0;x<w;x++){const t=(x/w)*10-(time*0.05);const yv=Math.sin(2*Math.PI*f1*t)+0.5*Math.sin(2*Math.PI*f2*t);const y=h/4+25*yv;if(x===0)ctxFour.moveTo(x,y);else ctxFour.lineTo(x,y);}
+    ctxFour.stroke();ctxFour.beginPath();ctxFour.moveTo(0,3*h/4);ctxFour.lineTo(w,3*h/4);ctxFour.strokeStyle='#94a3b8';ctxFour.stroke();
+    const xf1=(f1/12.0)*w;const xf2=(f2/12.0)*w;
+    ctxFour.beginPath();ctxFour.strokeStyle='#3b82f6';ctxFour.lineWidth=4;ctxFour.moveTo(xf1,3*h/4);ctxFour.lineTo(xf1,3*h/4-60);ctxFour.stroke();
+    ctxFour.beginPath();ctxFour.strokeStyle='#ef4444';ctxFour.lineWidth=4;ctxFour.moveTo(xf2,3*h/4);ctxFour.lineTo(xf2,3*h/4-30);ctxFour.stroke();
+}
+const canvasLoc=document.getElementById('canvas-localization');const ctxLoc=canvasLoc?canvasLoc.getContext('2d'):null;const slLocX=document.getElementById('slider-loc-x');const slLocY=document.getElementById('slider-loc-y');
+function drawLocalization(){
+    if(!canvasLoc)return;const w=canvasLoc.width=canvasLoc.offsetWidth;const h=canvasLoc.height=300;ctxLoc.clearRect(0,0,w,h);drawGrid(ctxLoc,w,h);
+    const tx=parseFloat(slLocX.value)*w;const ty=parseFloat(slLocY.value)*h;document.getElementById('val-loc-x').innerText=(tx/100).toFixed(2);document.getElementById('val-loc-y').innerText=(ty/100).toFixed(2);
+    const ant1={x:30,y:30,c:'#f87171'};const ant2={x:w-30,y:30,c:'#60a5fa'};const ant3={x:w/2,y:h-30,c:'#34d399'};const pls=(time%60)/60;
+    [{a:ant1,r:Math.hypot(tx-ant1.x,ty-ant1.y)},{a:ant2,r:Math.hypot(tx-ant2.x,ty-ant2.y)},{a:ant3,r:Math.hypot(tx-ant3.x,ty-ant3.y)}].forEach(s=>{
+        ctxLoc.beginPath();ctxLoc.strokeStyle=s.a.c;ctxLoc.lineWidth=2;ctxLoc.arc(s.a.x,s.a.y,s.r,0,2*Math.PI);ctxLoc.stroke();
+        ctxLoc.beginPath();ctxLoc.strokeStyle=s.a.c+'66';ctxLoc.lineWidth=1;ctxLoc.arc(s.a.x,s.a.y,s.r*pls,0,2*Math.PI);ctxLoc.stroke();
+        ctxLoc.fillStyle=s.a.c;ctxLoc.beginPath();ctxLoc.arc(s.a.x,s.a.y,8,0,2*Math.PI);ctxLoc.fill();
+    });
+    ctxLoc.fillStyle='#f59e0b';ctxLoc.beginPath();ctxLoc.arc(tx,ty,6,0,2*Math.PI);ctxLoc.fill();
+}
+const canvasDiff=document.getElementById('canvas-diffraction');const ctxDiff=canvasDiff?canvasDiff.getContext('2d'):null;const slSlit=document.getElementById('slider-slit');
+function drawDiffraction(){
+    if(!canvasDiff)return;const w=canvasDiff.width=canvasDiff.offsetWidth;const h=canvasDiff.height=300;ctxDiff.clearRect(0,0,w,h);drawGrid(ctxDiff,w,h);
+    const a=parseFloat(slSlit.value);document.getElementById('slider-slit-val').innerText=a.toFixed(1);document.getElementById('val-slit').innerText=a.toFixed(1);
+    let sT=6.0/a;if(sT>1)sT=1;const th=Math.asin(sT);document.getElementById('val-spread').innerText=(sT>=1)?"> 90":(th*180/Math.PI).toFixed(0);
+    const cx=w/2;const cy=h/2;ctxDiff.strokeStyle='#3b82f6';ctxDiff.lineWidth=2;
+    for(let i=0;i<cx;i+=20){const wx=(time+i)%cx;ctxDiff.beginPath();ctxDiff.moveTo(wx,0);ctxDiff.lineTo(wx,h);ctxDiff.stroke();}
+    ctxDiff.fillStyle='#475569';ctxDiff.fillRect(cx-5,0,10,cy-(a*5)/2);ctxDiff.fillRect(cx-5,cy+(a*5)/2,10,h-(cy+(a*5)/2));
+    ctxDiff.strokeStyle='#10b981';
+    for(let r=10;r<cx;r+=20){const wR=(time+r)%(cx+50);if(wR>0){ctxDiff.beginPath();ctxDiff.globalAlpha=Math.max(0,1-wR/cx);ctxDiff.arc(cx,cy,wR,-th,th);ctxDiff.stroke();}}
+    ctxDiff.globalAlpha=1.0;
+}
+const canvasAtt=document.getElementById('canvas-attenuation');const ctxAtt=canvasAtt?canvasAtt.getContext('2d'):null;const slDist=document.getElementById('slider-dist');
+function drawAttenuation(){
+    if(!canvasAtt)return;const w=canvasAtt.width=canvasAtt.offsetWidth;const h=canvasAtt.height=300;ctxAtt.clearRect(0,0,w,h);drawGrid(ctxAtt,w,h);
+    const r=parseFloat(slDist.value);const int=100/(r*r);document.getElementById('slider-dist-val').innerText=r.toFixed(1);document.getElementById('val-dist').innerText=r.toFixed(1);document.getElementById('val-p-rec').innerText=int.toFixed(1);
+    ctxAtt.beginPath();ctxAtt.strokeStyle='#ef4444';ctxAtt.lineWidth=3;
+    for(let x=1;x<=10;x+=0.1){const py=h-((100/(x*x))/100*(h-40));if(x===1)ctxAtt.moveTo((x/10)*w,py);else ctxAtt.lineTo((x/10)*w,py);}
+    ctxAtt.stroke();const cPx=(r/10)*w;const cPy=h-(int/100*(h-40));
+    ctxAtt.beginPath();ctxAtt.setLineDash([5,5]);ctxAtt.strokeStyle='white';ctxAtt.moveTo(cPx,h);ctxAtt.lineTo(cPx,cPy);ctxAtt.lineTo(0,cPy);ctxAtt.stroke();ctxAtt.setLineDash([]);
+    ctxAtt.fillStyle='#f59e0b';ctxAtt.beginPath();ctxAtt.arc(cPx,cPy,6,0,Math.PI*2);ctxAtt.fill();
+}
+const canvasAI=document.getElementById('canvas-ai');const ctxAI=canvasAI?canvasAI.getContext('2d'):null;let aiS={r:false,tx:0,ty:0,gx:0,gy:0,lr:0.05};
+document.getElementById('btn-run-ai').addEventListener('click',()=>{if(!canvasAI)return;aiS.tx=50+Math.random()*(canvasAI.offsetWidth-100);aiS.ty=50+Math.random()*200;aiS.gx=20;aiS.gy=20;aiS.r=true;});
+function drawAI(){
+    if(!canvasAI)return;const w=canvasAI.width=canvasAI.offsetWidth;const h=canvasAI.height=300;ctxAI.clearRect(0,0,w,h);
+    if(aiS.tx===0){aiS.tx=w*0.7;aiS.ty=h*0.7;}
+    for(let r=300;r>0;r-=40){ctxAI.beginPath();ctxAI.fillStyle=`rgba(30,41,59,${0.1+(300-r)/1000})`;ctxAI.strokeStyle='#334155';ctxAI.arc(aiS.tx,aiS.ty,r,0,Math.PI*2);ctxAI.fill();ctxAI.stroke();}
+    ctxAI.fillStyle='#10b981';ctxAI.beginPath();ctxAI.arc(aiS.tx,aiS.ty,6,0,Math.PI*2);ctxAI.fill();
+    if(aiS.r){
+        const dx=aiS.tx-aiS.gx;const dy=aiS.ty-aiS.gy;const err=Math.hypot(dx,dy);aiS.gx+=dx*aiS.lr;aiS.gy+=dy*aiS.lr;
+        if(err<1.0){aiS.r=false;document.getElementById('val-ai-error').innerText="Converged!";document.getElementById('val-ai-error').className="highlight text-green-400";}
+        else{document.getElementById('val-ai-error').innerText=err.toFixed(1);document.getElementById('val-ai-error').className="highlight text-yellow-400";}
+    }
+    ctxAI.fillStyle='#ef4444';ctxAI.beginPath();ctxAI.arc(aiS.gx,aiS.gy,8,0,Math.PI*2);ctxAI.fill();
+}
+const canvasPol=document.getElementById('canvas-polarization');const ctxPol=canvasPol?canvasPol.getContext('2d'):null;const slTheta=document.getElementById('slider-theta');
+function drawPolarization(){
+    if(!canvasPol)return;const w=canvasPol.width=canvasPol.offsetWidth;const h=canvasPol.height=300;ctxPol.clearRect(0,0,w,h);drawGrid(ctxPol,w,h);
+    const thD=parseFloat(slTheta.value);const th=thD*Math.PI/180;document.getElementById('slider-theta-val').innerText=thD;document.getElementById('val-theta').innerText=thD;
+    const int=Math.pow(Math.cos(th),2)*100;document.getElementById('val-pol-intensity').innerText=int.toFixed(1);
+    const cx=w/2;const cy=h/2;const R=80;
+    ctxPol.strokeStyle='#94a3b8';ctxPol.lineWidth=2;ctxPol.setLineDash([5,5]);ctxPol.beginPath();ctxPol.moveTo(cx-150*Math.sin(th),cy+150*Math.cos(th));ctxPol.lineTo(cx+150*Math.sin(th),cy-150*Math.cos(th));ctxPol.stroke();ctxPol.setLineDash([]);
+    const Em=R*Math.cos(time*0.1);ctxPol.strokeStyle='#3b82f6';ctxPol.lineWidth=4;ctxPol.beginPath();ctxPol.moveTo(cx,cy);ctxPol.lineTo(cx,cy-Em);ctxPol.stroke();
+    const Ep=Em*Math.cos(th);ctxPol.strokeStyle='#10b981';ctxPol.lineWidth=6;ctxPol.beginPath();ctxPol.moveTo(cx,cy);ctxPol.lineTo(cx+Ep*Math.sin(th),cy-Ep*Math.cos(th));ctxPol.stroke();
+    ctxPol.fillStyle='white';ctxPol.fillText("Vertical Tx Field",cx+10,cy-R-10);ctxPol.fillText("Tilted Rx Antenna",cx+150*Math.sin(th)-20,cy-150*Math.cos(th)-10);
+    ctxPol.fillStyle='#1e293b';ctxPol.fillRect(10,h-30,200,20);ctxPol.fillStyle='#10b981';ctxPol.fillRect(10,h-30,2*int,20);ctxPol.strokeStyle='white';ctxPol.strokeRect(10,h-30,200,20);ctxPol.fillStyle='white';ctxPol.fillText(`Power: ${int.toFixed(0)}%`,220,h-15);
+}
+const canvasRef=document.getElementById('canvas-refraction');const ctxRef=canvasRef?canvasRef.getContext('2d'):null;const slN2=document.getElementById('slider-n2');
+function drawRefraction(){
+    if(!canvasRef)return;const w=canvasRef.width=canvasRef.offsetWidth;const h=canvasRef.height=300;ctxRef.clearRect(0,0,w,h);
+    const n1=1.0;const n2=parseFloat(slN2.value);document.getElementById('slider-n2-val').innerText=n2.toFixed(1);document.getElementById('val-n2').innerText=n2.toFixed(1);
+    const th1=Math.PI/4;const th2=Math.asin((n1*Math.sin(th1))/n2);document.getElementById('val-refract-angle').innerText=(th2*180/Math.PI).toFixed(1);
+    ctxRef.fillStyle='#334155';ctxRef.fillRect(w/2,0,w/2,h);ctxRef.fillStyle='white';ctxRef.fillText("Air (n=1)",w/4-20,20);ctxRef.fillText(`Wall (n=${n2.toFixed(1)})`,3*w/4-20,20);
+    const cx=w/2;const cy=h/2;ctxRef.strokeStyle='#94a3b8';ctxRef.lineWidth=1;ctxRef.setLineDash([5,5]);ctxRef.beginPath();ctxRef.moveTo(0,cy);ctxRef.lineTo(w,cy);ctxRef.stroke();ctxRef.setLineDash([]);
+    ctxRef.strokeStyle='#ef4444';ctxRef.lineWidth=3;ctxRef.beginPath();ctxRef.moveTo(cx-150*Math.cos(th1),cy-150*Math.sin(th1));ctxRef.lineTo(cx,cy);ctxRef.stroke();
+    ctxRef.beginPath();ctxRef.moveTo(cx,cy);ctxRef.lineTo(cx+150*Math.cos(th2),cy+150*Math.sin(th2));ctxRef.stroke();
+    const l1=20;const l2=l1/n2;ctxRef.strokeStyle='rgba(59,130,246,0.5)';ctxRef.lineWidth=2;
+    for(let i=0;i<150;i+=l1){const off=(i-(time%l1));const wx=cx-off*Math.cos(th1);const wy=cy-off*Math.sin(th1);ctxRef.beginPath();ctxRef.moveTo(wx-50*Math.sin(th1),wy+50*Math.cos(th1));ctxRef.lineTo(wx+50*Math.sin(th1),wy-50*Math.cos(th1));ctxRef.stroke();}
+    for(let i=0;i<150;i+=l2){const off=(i+(time/n2%l2));const wx=cx+off*Math.cos(th2);const wy=cy+off*Math.sin(th2);ctxRef.beginPath();ctxRef.moveTo(wx-50*Math.sin(th2),wy+50*Math.cos(th2));ctxRef.lineTo(wx+50*Math.sin(th2),wy-50*Math.cos(th2));ctxRef.stroke();}
+}
+const canvasBeats=document.getElementById('canvas-beats');const ctxBeats=canvasBeats?canvasBeats.getContext('2d'):null;const slBeat=document.getElementById('slider-beat');
+function drawBeats(){
+    if(!canvasBeats)return;const w=canvasBeats.width=canvasBeats.offsetWidth;const h=canvasBeats.height=300;ctxBeats.clearRect(0,0,w,h);drawGrid(ctxBeats,w,h);
+    const f1=5.0;const dF=parseFloat(slBeat.value);const f2=f1+dF;document.getElementById('slider-beat-val').innerText=dF.toFixed(1);document.getElementById('val-beat-f2').innerText=f2.toFixed(1);document.getElementById('val-beat-freq').innerText=dF.toFixed(1);
+    ctxBeats.beginPath();ctxBeats.strokeStyle='#3b82f6';ctxBeats.lineWidth=2;
+    for(let x=0;x<w;x++){const t=(x/w)*2-(time*0.01);const yv=Math.sin(2*Math.PI*f1*t)+Math.sin(2*Math.PI*f2*t);const y=h/2+40*yv;if(x===0)ctxBeats.moveTo(x,y);else ctxBeats.lineTo(x,y);}ctxBeats.stroke();
+    if(dF>0){
+        ctxBeats.beginPath();ctxBeats.strokeStyle='rgba(239,68,68,0.5)';ctxBeats.lineWidth=3;ctxBeats.setLineDash([10,5]);
+        for(let x=0;x<w;x++){const t=(x/w)*2-(time*0.01);const ev=2*Math.cos(2*Math.PI*(dF/2)*t);const y=h/2+40*ev;if(x===0)ctxBeats.moveTo(x,y);else ctxBeats.lineTo(x,y);}ctxBeats.stroke();
+        ctxBeats.beginPath();
+        for(let x=0;x<w;x++){const t=(x/w)*2-(time*0.01);const ev=-2*Math.cos(2*Math.PI*(dF/2)*t);const y=h/2+40*ev;if(x===0)ctxBeats.moveTo(x,y);else ctxBeats.lineTo(x,y);}ctxBeats.stroke();ctxBeats.setLineDash([]);
+    }
+    ctxBeats.fillStyle='white';ctxBeats.fillText("High Freq: Average (Carrier)",10,20);ctxBeats.fillStyle='#ef4444';ctxBeats.fillText("Dashed Line: Beat Frequency (Envelope)",10,40);
+}
+const canvasBeam=document.getElementById('canvas-beamforming');const ctxBeam=canvasBeam?canvasBeam.getContext('2d'):null;const slBeam=document.getElementById('slider-beam');
+function drawBeamforming(){
+    if(!canvasBeam)return;const w=canvasBeam.width=canvasBeam.offsetWidth;const h=canvasBeam.height=300;ctxBeam.clearRect(0,0,w,h);drawGrid(ctxBeam,w,h);
+    const aD=parseFloat(slBeam.value);const a=aD*Math.PI/180;document.getElementById('slider-beam-val').innerText=aD;document.getElementById('val-beam-alpha').innerText=aD;
+    const cx=w/2;const cy=h-20;const N=4;const d=Math.PI;
+    for(let i=0;i<N;i++){const x=cx-(N*10)/2+i*10+5;ctxBeam.fillStyle='#10b981';ctxBeam.beginPath();ctxBeam.arc(x,cy,4,0,Math.PI*2);ctxBeam.fill();}
+    ctxBeam.fillStyle='white';ctxBeam.fillText("Phased Antenna Array",cx-60,cy+15);
+    ctxBeam.beginPath();ctxBeam.strokeStyle='#3b82f6';ctxBeam.lineWidth=3;
+    for(let th=0;th<=Math.PI;th+=0.02){
+        const psi=d*Math.cos(th)+a;let AF=0;if(Math.abs(psi)<0.001)AF=1;else AF=Math.abs(Math.sin(N*psi/2)/(N*Math.sin(psi/2)));
+        const r=AF*(h-60);const px=cx+r*Math.cos(th);const py=cy-r*Math.sin(th);if(th===0)ctxBeam.moveTo(px,py);else ctxBeam.lineTo(px,py);
+    }
+    ctxBeam.stroke();ctxBeam.fillStyle='#64748b';ctxBeam.fillText("Constructive Main Lobe",10,20);
+}
+const canvasBrew=document.getElementById('canvas-brewster');const ctxBrew=canvasBrew?canvasBrew.getContext('2d'):null;const slBrew=document.getElementById('slider-brewster');
+function drawBrewster(){
+    if(!canvasBrew)return;const w=canvasBrew.width=canvasBrew.offsetWidth;const h=canvasBrew.height=300;ctxBrew.clearRect(0,0,w,h);drawGrid(ctxBrew,w,h);
+    const thID=parseFloat(slBrew.value);const thI=thID*Math.PI/180;document.getElementById('slider-brewster-val').innerText=thID;document.getElementById('val-brewster-theta').innerText=thID;
+    const n1=1.0;const n2=1.5;ctxBrew.beginPath();ctxBrew.strokeStyle='#475569';ctxBrew.lineWidth=2;
+    for(let a=0;a<=90;a++){
+        const ti=a*Math.PI/180;const tt=Math.asin((n1/n2)*Math.sin(ti));
+        let num=n1*Math.cos(tt)-n2*Math.cos(ti);let den=n1*Math.cos(tt)+n2*Math.cos(ti);let Rp=Math.pow(num/den,2);
+        const x=(a/90)*w;const y=h-20-(Rp*(h-40));if(a===0)ctxBrew.moveTo(x,y);else ctxBrew.lineTo(x,y);
+    }
+    ctxBrew.stroke();
+    const thT=Math.asin((n1/n2)*Math.sin(thI));let cN=n1*Math.cos(thT)-n2*Math.cos(thI);let cD=n1*Math.cos(thT)+n2*Math.cos(thI);let cRp=Math.pow(cN/cD,2);
+    const cx=(thID/90)*w;const cy=h-20-(cRp*(h-40));
+    ctxBrew.beginPath();ctxBrew.setLineDash([5,5]);ctxBrew.strokeStyle='white';ctxBrew.moveTo(cx,h);ctxBrew.lineTo(cx,cy);ctxBrew.lineTo(0,cy);ctxBrew.stroke();ctxBrew.setLineDash([]);
+    ctxBrew.fillStyle='#ef4444';ctxBrew.beginPath();ctxBrew.arc(cx,cy,6,0,Math.PI*2);ctxBrew.fill();
+    ctxBrew.fillStyle='white';ctxBrew.fillText("Reflectance of p-polarized wave (Rp)",10,20);ctxBrew.fillStyle='#ef4444';ctxBrew.fillText(`Angle: ${thID}°, Reflection: ${(cRp*100).toFixed(1)}%`,cx+10,cy-10);
+    ctxBrew.fillStyle='#10b981';ctxBrew.fillText("Brewster's Angle (Zero Reflection)",(56.3/90)*w-40,h-5);
+}
+const canvasSkin=document.getElementById('canvas-skin');const ctxSkin=canvasSkin?canvasSkin.getContext('2d'):null;const slSkin=document.getElementById('slider-skin');
+function drawSkinEffect(){
+    if(!canvasSkin)return;const w=canvasSkin.width=canvasSkin.offsetWidth;const h=canvasSkin.height=300;ctxSkin.clearRect(0,0,w,h);drawGrid(ctxSkin,w,h);
+    const sig=parseFloat(slSkin.value);let lbl="Moderate";if(sig<3)lbl="Low (Fat / Bone)";else if(sig>7)lbl="High (Blood / Muscle)";document.getElementById('val-skin-sigma').innerText=lbl;
+    const delta=(1/Math.sqrt(sig))*50;const bX=w*0.2;
+    ctxSkin.fillStyle='rgba(244,63,94,0.2)';ctxSkin.fillRect(bX,0,w,h);ctxSkin.strokeStyle='#f43f5e';ctxSkin.beginPath();ctxSkin.moveTo(bX,0);ctxSkin.lineTo(bX,h);ctxSkin.stroke();
+    ctxSkin.fillStyle='white';ctxSkin.fillText("Air (Vacuum)",10,20);ctxSkin.fillText("Human Tissue (Lossy Dielectric)",bX+10,20);
+    ctxSkin.beginPath();ctxSkin.strokeStyle='#94a3b8';ctxSkin.setLineDash([5,5]);ctxSkin.lineWidth=2;
+    for(let x=bX;x<w;x++){const z=x-bX;const env=(h/3)*Math.exp(-z/delta);if(x===bX){ctxSkin.moveTo(x,h/2-env);}else{ctxSkin.lineTo(x,h/2-env);}}
+    for(let x=bX;x<w;x++){const z=x-bX;const env=(h/3)*Math.exp(-z/delta);if(x===bX){ctxSkin.moveTo(x,h/2+env);}else{ctxSkin.lineTo(x,h/2+env);}}
+    ctxSkin.stroke();ctxSkin.setLineDash([]);
+    ctxSkin.beginPath();ctxSkin.strokeStyle='#3b82f6';ctxSkin.lineWidth=3;const ka=0.1;const kt=0.15;const wF=0.5;
+    for(let x=0;x<w;x++){
+        let y=0;if(x<bX){y=h/2+(h/3)*Math.cos(ka*x-wF*time*0.1);}else{const z=x-bX;const amp=(h/3)*Math.exp(-z/delta);y=h/2+amp*Math.cos(kt*z-wF*time*0.1);}
+        if(x===0)ctxSkin.moveTo(x,y);else ctxSkin.lineTo(x,y);
+    }
+    ctxSkin.stroke();ctxSkin.fillStyle='#f59e0b';ctxSkin.fillText(`Skin Depth (δ): ${delta.toFixed(1)}`,bX+10,h-20);
+}
+const canvasAoA=document.getElementById('canvas-aoa');const ctxAoA=canvasAoA?canvasAoA.getContext('2d'):null;const slAoA=document.getElementById('slider-aoa');
+function drawAoA(){
+    if(!canvasAoA)return;const w=canvasAoA.width=canvasAoA.offsetWidth;const h=canvasAoA.height=300;ctxAoA.clearRect(0,0,w,h);drawGrid(ctxAoA,w,h);
+    const thD=parseFloat(slAoA.value);const th=thD*Math.PI/180;document.getElementById('slider-aoa-val').innerText=thD;document.getElementById('val-aoa-theta').innerText=thD;
+    const L=100;const lambda=40;const dD=L*Math.sin(th);const ph=(2*Math.PI*dD)/lambda;document.getElementById('val-aoa-phase').innerText=ph.toFixed(2);
+    const cx=w/2;const cy=h-50;const a1={x:cx-L/2,y:cy};const a2={x:cx+L/2,y:cy};
+    ctxAoA.fillStyle='#3b82f6';ctxAoA.beginPath();ctxAoA.arc(a1.x,a1.y,6,0,Math.PI*2);ctxAoA.fill();ctxAoA.fillStyle='#ef4444';ctxAoA.beginPath();ctxAoA.arc(a2.x,a2.y,6,0,Math.PI*2);ctxAoA.fill();
+    ctxAoA.fillStyle='white';ctxAoA.fillText("Antenna 1",a1.x-25,a1.y+20);ctxAoA.fillText("Antenna 2",a2.x-25,a2.y+20);
+    ctxAoA.beginPath();ctxAoA.strokeStyle='white';ctxAoA.setLineDash([2,2]);ctxAoA.moveTo(a1.x,a1.y);ctxAoA.lineTo(a2.x,a2.y);ctxAoA.stroke();ctxAoA.setLineDash([]);ctxAoA.fillText(`L`,cx-5,cy+15);
+    ctxAoA.strokeStyle='rgba(16,185,129,0.5)';ctxAoA.lineWidth=2;
+    for(let i=0;i<300;i+=lambda){
+        const off=(i-(time%lambda));const nx=Math.sin(th);const ny=Math.cos(th);const wx=cx-off*nx;const wy=cy-off*ny;const vx=Math.cos(th);const vy=-Math.sin(th);
+        ctxAoA.beginPath();ctxAoA.moveTo(wx-200*vx,wy-200*vy);ctxAoA.lineTo(wx+200*vx,wy+200*vy);ctxAoA.stroke();
+    }
+    if(Math.abs(thD)>5){
+        ctxAoA.beginPath();ctxAoA.strokeStyle='#f59e0b';ctxAoA.lineWidth=3;
+        if(th>0){ctxAoA.moveTo(a1.x,a1.y);ctxAoA.lineTo(a2.x-dD*Math.sin(th),a2.y-dD*Math.cos(th));ctxAoA.moveTo(a2.x,a2.y);ctxAoA.lineTo(a2.x-dD*Math.sin(th),a2.y-dD*Math.cos(th));}
+        else{const aD=Math.abs(dD);ctxAoA.moveTo(a2.x,a2.y);ctxAoA.lineTo(a1.x+aD*Math.sin(Math.abs(th)),a1.y-aD*Math.cos(Math.abs(th)));ctxAoA.moveTo(a1.x,a1.y);ctxAoA.lineTo(a1.x+aD*Math.sin(Math.abs(th)),a1.y-aD*Math.cos(Math.abs(th)));}
+        ctxAoA.stroke();ctxAoA.fillStyle='#f59e0b';ctxAoA.fillText(`Δd = ${Math.abs(dD).toFixed(1)}`,cx-30,cy-30);
+    }
+}
+const canvasNoise=document.getElementById('canvas-noise');const ctxNoise=canvasNoise?canvasNoise.getContext('2d'):null;const slNoise=document.getElementById('slider-noise');
+function getG(m,s){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return s*Math.sqrt(-2.0*Math.log(u))*Math.cos(2.0*Math.PI*v)+m;}
+function drawNoise(){
+    if(!canvasNoise)return;const w=canvasNoise.width=canvasNoise.offsetWidth;const h=canvasNoise.height=300;ctxNoise.clearRect(0,0,w,h);drawGrid(ctxNoise,w,h);
+    const sig=parseFloat(slNoise.value);document.getElementById('val-noise-var').innerText=sig.toFixed(2);
+    let slbl="Excellent";if(sig>0.3)slbl="Good";if(sig>0.6)slbl="Poor";if(sig>0.8)slbl="Very Bad";document.getElementById('val-noise-snr').innerText=slbl;
+    const a=50;const f=0.05;ctxNoise.beginPath();ctxNoise.strokeStyle='rgba(239,68,68,0.8)';ctxNoise.lineWidth=2;
+    for(let x=0;x<w;x+=3){const ty=Math.sin(x*f-time*0.1);const n=getG(0,sig);const y=h/2+a*(ty+n);if(x===0)ctxNoise.moveTo(x,y);else ctxNoise.lineTo(x,y);}ctxNoise.stroke();
+    ctxNoise.beginPath();ctxNoise.strokeStyle='#3b82f6';ctxNoise.lineWidth=4;
+    for(let x=0;x<w;x++){const ty=Math.sin(x*f-time*0.1);const y=h/2+a*ty;if(x===0)ctxNoise.moveTo(x,y);else ctxNoise.lineTo(x,y);}ctxNoise.stroke();
+    ctxNoise.fillStyle='#3b82f6';ctxNoise.fillText("True Underlying Signal (μ)",10,20);ctxNoise.fillStyle='#ef4444';ctxNoise.fillText(`Measured Signal (+ Gaussian Noise σ=${sig})`,10,40);
+}
+const canvasFS=document.getElementById('canvas-fseries');const ctxFS=canvasFS?canvasFS.getContext('2d'):null;const slFS=document.getElementById('slider-fseries');
+function drawFSeries(){
+    if(!canvasFS)return;const w=canvasFS.width=canvasFS.offsetWidth;const h=canvasFS.height=300;ctxFS.clearRect(0,0,w,h);drawGrid(ctxFS,w,h);
+    const N=parseInt(slFS.value);document.getElementById('slider-fseries-val').innerText=N;document.getElementById('val-fourier-terms').innerText=N;
+    const f=0.02;const a=60;ctxFS.strokeStyle='#334155';ctxFS.lineWidth=1;ctxFS.beginPath();ctxFS.moveTo(0,h/2);ctxFS.lineTo(w,h/2);ctxFS.stroke();
+    for(let n=1;n<=N;n+=2){
+        ctxFS.beginPath();ctxFS.strokeStyle=`rgba(59,130,246,${1/(n+1)})`;ctxFS.lineWidth=1;
+        for(let x=0;x<w;x++){const yv=(4/(n*Math.PI))*Math.sin(n*(x*f-time*0.05));const y=h/2+a*yv;if(x===0)ctxFS.moveTo(x,y);else ctxFS.lineTo(x,y);}ctxFS.stroke();
+    }
+    ctxFS.beginPath();ctxFS.strokeStyle='#10b981';ctxFS.lineWidth=3;
+    for(let x=0;x<w;x++){let sy=0;for(let n=1;n<=N;n+=2){sy+=(4/(n*Math.PI))*Math.sin(n*(x*f-time*0.05));}const y=h/2+a*sy;if(x===0)ctxFS.moveTo(x,y);else ctxFS.lineTo(x,y);}ctxFS.stroke();
+    ctxFS.fillStyle='#10b981';ctxFS.fillText(`Composite Signal (Sum of ${N} odd harmonics)`,10,20);ctxFS.fillStyle='#3b82f6';ctxFS.fillText("Faint lines: Individual Sine Waves",10,40);
+}
+const canvasSHM=document.getElementById('canvas-shm');const ctxSHM=canvasSHM?canvasSHM.getContext('2d'):null;const slSHM=document.getElementById('slider-shm');
+function drawSHM(){
+    if(!canvasSHM)return;const w=canvasSHM.width=canvasSHM.offsetWidth;const h=canvasSHM.height=300;ctxSHM.clearRect(0,0,w,h);
+    const wr=parseFloat(slSHM.value);document.getElementById('slider-shm-val').innerText=wr.toFixed(1);document.getElementById('val-shm-w').innerText=wr.toFixed(1);
+    const h3=h/3;const A=30;ctxSHM.strokeStyle='#334155';ctxSHM.lineWidth=1;
+    ctxSHM.beginPath();ctxSHM.moveTo(0,h3/2);ctxSHM.lineTo(w,h3/2);ctxSHM.stroke();ctxSHM.beginPath();ctxSHM.moveTo(0,h3+h3/2);ctxSHM.lineTo(w,h3+h3/2);ctxSHM.stroke();ctxSHM.beginPath();ctxSHM.moveTo(0,2*h3+h3/2);ctxSHM.lineTo(w,2*h3+h3/2);ctxSHM.stroke();
+    ctxSHM.beginPath();ctxSHM.strokeStyle='#3b82f6';ctxSHM.lineWidth=2;for(let x=0;x<w;x++){const t=(x/w)*10-time*0.05;const y=h3/2-A*Math.sin(wr*t);if(x===0)ctxSHM.moveTo(x,y);else ctxSHM.lineTo(x,y);}ctxSHM.stroke();ctxSHM.fillStyle='#3b82f6';ctxSHM.fillText("Displacement x(t) = A sin(ωt)",10,15);
+    ctxSHM.beginPath();ctxSHM.strokeStyle='#10b981';ctxSHM.lineWidth=2;for(let x=0;x<w;x++){const t=(x/w)*10-time*0.05;const y=h3+h3/2-(A*0.8)*Math.cos(wr*t);if(x===0)ctxSHM.moveTo(x,y);else ctxSHM.lineTo(x,y);}ctxSHM.stroke();ctxSHM.fillStyle='#10b981';ctxSHM.fillText("Velocity v(t) = Aω cos(ωt) [90° phase shift]",10,h3+15);
+    ctxSHM.beginPath();ctxSHM.strokeStyle='#ef4444';ctxSHM.lineWidth=2;for(let x=0;x<w;x++){const t=(x/w)*10-time*0.05;const y=2*h3+h3/2-(A*0.6)*-Math.sin(wr*t);if(x===0)ctxSHM.moveTo(x,y);else ctxSHM.lineTo(x,y);}ctxSHM.stroke();ctxSHM.fillStyle='#ef4444';ctxSHM.fillText("Acceleration a(t) = -Aω² sin(ωt) [180° phase shift]",10,2*h3+15);
+    const sX=w/2;ctxSHM.beginPath();ctxSHM.strokeStyle='white';ctxSHM.setLineDash([5,5]);ctxSHM.moveTo(sX,0);ctxSHM.lineTo(sX,h);ctxSHM.stroke();ctxSHM.setLineDash([]);
+}
+const canvas3D=document.getElementById('canvas-3dspheres');const ctx3D=canvas3D?canvas3D.getContext('2d'):null;const sl3D=document.getElementById('slider-3d');
+function draw3DSpheres(){
+    if(!canvas3D)return;const w=canvas3D.width=canvas3D.offsetWidth;const h=canvas3D.height=300;ctx3D.clearRect(0,0,w,h);
+    const zT=parseFloat(sl3D.value);document.getElementById('slider-3d-val').innerText=zT.toFixed(1);document.getElementById('val-3d-z').innerText=zT.toFixed(1);
+    const cx=w/2;const cy=h/2;const isoX=(x,y,z)=>cx+(x-y)*Math.cos(Math.PI/6);const isoY=(x,y,z)=>cy+(x+y)*Math.sin(Math.PI/6)-z*30;
+    ctx3D.strokeStyle='#334155';ctx3D.lineWidth=2;ctx3D.beginPath();ctx3D.moveTo(isoX(0,0,0),isoY(0,0,0));ctx3D.lineTo(isoX(150,0,0),isoY(150,0,0));ctx3D.stroke();ctx3D.beginPath();ctx3D.moveTo(isoX(0,0,0),isoY(0,0,0));ctx3D.lineTo(isoX(0,150,0),isoY(0,150,0));ctx3D.stroke();ctx3D.beginPath();ctx3D.moveTo(isoX(0,0,0),isoY(0,0,0));ctx3D.lineTo(isoX(0,0,4),isoY(0,0,4));ctx3D.stroke();
+    ctx3D.fillStyle='#64748b';ctx3D.fillText("X",isoX(160,0,0),isoY(160,0,0));ctx3D.fillText("Y",isoX(0,160,0),isoY(0,160,0));ctx3D.fillText("Z",isoX(0,0,4.5),isoY(0,0,4.5));
+    const tX=80,tY=80,tZ=zT;const px=isoX(tX,tY,tZ);const py=isoY(tX,tY,tZ);
+    const ants=[{x:120,y:20,z:0,c:'#f87171'},{x:20,y:120,z:0,c:'#60a5fa'},{x:30,y:30,z:0,c:'#34d399'}];
+    ants.forEach(a=>{
+        const ax=isoX(a.x,a.y,a.z);const ay=isoY(a.x,a.y,a.z);ctx3D.fillStyle=a.c;ctx3D.beginPath();ctx3D.arc(ax,ay,5,0,Math.PI*2);ctx3D.fill();
+        const r=Math.sqrt(Math.pow(tX-a.x,2)+Math.pow(tY-a.y,2)+Math.pow(tZ-a.z,2));ctx3D.strokeStyle=a.c+'40';ctx3D.lineWidth=1;
+        for(let ang=0;ang<Math.PI;ang+=Math.PI/4){
+            ctx3D.beginPath();for(let th=0;th<=Math.PI*2;th+=0.2){const sx=a.x+r*Math.cos(th);const sy=a.y+r*Math.sin(th)*Math.cos(ang);const sz=a.z+r*Math.sin(th)*Math.sin(ang);const ppx=isoX(sx,sy,sz);const ppy=isoY(sx,sy,sz);if(th===0)ctx3D.moveTo(ppx,ppy);else ctx3D.lineTo(ppx,ppy);}ctx3D.stroke();
+        }
+    });
+    ctx3D.beginPath();ctx3D.strokeStyle='white';ctx3D.setLineDash([4,4]);ctx3D.moveTo(isoX(tX,tY,0),isoY(tX,tY,0));ctx3D.lineTo(px,py);ctx3D.stroke();ctx3D.setLineDash([]);
+    ctx3D.fillStyle='#f59e0b';ctx3D.beginPath();ctx3D.arc(px,py,6,0,Math.PI*2);ctx3D.fill();ctx3D.fillStyle='white';ctx3D.fillText(`Target (x, y, z=${zT.toFixed(1)})`,px+10,py-10);
+}
+const canvasDet=document.getElementById('canvas-det');const ctxDet=canvasDet?canvasDet.getContext('2d'):null;const slDet=document.getElementById('slider-det');
+function drawDeterminant(){
+    if(!canvasDet)return;const w=canvasDet.width=canvasDet.offsetWidth;const h=canvasDet.height=300;ctxDet.clearRect(0,0,w,h);
+    const thD=parseFloat(slDet.value);const th=thD*Math.PI/180;document.getElementById('val-det-angle').innerText=thD;const det=Math.sin(th);document.getElementById('val-det-val').innerText=det.toFixed(2);
+    if(det<0.1)document.getElementById('val-det-val').className="highlight text-red-500";else document.getElementById('val-det-val').className="highlight";
+    const cx=w/2-50;const cy=h-50;const sc=100;ctxDet.strokeStyle='#334155';ctxDet.lineWidth=1;
+    for(let i=-2;i<=2;i++){ctxDet.beginPath();ctxDet.moveTo(cx+i*sc,0);ctxDet.lineTo(cx+i*sc,h);ctxDet.stroke();ctxDet.beginPath();ctxDet.moveTo(0,cy-i*sc);ctxDet.lineTo(w,cy-i*sc);ctxDet.stroke();}
+    ctxDet.strokeStyle='rgba(59,130,246,0.3)';ctxDet.lineWidth=2;
+    for(let i=-2;i<=5;i++){
+        for(let j=-2;j<=2;j++){
+            const t1x=cx+(i*1+j*Math.cos(th))*sc;const t1y=cy-(i*0+j*Math.sin(th))*sc;const t2x=cx+((i+1)*1+j*Math.cos(th))*sc;const t2y=cy-((i+1)*0+j*Math.sin(th))*sc;const t3x=cx+(i*1+(j+1)*Math.cos(th))*sc;const t3y=cy-(i*0+(j+1)*Math.sin(th))*sc;
+            ctxDet.beginPath();ctxDet.moveTo(t1x,t1y);ctxDet.lineTo(t2x,t2y);ctxDet.stroke();ctxDet.beginPath();ctxDet.moveTo(t1x,t1y);ctxDet.lineTo(t3x,t3y);ctxDet.stroke();
+        }
+    }
+    ctxDet.beginPath();ctxDet.strokeStyle='#ef4444';ctxDet.lineWidth=4;ctxDet.moveTo(cx,cy);ctxDet.lineTo(cx+sc,cy);ctxDet.stroke();ctxDet.fillStyle='#ef4444';ctxDet.fillText("Path 1 Vector",cx+sc+5,cy);
+    const v2x=cx+Math.cos(th)*sc;const v2y=cy-Math.sin(th)*sc;ctxDet.beginPath();ctxDet.strokeStyle='#10b981';ctxDet.lineWidth=4;ctxDet.moveTo(cx,cy);ctxDet.lineTo(v2x,v2y);ctxDet.stroke();ctxDet.fillStyle='#10b981';ctxDet.fillText("Path 2 Vector",v2x,v2y-10);
+    ctxDet.fillStyle='rgba(245,158,11,0.3)';ctxDet.beginPath();ctxDet.moveTo(cx,cy);ctxDet.lineTo(cx+sc,cy);ctxDet.lineTo(cx+sc+Math.cos(th)*sc,cy-Math.sin(th)*sc);ctxDet.lineTo(v2x,v2y);ctxDet.fill();
+    ctxDet.fillStyle='white';ctxDet.fillText(`Area = det(H) = ${det.toFixed(2)}`,cx+10,cy-20);
+    if(det<0.1){ctxDet.fillStyle='#ef4444';ctxDet.font="bold 16px Arial";ctxDet.fillText("MATRIX SINGULAR: Cannot Solve Inverse!",cx-50,cy-100);ctxDet.font="14px Arial";}
+}
+const canvasLCR=document.getElementById('canvas-lcr');const ctxLCR=canvasLCR?canvasLCR.getContext('2d'):null;const slLCR=document.getElementById('slider-lcr');
+function drawResonance(){
+    if(!canvasLCR)return;const w=canvasLCR.width=canvasLCR.offsetWidth;const h=canvasLCR.height=300;ctxLCR.clearRect(0,0,w,h);drawGrid(ctxLCR,w,h);
+    const C=parseFloat(slLCR.value);document.getElementById('val-lcr-c').innerText=C.toFixed(1);const L=1.0;const f0=5.0/Math.sqrt(L*C);document.getElementById('val-lcr-f').innerText=f0.toFixed(2);
+    const R=0.5;ctxLCR.beginPath();ctxLCR.strokeStyle='#3b82f6';ctxLCR.lineWidth=3;
+    for(let x=0;x<w;x++){const f=(x/w)*10;if(f===0)continue;const XL=2*Math.PI*f*L;const XC=1/(2*Math.PI*f*C);const Z=Math.sqrt(R*R+Math.pow(XL-XC,2));const I=1/Z;const y=h-(I*(h-50)*0.5);if(x===1)ctxLCR.moveTo(x,y);else ctxLCR.lineTo(x,y);}ctxLCR.stroke();
+    const px=(f0/10)*w;ctxLCR.beginPath();ctxLCR.strokeStyle='#f59e0b';ctxLCR.lineWidth=2;ctxLCR.setLineDash([5,5]);ctxLCR.moveTo(px,h);ctxLCR.lineTo(px,20);ctxLCR.stroke();ctxLCR.setLineDash([]);
+    ctxLCR.fillStyle='#f59e0b';ctxLCR.beginPath();ctxLCR.arc(px,h/2,6,0,Math.PI*2);ctxLCR.fill();ctxLCR.fillStyle='white';ctxLCR.fillText(`Resonant Freq: ${f0.toFixed(2)} GHz`,px+10,40);ctxLCR.fillText("Antenna Power Efficiency",10,20);
+    const tx=(5.0/10)*w;ctxLCR.beginPath();ctxLCR.strokeStyle='#ef4444';ctxLCR.lineWidth=1;ctxLCR.moveTo(tx,h);ctxLCR.lineTo(tx,0);ctxLCR.stroke();ctxLCR.fillStyle='#ef4444';ctxLCR.fillText("Required 5GHz WiFi",tx-110,80);
+}
+const canvasPoynt=document.getElementById('canvas-poynting');const ctxPoynt=canvasPoynt?canvasPoynt.getContext('2d'):null;
+function drawPoynting(){
+    if(!canvasPoynt)return;const w=canvasPoynt.width=canvasPoynt.offsetWidth;const h=canvasPoynt.height=300;ctxPoynt.clearRect(0,0,w,h);
+    const cx=50;const cy=h/2;const isoX=(x,y,z)=>cx+x-0.5*z;const isoY=(x,y,z)=>cy-y+0.3*z;
+    ctxPoynt.strokeStyle='#334155';ctxPoynt.lineWidth=1;ctxPoynt.beginPath();ctxPoynt.moveTo(isoX(0,0,0),isoY(0,0,0));ctxPoynt.lineTo(isoX(w-100,0,0),isoY(w-100,0,0));ctxPoynt.stroke();ctxPoynt.beginPath();ctxPoynt.moveTo(isoX(0,-100,0),isoY(0,-100,0));ctxPoynt.lineTo(isoX(0,100,0),isoY(0,100,0));ctxPoynt.stroke();ctxPoynt.beginPath();ctxPoynt.moveTo(isoX(0,0,-150),isoY(0,0,-150));ctxPoynt.lineTo(isoX(0,0,150),isoY(0,0,150));ctxPoynt.stroke();
+    const k=0.05;const wF=0.1;const A=60;ctxPoynt.lineWidth=2;
+    for(let x=0;x<w-150;x+=10){
+        const ph=k*x-wF*time;const E=A*Math.cos(ph);const H=A*Math.cos(ph);
+        ctxPoynt.strokeStyle='#3b82f6';ctxPoynt.beginPath();ctxPoynt.moveTo(isoX(x,0,0),isoY(x,0,0));ctxPoynt.lineTo(isoX(x,E,0),isoY(x,E,0));ctxPoynt.stroke();
+        ctxPoynt.strokeStyle='#ef4444';ctxPoynt.beginPath();ctxPoynt.moveTo(isoX(x,0,0),isoY(x,0,0));ctxPoynt.lineTo(isoX(x,0,H),isoY(x,0,H));ctxPoynt.stroke();
+    }
+    const xH=(time*2)%(w-150);ctxPoynt.strokeStyle='#10b981';ctxPoynt.lineWidth=4;ctxPoynt.beginPath();ctxPoynt.moveTo(isoX(xH,0,0),isoY(xH,0,0));ctxPoynt.lineTo(isoX(xH+40,0,0),isoY(xH+40,0,0));ctxPoynt.stroke();
+    ctxPoynt.fillStyle='#3b82f6';ctxPoynt.fillText("Electric Field (E)",cx,30);ctxPoynt.fillStyle='#ef4444';ctxPoynt.fillText("Magnetic Field (H)",cx,50);ctxPoynt.fillStyle='#10b981';ctxPoynt.fillText("Poynting Vector (S) = E x H",cx,70);
+}
+const canvasFres=document.getElementById('canvas-fresnel');const ctxFres=canvasFres?canvasFres.getContext('2d'):null;const slFres=document.getElementById('slider-fresnel');
+function drawFresnel(){
+    if(!canvasFres)return;const w=canvasFres.width=canvasFres.offsetWidth;const h=canvasFres.height=300;ctxFres.clearRect(0,0,w,h);
+    const n1=1.0;const n2=parseFloat(slFres.value);document.getElementById('slider-fresnel-val').innerText=n2.toFixed(1);document.getElementById('val-fresnel-n2').innerText=n2.toFixed(1);
+    const r=(n1-n2)/(n1+n2);const R=r*r;const T=1-R;document.getElementById('val-fresnel-r').innerText=(R*100).toFixed(1);
+    const cx=w/2;ctxFres.fillStyle='#1e293b';ctxFres.fillRect(0,0,cx,h);ctxFres.fillStyle='#334155';ctxFres.fillRect(cx,0,cx,h);ctxFres.strokeStyle='white';ctxFres.beginPath();ctxFres.moveTo(cx,0);ctxFres.lineTo(cx,h);ctxFres.stroke();
+    ctxFres.fillStyle='white';ctxFres.fillText(`Air (n1=${n1})`,10,20);ctxFres.fillText(`Wall (n2=${n2.toFixed(1)})`,cx+10,20);
+    const amp=80;const k1=0.1;const k2=k1*n2;const wF=0.2;
+    ctxFres.beginPath();ctxFres.strokeStyle='rgba(59,130,246,0.7)';ctxFres.lineWidth=3;for(let x=0;x<=cx;x++){const y=h/2+amp*Math.cos(k1*x-wF*time);if(x===0)ctxFres.moveTo(x,y);else ctxFres.lineTo(x,y);}ctxFres.stroke();
+    ctxFres.beginPath();ctxFres.strokeStyle='#ef4444';ctxFres.lineWidth=3;for(let x=0;x<=cx;x++){const y=h/2+(amp*Math.abs(r))*Math.cos(-k1*x-wF*time+(r<0?Math.PI:0));if(x===0)ctxFres.moveTo(cx-x,y);else ctxFres.lineTo(cx-x,y);}ctxFres.stroke();
+    ctxFres.beginPath();ctxFres.strokeStyle='#10b981';ctxFres.lineWidth=3;for(let x=0;x<=cx;x++){const ta=amp*(1+r);const y=h/2+ta*Math.cos(k2*x-wF*time);if(x===0)ctxFres.moveTo(cx+x,y);else ctxFres.lineTo(cx+x,y);}ctxFres.stroke();
+    ctxFres.fillStyle='#3b82f6';ctxFres.fillText("Incident (100%)",10,h-50);ctxFres.fillStyle='#ef4444';ctxFres.fillText(`Reflected (${(R*100).toFixed(0)}%)`,10,h-30);ctxFres.fillStyle='#10b981';ctxFres.fillText(`Transmitted (${(T*100).toFixed(0)}%)`,cx+10,h-30);
+}
+const canvasRCS=document.getElementById('canvas-rcs');const ctxRCS=canvasRCS?canvasRCS.getContext('2d'):null;const slRCS=document.getElementById('slider-rcs');
+function drawRCS(){
+    if(!canvasRCS)return;const w=canvasRCS.width=canvasRCS.offsetWidth;const h=canvasRCS.height=300;ctxRCS.clearRect(0,0,w,h);drawGrid(ctxRCS,w,h);
+    const sig=parseFloat(slRCS.value);document.getElementById('slider-rcs-val').innerText=sig.toFixed(1);document.getElementById('val-rcs-sigma').innerText=sig.toFixed(1);
+    ctxRCS.beginPath();ctxRCS.strokeStyle='#3b82f6';ctxRCS.lineWidth=3;
+    for(let px=10;px<w;px++){const R=(px/w)*10;if(R<0.5)continue;const Pr=(1000*sig)/Math.pow(R,4);let py=h-Pr;if(py>h)py=h;if(px===10)ctxRCS.moveTo(px,Math.max(0,py));else ctxRCS.lineTo(px,Math.max(0,py));}ctxRCS.stroke();
+    const tR=2.0;document.getElementById('val-rcs-dist').innerText=tR.toFixed(1);const cX=(tR/10)*w;const cY=h-(1000*sig)/Math.pow(tR,4);
+    ctxRCS.beginPath();ctxRCS.strokeStyle='white';ctxRCS.setLineDash([5,5]);ctxRCS.moveTo(cX,h);ctxRCS.lineTo(cX,cY);ctxRCS.lineTo(0,cY);ctxRCS.stroke();ctxRCS.setLineDash([]);
+    ctxRCS.fillStyle='#ef4444';ctxRCS.beginPath();ctxRCS.arc(cX,cY,6,0,Math.PI*2);ctxRCS.fill();
+    ctxRCS.fillStyle='white';ctxRCS.fillText("Distance (R)",w/2,h-10);ctxRCS.fillStyle='#3b82f6';ctxRCS.fillText(`Two-Way Radar Return (1/R^4)`,10,20);
+}
+const canvasDip=document.getElementById('canvas-dipole');const ctxDip=canvasDip?canvasDip.getContext('2d'):null;const slDip=document.getElementById('slider-dipole');
+function drawDipole(){
+    if(!canvasDip)return;const w=canvasDip.width=canvasDip.offsetWidth;const h=canvasDip.height=300;ctxDip.clearRect(0,0,w,h);
+    const L=parseFloat(slDip.value);document.getElementById('val-dipole-len').innerText=L.toFixed(1);
+    const cx=w/2;const cy=h/2;const pL=L*40;ctxDip.fillStyle='#64748b';ctxDip.fillRect(cx-5,cy-pL/2,10,pL);ctxDip.fillStyle='white';ctxDip.fillText("Dipole Antenna",cx-40,cy-pL/2-20);
+    const k=2*Math.PI/6.0;const I0=80;ctxDip.beginPath();ctxDip.strokeStyle='#ef4444';ctxDip.lineWidth=3;let eff=0;
+    for(let zp=-pL/2;zp<=pL/2;zp++){const zc=zp/40;const c=I0*Math.sin(k*(L/2-Math.abs(zc)))*Math.sin(time*0.1);const px=cx+c;const py=cy+zp;if(zp===-pL/2)ctxDip.moveTo(px,py);else ctxDip.lineTo(px,py);if(Math.abs(zc)<0.05)eff=Math.abs(Math.sin(k*(L/2)));}
+    ctxDip.stroke();ctxDip.fillStyle='#ef4444';ctxDip.fillText("Standing Current Wave I(z,t)",cx+30,cy);
+    ctxDip.fillStyle='#1e293b';ctxDip.fillRect(10,h-40,200,20);ctxDip.fillStyle='#10b981';ctxDip.fillRect(10,h-40,200*eff,20);ctxDip.strokeStyle='white';ctxDip.strokeRect(10,h-40,200,20);ctxDip.fillStyle='white';ctxDip.fillText(`Radiation Efficiency: ${(eff*100).toFixed(0)}%`,10,h-50);
+}
+const canvasNyq=document.getElementById('canvas-nyquist');const ctxNyq=canvasNyq?canvasNyq.getContext('2d'):null;const slNyq=document.getElementById('slider-nyq');
+function drawNyquist(){
+    if(!canvasNyq)return;const w=canvasNyq.width=canvasNyq.offsetWidth;const h=canvasNyq.height=300;ctxNyq.clearRect(0,0,w,h);drawGrid(ctxNyq,w,h);
+    const fs=parseFloat(slNyq.value);document.getElementById('slider-nyq-val').innerText=fs.toFixed(1);document.getElementById('val-nyq-fs').innerText=fs.toFixed(1);
+    const fsig=2.0;const isA=fs<(2*fsig);const sE=document.getElementById('val-nyq-status');if(isA){sE.innerText="Aliased (Ghost Freq)";sE.className="highlight text-red-500";}else{sE.innerText="Valid";sE.className="highlight text-green-400";}
+    const amp=60;ctxNyq.beginPath();ctxNyq.strokeStyle='rgba(59,130,246,0.4)';ctxNyq.lineWidth=2;
+    for(let px=0;px<w;px++){const t=px/w*2;const y=h/2-amp*Math.cos(2*Math.PI*fsig*t-time*0.05);if(px===0)ctxNyq.moveTo(px,y);else ctxNyq.lineTo(px,y);}ctxNyq.stroke();
+    const nS=Math.floor(2*fs);const smp=[];for(let i=0;i<=nS;i++){const t=i/fs;const px=(t/2)*w;if(px>w)break;const y=h/2-amp*Math.cos(2*Math.PI*fsig*t-time*0.05);smp.push({x:px,y:y});}
+    ctxNyq.beginPath();ctxNyq.strokeStyle='#ef4444';ctxNyq.lineWidth=3;for(let i=0;i<smp.length;i++){if(i===0)ctxNyq.moveTo(smp[i].x,smp[i].y);else ctxNyq.lineTo(smp[i].x,smp[i].y);}ctxNyq.stroke();
+    ctxNyq.fillStyle='white';smp.forEach(s=>{ctxNyq.beginPath();ctxNyq.arc(s.x,s.y,4,0,Math.PI*2);ctxNyq.fill();});
+    ctxNyq.fillStyle='rgba(59,130,246,0.8)';ctxNyq.fillText(`True Signal (${fsig.toFixed(1)} Hz)`,10,20);ctxNyq.fillStyle='#ef4444';ctxNyq.fillText(`Digital Reconstruction (Sampled at ${fs.toFixed(1)} Hz)`,10,40);
+}
+const canvasConv=document.getElementById('canvas-convolution');const ctxConv=canvasConv?canvasConv.getContext('2d'):null;
+function drawConvolution(){
+    if(!canvasConv)return;const w=canvasConv.width=canvasConv.offsetWidth;const h=canvasConv.height=300;ctxConv.clearRect(0,0,w,h);const h3=h/3;
+    ctxConv.strokeStyle='#334155';ctxConv.lineWidth=1;ctxConv.beginPath();ctxConv.moveTo(0,h3-20);ctxConv.lineTo(w,h3-20);ctxConv.stroke();ctxConv.beginPath();ctxConv.moveTo(0,2*h3-20);ctxConv.lineTo(w,2*h3-20);ctxConv.stroke();ctxConv.beginPath();ctxConv.moveTo(0,3*h3-20);ctxConv.lineTo(w,3*h3-20);ctxConv.stroke();
+    const sX=(time*2)%(w+100)-50;const pW=60;ctxConv.fillStyle='rgba(59,130,246,0.5)';ctxConv.fillRect(sX,h3-70,pW,50);ctxConv.strokeStyle='#3b82f6';ctxConv.lineWidth=2;ctxConv.strokeRect(sX,h3-70,pW,50);ctxConv.fillStyle='white';ctxConv.fillText("Input Pulse x(t)",10,20);
+    const ech=[{x:100,a:50},{x:180,a:30},{x:250,a:20}];ctxConv.strokeStyle='#f59e0b';ctxConv.lineWidth=3;
+    ech.forEach(e=>{ctxConv.beginPath();ctxConv.moveTo(e.x,2*h3-20);ctxConv.lineTo(e.x,2*h3-20-e.a);ctxConv.stroke();ctxConv.fillStyle='#f59e0b';ctxConv.beginPath();ctxConv.arc(e.x,2*h3-20-e.a,4,0,Math.PI*2);ctxConv.fill();});
+    ctxConv.fillStyle='white';ctxConv.fillText("Room Echoes h(τ) [Direct + 2 Reflections]",10,h3+20);ctxConv.fillText("Received Signal y(t) = x(t) * h(t)",10,2*h3+20);
+    ctxConv.beginPath();ctxConv.strokeStyle='#10b981';ctxConv.lineWidth=2;
+    for(let px=0;px<w;px++){let yv=0;ech.forEach(e=>{if(px>=e.x&&px<=e.x+pW)yv+=e.a;});const py=3*h3-20-yv;if(px===0)ctxConv.moveTo(px,py);else ctxConv.lineTo(px,py);}ctxConv.stroke();
+    let cy=0;ech.forEach(e=>{if(sX+pW>=e.x&&sX+pW<=e.x+pW)cy+=e.a;});ctxConv.fillStyle='#10b981';ctxConv.beginPath();ctxConv.arc(sX+pW,3*h3-20-cy,6,0,Math.PI*2);ctxConv.fill();
+}
+const canvasRes=document.getElementById('canvas-resolution');const ctxRes=canvasRes?canvasRes.getContext('2d'):null;const slRes=document.getElementById('slider-res');
+function drawResolution(){
+    if(!canvasRes)return;const w=canvasRes.width=canvasRes.offsetWidth;const h=canvasRes.height=300;ctxRes.clearRect(0,0,w,h);drawGrid(ctxRes,w,h);
+    const B=parseFloat(slRes.value);document.getElementById('slider-res-val').innerText=B;document.getElementById('val-res-b').innerText=B;
+    const dR=300/(2*B);document.getElementById('val-res-dr').innerText=dR.toFixed(1);
+    const cx=w/2;const tS=100;const t1=cx-tS/2;const t2=cx+tS/2;const pW=(500/B)*15;
+    ctxRes.beginPath();ctxRes.strokeStyle='#3b82f6';ctxRes.lineWidth=3;
+    for(let px=0;px<w;px++){const p1=60*Math.exp(-Math.pow((px-t1)/pW,2));const p2=60*Math.exp(-Math.pow((px-t2)/pW,2));const py=h-30-(p1+p2);if(px===0)ctxRes.moveTo(px,py);else ctxRes.lineTo(px,py);}ctxRes.stroke();
+    ctxRes.strokeStyle='white';ctxRes.setLineDash([5,5]);ctxRes.beginPath();ctxRes.moveTo(t1,h);ctxRes.lineTo(t1,h-100);ctxRes.stroke();ctxRes.beginPath();ctxRes.moveTo(t2,h);ctxRes.lineTo(t2,h-100);ctxRes.stroke();ctxRes.setLineDash([]);
+    ctxRes.fillStyle='#f59e0b';ctxRes.beginPath();ctxRes.arc(t1,h-20,6,0,Math.PI*2);ctxRes.fill();ctxRes.beginPath();ctxRes.arc(t2,h-20,6,0,Math.PI*2);ctxRes.fill();
+    ctxRes.fillStyle='white';ctxRes.fillText("Target 1",t1-25,h-5);ctxRes.fillText("Target 2",t2-25,h-5);
+    if(dR>15.0){ctxRes.fillStyle='#ef4444';ctxRes.fillText("UNRESOLVED: Pulses merged into one blob. AI sees one object.",10,20);}else{ctxRes.fillStyle='#10b981';ctxRes.fillText("RESOLVED: Two distinct peaks. AI clearly sees two objects.",10,20);}
+}
+const canvasMax=document.getElementById('canvas-maxwell');const ctxMax=canvasMax?canvasMax.getContext('2d'):null;
+function drawMaxwell(){
+    if(!canvasMax)return;const w=canvasMax.width=canvasMax.offsetWidth;const h=canvasMax.height=300;ctxMax.clearRect(0,0,w,h);
+    const cx1=w/4;const cx2=3*w/4;const cy=h/2;const qO=Math.sin(time*0.05);
+    ctxMax.fillStyle='white';ctxMax.fillText("∇ ⋅ E = ρ / ε₀ (Divergence)",cx1-60,30);ctxMax.beginPath();ctxMax.fillStyle=qO>0?'rgba(239,68,68,0.5)':'rgba(59,130,246,0.5)';
+    ctxMax.arc(cx1,cy,15,0,Math.PI*2);ctxMax.fill();ctxMax.fillStyle='white';ctxMax.font='bold 16px Arial';ctxMax.fillText(qO>0?'+':'-',cx1-5,cy+5);
+    for(let a=0;a<Math.PI*2;a+=Math.PI/4){const dir=qO>0?1:-1;const rS=20;const rE=20+40*Math.abs(qO);const sX=cx1+rS*Math.cos(a);const sY=cy+rS*Math.sin(a);const eX=cx1+rE*Math.cos(a)*dir;const eY=cy+rE*Math.sin(a)*dir;ctxMax.beginPath();ctxMax.strokeStyle='#3b82f6';ctxMax.lineWidth=2;if(dir>0){ctxMax.moveTo(sX,sY);ctxMax.lineTo(eX,eY);}else{ctxMax.moveTo(cx1+60*Math.cos(a),cy+60*Math.sin(a));ctxMax.lineTo(sX,sY);}ctxMax.stroke();}
+    ctxMax.fillStyle='white';ctxMax.font='14px Arial';ctxMax.fillText("∇ × E = -∂B/∂t (Curl)",cx2-60,30);const bO=Math.cos(time*0.05);
+    ctxMax.beginPath();ctxMax.fillStyle=bO>0?'rgba(16,185,129,0.3)':'rgba(16,185,129,0.8)';ctxMax.arc(cx2,cy,20+10*bO,0,Math.PI*2);ctxMax.fill();ctxMax.fillStyle='#10b981';ctxMax.fillText("∂B/∂t",cx2-15,cy+5);
+    const rC=50;ctxMax.beginPath();ctxMax.strokeStyle='#3b82f6';ctxMax.lineWidth=2;ctxMax.arc(cx2,cy,rC,0,Math.PI*2);ctxMax.stroke();const cD=-bO;
+    for(let a=0;a<Math.PI*2;a+=Math.PI/2){const px=cx2+rC*Math.cos(a);const py=cy+rC*Math.sin(a);const vx=-Math.sin(a)*cD*15;const vy=Math.cos(a)*cD*15;ctxMax.beginPath();ctxMax.strokeStyle='white';ctxMax.lineWidth=3;ctxMax.moveTo(px,py);ctxMax.lineTo(px+vx,py+vy);ctxMax.stroke();ctxMax.beginPath();ctxMax.fillStyle='white';ctxMax.arc(px+vx,py+vy,3,0,Math.PI*2);ctxMax.fill();}
+}
+const canvasWE=document.getElementById('canvas-waveeq');const ctxWE=canvasWE?canvasWE.getContext('2d'):null;
+function drawWaveEq(){
+    if(!canvasWE)return;const w=canvasWE.width=canvasWE.offsetWidth;const h=canvasWE.height=300;ctxWE.clearRect(0,0,w,h);
+    const cy=h/2;ctxWE.strokeStyle='#334155';ctxWE.lineWidth=1;ctxWE.beginPath();ctxWE.moveTo(0,cy);ctxWE.lineTo(w,cy);ctxWE.stroke();
+    const k=0.02;const wF=0.05;const A=60;ctxWE.beginPath();ctxWE.strokeStyle='#3b82f6';ctxWE.lineWidth=3;
+    for(let x=0;x<w;x++){const y=cy-A*Math.cos(k*x-wF*time);if(x===0)ctxWE.moveTo(x,y);else ctxWE.lineTo(x,y);}ctxWE.stroke();
+    const pP=wF*time;let pX=(pP/k)%(Math.PI*2/k);
+    while(pX<w){const px=pX;const py=cy-A;ctxWE.beginPath();ctxWE.strokeStyle='#ef4444';ctxWE.lineWidth=2;ctxWE.arc(px,cy-A+20,20,Math.PI,0);ctxWE.stroke();ctxWE.fillStyle='#ef4444';ctxWE.fillText("∇²E (Curvature)",px-30,py-10);ctxWE.beginPath();ctxWE.strokeStyle='#10b981';ctxWE.lineWidth=2;ctxWE.moveTo(px,py);ctxWE.lineTo(px,py+40);ctxWE.stroke();ctxWE.beginPath();ctxWE.fillStyle='#10b981';ctxWE.moveTo(px,py+40);ctxWE.lineTo(px-5,py+30);ctxWE.lineTo(px+5,py+30);ctxWE.fill();ctxWE.fillText("∂²E/∂t² (Restoring Accel)",px+10,py+35);pX+=Math.PI*2/k;}
+    ctxWE.fillStyle='white';ctxWE.fillText("The spatial curvature directly drives the temporal acceleration, propagating the wave.",10,h-20);
+}
+const canvasED=document.getElementById('canvas-energydensity');const ctxED=canvasED?canvasED.getContext('2d'):null;
+function drawEnergyDensity(){
+    if(!canvasED)return;const w=canvasED.width=canvasED.offsetWidth;const h=canvasED.height=300;ctxED.clearRect(0,0,w,h);
+    const cy=h*0.75;ctxED.strokeStyle='#334155';ctxED.lineWidth=1;ctxED.beginPath();ctxED.moveTo(0,cy);ctxED.lineTo(w,cy);ctxED.stroke();
+    const k=0.05;const wF=0.1;const A=40;ctxED.beginPath();ctxED.strokeStyle='rgba(59,130,246,0.5)';ctxED.lineWidth=2;ctxED.setLineDash([5,5]);
+    for(let x=0;x<w;x++){const y=cy-A*Math.sin(k*x-wF*time);if(x===0)ctxED.moveTo(x,y);else ctxED.lineTo(x,y);}ctxED.stroke();ctxED.setLineDash([]);
+    ctxED.beginPath();ctxED.strokeStyle='#f59e0b';ctxED.lineWidth=3;
+    for(let x=0;x<w;x++){const val=Math.sin(k*x-wF*time);const u=cy-2.5*A*(val*val);if(x===0)ctxED.moveTo(x,u);else ctxED.lineTo(x,u);}ctxED.stroke();
+    ctxED.lineTo(w,cy);ctxED.lineTo(0,cy);ctxED.fillStyle='rgba(245,158,11,0.2)';ctxED.fill();
+    ctxED.fillStyle='rgba(59,130,246,0.8)';ctxED.fillText("E Field (crosses zero)",10,20);ctxED.fillStyle='#f59e0b';ctxED.fillText("Energy Density u ∝ E² (Always positive, pulsing)",10,40);
+}
+const canvasRec=document.getElementById('canvas-reciprocity');const ctxRec=canvasRec?canvasRec.getContext('2d'):null;
+let rS="AB";setInterval(()=>{rS=rS==="AB"?"BA":"AB";},3000);
+function drawReciprocity(){
+    if(!canvasRec)return;const w=canvasRec.width=canvasRec.offsetWidth;const h=canvasRec.height=300;ctxRec.clearRect(0,0,w,h);
+    document.getElementById('val-recip-dir').innerText=rS==="AB"?"Antenna A ➔ Antenna B":"Antenna B ➔ Antenna A";
+    const aA={x:50,y:h/2};const aB={x:w-50,y:h/2};const sct=[{x:w/2,y:50},{x:w/3,y:h-50},{x:2*w/3,y:h-60}];
+    ctxRec.fillStyle='#3b82f6';ctxRec.beginPath();ctxRec.arc(aA.x,aA.y,8,0,Math.PI*2);ctxRec.fill();ctxRec.fillText("A",aA.x-20,aA.y+5);
+    ctxRec.fillStyle='#ef4444';ctxRec.beginPath();ctxRec.arc(aB.x,aB.y,8,0,Math.PI*2);ctxRec.fill();ctxRec.fillText("B",aB.x+10,aB.y+5);
+    sct.forEach(s=>{ctxRec.fillStyle='#64748b';ctxRec.beginPath();ctxRec.arc(s.x,s.y,6,0,Math.PI*2);ctxRec.fill();});
+    const iAB=rS==="AB";const tx=iAB?aA:aB;const rx=iAB?aB:aA;const txC=iAB?'#3b82f6':'#ef4444';
+    ctxRec.strokeStyle=txC;ctxRec.lineWidth=2;ctxRec.beginPath();ctxRec.setLineDash([10,10]);ctxRec.lineDashOffset=-time*(iAB?2:-2);ctxRec.moveTo(tx.x,tx.y);ctxRec.lineTo(rx.x,rx.y);ctxRec.stroke();
+    sct.forEach(s=>{ctxRec.beginPath();ctxRec.moveTo(tx.x,tx.y);ctxRec.lineTo(s.x,s.y);ctxRec.lineTo(rx.x,rx.y);ctxRec.stroke();});ctxRec.setLineDash([]);
+    ctxRec.fillStyle='white';ctxRec.fillText("Received Multipath Superposition:",10,20);ctxRec.beginPath();ctxRec.strokeStyle='#10b981';ctxRec.lineWidth=3;
+    for(let px=0;px<200;px++){const y=50-20*(Math.sin(px*0.1)+0.5*Math.cos(px*0.15+1)+0.3*Math.sin(px*0.2+2));if(px===0)ctxRec.moveTo(10+px,y);else ctxRec.lineTo(10+px,y);}
+    ctxRec.stroke();ctxRec.fillStyle='#10b981';ctxRec.fillText("Identical Profile",220,50);
+}
+const canvasShan=document.getElementById('canvas-shannon');const ctxShan=canvasShan?canvasShan.getContext('2d'):null;const slShan=document.getElementById('slider-shannon-snr');
+function drawShannon(){
+    if(!canvasShan)return;const w=canvasShan.width=canvasShan.offsetWidth;const h=canvasShan.height=300;ctxShan.clearRect(0,0,w,h);drawGrid(ctxShan,w,h);
+    const SNR=parseFloat(slShan.value);document.getElementById('slider-shannon-snr-val').innerText=SNR;document.getElementById('val-shannon-snr').innerText=SNR;
+    const B=20;const C=B*Math.log2(1+SNR);document.getElementById('val-shannon-c').innerText=C.toFixed(1);
+    ctxShan.beginPath();ctxShan.strokeStyle='#3b82f6';ctxShan.lineWidth=3;
+    for(let x=0;x<=100;x++){const cap=B*Math.log2(1+x);const px=(x/100)*w;const py=h-(cap/(B*Math.log2(1+100)))*(h-40);if(x===0)ctxShan.moveTo(px,py);else ctxShan.lineTo(px,py);}ctxShan.stroke();
+    const cX=(SNR/100)*w;const cY=h-(C/(B*Math.log2(1+100)))*(h-40);
+    ctxShan.beginPath();ctxShan.strokeStyle='white';ctxShan.setLineDash([5,5]);ctxShan.moveTo(cX,h);ctxShan.lineTo(cX,cY);ctxShan.lineTo(0,cY);ctxShan.stroke();ctxShan.setLineDash([]);
+    ctxShan.fillStyle='#ef4444';ctxShan.beginPath();ctxShan.arc(cX,cY,6,0,Math.PI*2);ctxShan.fill();
+    ctxShan.fillStyle='white';ctxShan.fillText("SNR (Linear Scale)",w/2,h-10);ctxShan.fillText(`Capacity = ${C.toFixed(1)} Mbps`,10,cY-10);ctxShan.fillStyle='#3b82f6';ctxShan.fillText("Notice the diminishing returns due to the Logarithm",10,20);
+}
+const canvasSVD=document.getElementById('canvas-svd');const ctxSVD=canvasSVD?canvasSVD.getContext('2d'):null;
+function drawSVD(){
+    if(!canvasSVD)return;const w=canvasSVD.width=canvasSVD.offsetWidth;const h=canvasSVD.height=300;ctxSVD.clearRect(0,0,w,h);
+    const cx=w/2;const cy=h/2;ctxSVD.strokeStyle='#334155';ctxSVD.lineWidth=1;ctxSVD.beginPath();ctxSVD.moveTo(0,cy);ctxSVD.lineTo(w,cy);ctxSVD.stroke();ctxSVD.beginPath();ctxSVD.moveTo(cx,0);ctxSVD.lineTo(cx,h);ctxSVD.stroke();
+    const rB=50;const s1=1.5+0.5*Math.sin(time*0.05);const s2=0.8+0.2*Math.cos(time*0.05);const ang=time*0.02;
+    ctxSVD.beginPath();ctxSVD.strokeStyle='#3b82f6';ctxSVD.lineWidth=2;
+    for(let a=0;a<=Math.PI*2;a+=0.05){const x=Math.cos(a);const y=Math.sin(a);const sx=x*s1;const sy=y*s2;const fx=sx*Math.cos(ang)-sy*Math.sin(ang);const fy=sx*Math.sin(ang)+sy*Math.cos(ang);const px=cx+fx*rB;const py=cy-fy*rB;if(a===0)ctxSVD.moveTo(px,py);else ctxSVD.lineTo(px,py);}ctxSVD.closePath();ctxSVD.stroke();
+    const a1x=cx+s1*rB*Math.cos(ang);const a1y=cy-s1*rB*Math.sin(ang);const a2x=cx-s2*rB*Math.sin(ang);const a2y=cy-s2*rB*Math.cos(ang);
+    ctxSVD.beginPath();ctxSVD.strokeStyle='#ef4444';ctxSVD.lineWidth=3;ctxSVD.moveTo(cx,cy);ctxSVD.lineTo(a1x,a1y);ctxSVD.stroke();ctxSVD.fillStyle='#ef4444';ctxSVD.fillText(`Σ₁ (Strong Path)`,a1x,a1y-10);
+    ctxSVD.beginPath();ctxSVD.strokeStyle='#10b981';ctxSVD.lineWidth=3;ctxSVD.moveTo(cx,cy);ctxSVD.lineTo(a2x,a2y);ctxSVD.stroke();ctxSVD.fillStyle='#10b981';ctxSVD.fillText(`Σ₂ (Weak Path)`,a2x,a2y-10);
+    ctxSVD.fillStyle='white';ctxSVD.fillText("SVD extracts orthogonal mathematical 'pipes' from the channel.",10,20);
+}
+const canvasKal=document.getElementById('canvas-kalman');const ctxKal=canvasKal?canvasKal.getContext('2d'):null;let kalE=0;let kalP=1.0;
+function drawKalman(){
+    if(!canvasKal)return;const w=canvasKal.width=canvasKal.offsetWidth;const h=canvasKal.height=300;ctxKal.clearRect(0,0,w,h);drawGrid(ctxKal,w,h);
+    const cy=h/2;const f=0.02;const a=80;const cX=(time%200)*(w/200);if(cX<5){kalE=0;kalP=1.0;}
+    const tY=Math.sin(time*f)*a;let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();const ns=20*Math.sqrt(-2.0*Math.log(u))*Math.cos(2.0*Math.PI*v);const z=tY+ns;
+    let pE=kalE;let pP=kalP+0.1;const R=20;const K=pP/(pP+R);kalE=pE+K*(z-pE);kalP=(1-K)*pP;
+    ctxKal.fillStyle='rgba(239,68,68,0.5)';ctxKal.beginPath();ctxKal.arc(cX,cy-z,4,0,Math.PI*2);ctxKal.fill();
+    ctxKal.fillStyle='#3b82f6';ctxKal.beginPath();ctxKal.arc(cX,cy-tY,3,0,Math.PI*2);ctxKal.fill();
+    ctxKal.fillStyle='#10b981';ctxKal.beginPath();ctxKal.arc(cX,cy-kalE,5,0,Math.PI*2);ctxKal.fill();
+    ctxKal.fillStyle='white';ctxKal.fillText("Blue: True Trajectory | Red: Noisy Radar Meas | Green: Kalman Smoothed Estimate",10,20);ctxKal.fillText(`Kalman Gain (K): ${K.toFixed(2)} (High = Trust Meas, Low = Trust Model)`,10,40);
+}
+const canvasScat=document.getElementById('canvas-scattering');const ctxScat=canvasScat?canvasScat.getContext('2d'):null;
+function drawScattering(){
+    if(!canvasScat)return;const w=canvasScat.width=canvasScat.offsetWidth;const h=canvasScat.height=300;ctxScat.clearRect(0,0,w,h);
+    const cx=w/2;const cy=h/2;const L=30;ctxScat.strokeStyle='rgba(59,130,246,0.4)';ctxScat.lineWidth=2;
+    for(let i=0;i<w/2;i+=L){const wx=(i+(time%L));if(wx<cx){ctxScat.beginPath();ctxScat.moveTo(wx,0);ctxScat.lineTo(wx,h);ctxScat.stroke();}}
+    ctxScat.fillStyle='#f59e0b';ctxScat.beginPath();ctxScat.arc(cx,cy,10,0,Math.PI*2);ctxScat.fill();ctxScat.fillStyle='white';ctxScat.fillText("Scattering Body",cx+15,cy-10);
+    ctxScat.strokeStyle='#ef4444';
+    for(let r=10;r<w;r+=L){const wR=(r+(time%L));ctxScat.globalAlpha=Math.max(0,1-wR/(w/2));ctxScat.lineWidth=3;ctxScat.beginPath();ctxScat.arc(cx,cy,wR,0,Math.PI*2);ctxScat.stroke();}
+    ctxScat.globalAlpha=1.0;ctxScat.fillStyle='white';ctxScat.fillText("Blue Plane Wave incident. Induces Red Spherical Scattered field (e^ikr / r).",10,20);
+}
+const canvasUnc=document.getElementById('canvas-uncertainty');const ctxUnc=canvasUnc?canvasUnc.getContext('2d'):null;const slUnc=document.getElementById('slider-uncertainty');
+function drawUncertainty(){
+    if(!canvasUnc)return;const w=canvasUnc.width=canvasUnc.offsetWidth;const h=canvasUnc.height=300;ctxUnc.clearRect(0,0,w,h);
+    const dt=parseFloat(slUnc.value);const df=1/dt;const cx=w/2;const cyT=h/4;const cyF=3*h/4;
+    ctxUnc.strokeStyle='#334155';ctxUnc.lineWidth=1;ctxUnc.beginPath();ctxUnc.moveTo(0,cyT);ctxUnc.lineTo(w,cyT);ctxUnc.stroke();ctxUnc.beginPath();ctxUnc.moveTo(0,cyF);ctxUnc.lineTo(w,cyF);ctxUnc.stroke();
+    ctxUnc.beginPath();ctxUnc.strokeStyle='#3b82f6';ctxUnc.lineWidth=3;
+    for(let px=0;px<w;px++){const x=(px-cx)/50;const y=cyT-60*Math.exp(-Math.pow(x/dt,2));if(px===0)ctxUnc.moveTo(px,y);else ctxUnc.lineTo(px,y);}ctxUnc.stroke();
+    ctxUnc.fillStyle='#3b82f6';ctxUnc.fillText(`Time Domain (Δt = ${dt.toFixed(1)})`,10,20);
+    ctxUnc.beginPath();ctxUnc.strokeStyle='#ef4444';ctxUnc.lineWidth=3;
+    for(let px=0;px<w;px++){const x=(px-cx)/50;const y=cyF-60*Math.exp(-Math.pow(x/df,2));if(px===0)ctxUnc.moveTo(px,y);else ctxUnc.lineTo(px,y);}ctxUnc.stroke();
+    ctxUnc.fillStyle='#ef4444';ctxUnc.fillText(`Frequency Domain (Δf = ${df.toFixed(2)})`,10,h/2+20);
+    ctxUnc.fillStyle='white';ctxUnc.fillText("Δt × Δf ≳ 1. You cannot have perfect distance (time) AND perfect speed (freq) resolution.",10,h-10);
+}
+const canvasEig=document.getElementById('canvas-eigenmodes');const ctxEig=canvasEig?canvasEig.getContext('2d'):null;
+function drawEigenmodes(){
+    if(!canvasEig)return;const w=canvasEig.width=canvasEig.offsetWidth;const h=canvasEig.height=300;
+    const r=15;const c=30;const dx=w/c;const dy=h/r;const m=2;const n=3;ctxEig.clearRect(0,0,w,h);const ph=time*0.1;
+    for(let yR=0;yR<=r;yR++){for(let xC=0;xC<=c;xC++){const x=xC/c;const y=yR/r;const z=Math.sin(m*Math.PI*x)*Math.sin(n*Math.PI*y)*Math.cos(ph);const px=xC*dx;const py=yR*dy;let fill='black';if(z>0.1)fill=`rgba(239,68,68,${Math.abs(z)})`;else if(z<-0.1)fill=`rgba(59,130,246,${Math.abs(z)})`;else fill='rgba(255,255,255,0.1)';ctxEig.fillStyle=fill;ctxEig.beginPath();ctxEig.arc(px,py,6*Math.abs(z)+2,0,Math.PI*2);ctxEig.fill();}}
+    ctxEig.fillStyle='white';ctxEig.font="bold 16px Arial";ctxEig.fillText(`Microwave Cavity Resonator (Room) - Mode (m=${m}, n=${n})`,20,30);ctxEig.font="14px Arial";ctxEig.fillText("Empty areas are 'Nodes' where signal is physically dead. Moving humans shift these modes.",20,55);
+}
+const canvasHelm=document.getElementById('canvas-helmholtz');const ctxHelm=canvasHelm?canvasHelm.getContext('2d'):null;
+function drawHelmholtz(){
+    if(!canvasHelm)return;const w=canvasHelm.width=canvasHelm.offsetWidth;const h=canvasHelm.height=300;ctxHelm.clearRect(0,0,w,h);
+    const cy=h/2;ctxHelm.strokeStyle='#334155';ctxHelm.lineWidth=1;ctxHelm.beginPath();ctxHelm.moveTo(0,cy);ctxHelm.lineTo(w,cy);ctxHelm.stroke();
+    const L=w-40;const sX=20;ctxHelm.fillStyle='#475569';ctxHelm.fillRect(0,0,20,h);ctxHelm.fillRect(w-20,0,20,h);
+    const cols=['rgba(59,130,246,0.5)','rgba(16,185,129,0.6)','rgba(239,68,68,0.8)'];
+    for(let n=1;n<=3;n++){
+        ctxHelm.beginPath();ctxHelm.strokeStyle=cols[n-1];ctxHelm.lineWidth=n===3?3:2;const k=(n*Math.PI)/L;
+        for(let px=0;px<=L;px++){const amp=80*Math.cos(time*0.05*n);const y=cy-amp*Math.sin(k*px);if(px===0)ctxHelm.moveTo(sX+px,y);else ctxHelm.lineTo(sX+px,y);}ctxHelm.stroke();
+        ctxHelm.fillStyle=cols[n-1];ctxHelm.fillText(`Mode n=${n} (k=${n}π/L)`,sX+10,cy-90+n*20);
+    }
+    ctxHelm.fillStyle='white';ctxHelm.fillText("∇²E + k²E = 0 bounds the room into discrete energy states.",sX+10,h-10);
+}
+const canvasMIMO=document.getElementById('canvas-mimo');const ctxMIMO=canvasMIMO?canvasMIMO.getContext('2d'):null;
+function drawMIMO(){
+    if(!canvasMIMO)return;const w=canvasMIMO.width=canvasMIMO.offsetWidth;const h=canvasMIMO.height=300;ctxMIMO.clearRect(0,0,w,h);
+    const N=4;const txX=50;const rxX=w-50;const spc=50;const sY=(h-(N-1)*spc)/2;const tA=[];const rA=[];
+    for(let i=0;i<N;i++){tA.push({x:txX,y:sY+i*spc});rA.push({x:rxX,y:sY+i*spc});ctxMIMO.fillStyle='#3b82f6';ctxMIMO.beginPath();ctxMIMO.arc(txX,sY+i*spc,6,0,Math.PI*2);ctxMIMO.fill();ctxMIMO.fillStyle='#10b981';ctxMIMO.beginPath();ctxMIMO.arc(rxX,sY+i*spc,6,0,Math.PI*2);ctxMIMO.fill();}
+    ctxMIMO.fillStyle='white';ctxMIMO.fillText("Tx Vector (x)",10,sY-20);ctxMIMO.fillText("Rx Vector (y)",rxX-30,sY-20);
+    for(let i=0;i<N;i++){for(let j=0;j<N;j++){
+        ctxMIMO.beginPath();ctxMIMO.strokeStyle=`rgba(148,163,184,0.2)`;ctxMIMO.lineWidth=1;ctxMIMO.moveTo(tA[i].x,tA[i].y);ctxMIMO.lineTo(rA[j].x,rA[j].y);ctxMIMO.stroke();
+        const pL=Math.hypot(rxX-txX,rA[j].y-tA[i].y);const off=(time*2+i*20+j*15)%pL;const uX=(rA[j].x-tA[i].x)/pL;const uY=(rA[j].y-tA[i].y)/pL;const dX=tA[i].x+off*uX;const dY=tA[i].y+off*uY;
+        ctxMIMO.fillStyle='rgba(245,158,11,0.8)';ctxMIMO.beginPath();ctxMIMO.arc(dX,dY,2,0,Math.PI*2);ctxMIMO.fill();
+    }}
+    ctxMIMO.fillStyle='white';ctxMIMO.font='bold 20px Arial';ctxMIMO.fillText("H Matrix (16 Paths)",w/2-80,h-20);ctxMIMO.font='14px Arial';
+}
+const canvasBayes=document.getElementById('canvas-bayes');const ctxBayes=canvasBayes?canvasBayes.getContext('2d'):null;
+function getGaussY(x,m,v){return(1/Math.sqrt(2*Math.PI*v))*Math.exp(-Math.pow(x-m,2)/(2*v));}
+function drawBayes(){
+    if(!canvasBayes)return;const w=canvasBayes.width=canvasBayes.offsetWidth;const h=canvasBayes.height=300;ctxBayes.clearRect(0,0,w,h);
+    const cy=h-40;ctxBayes.strokeStyle='#334155';ctxBayes.lineWidth=1;ctxBayes.beginPath();ctxBayes.moveTo(0,cy);ctxBayes.lineTo(w,cy);ctxBayes.stroke();ctxBayes.fillStyle='white';ctxBayes.fillText("Position (x)",w/2-30,cy+20);
+    const sc=2000;const m1=w/2-40;const v1=1500;
+    ctxBayes.beginPath();ctxBayes.strokeStyle='#3b82f6';ctxBayes.lineWidth=2;for(let px=0;px<w;px++){const y=cy-getGaussY(px,m1,v1)*sc*1.5;if(px===0)ctxBayes.moveTo(px,y);else ctxBayes.lineTo(px,y);}ctxBayes.stroke();
+    const m2=w/2+50+30*Math.sin(time*0.05);const v2=800;
+    ctxBayes.beginPath();ctxBayes.strokeStyle='#ef4444';ctxBayes.lineWidth=2;for(let px=0;px<w;px++){const y=cy-getGaussY(px,m2,v2)*sc*1.2;if(px===0)ctxBayes.moveTo(px,y);else ctxBayes.lineTo(px,y);}ctxBayes.stroke();
+    const vP=1/((1/v1)+(1/v2));const mP=vP*((m1/v1)+(m2/v2));
+    ctxBayes.beginPath();ctxBayes.strokeStyle='#10b981';ctxBayes.lineWidth=4;ctxBayes.fillStyle='rgba(16,185,129,0.2)';
+    for(let px=0;px<w;px++){const y=cy-getGaussY(px,mP,vP)*sc*2.0;if(px===0)ctxBayes.moveTo(px,y);else ctxBayes.lineTo(px,y);}
+    ctxBayes.stroke();ctxBayes.lineTo(w,cy);ctxBayes.lineTo(0,cy);ctxBayes.fill();
+    ctxBayes.fillStyle='#3b82f6';ctxBayes.fillText("Prior P(H) [Old Belief]",10,20);ctxBayes.fillStyle='#ef4444';ctxBayes.fillText("Likelihood P(D|H) [Noisy Sensor]",10,40);ctxBayes.fillStyle='#10b981';ctxBayes.fillText("Posterior P(H|D) [Sharper, Fused Result]",10,60);
+}
+const canvasMom=document.getElementById('canvas-momentum');const ctxMom=canvasMom?canvasMom.getContext('2d'):null;let oX=20;let oV=0;
+function drawMomentum(){
+    if(!canvasMom)return;const w=canvasMom.width=canvasMom.offsetWidth;const h=canvasMom.height=300;ctxMom.clearRect(0,0,w,h);
+    const cx=w/2;const cy=h-50;ctxMom.beginPath();ctxMom.strokeStyle='#64748b';ctxMom.lineWidth=3;
+    for(let px=0;px<w;px++){const dx=(px-cx)/100;const Jy=50*(dx*dx)+10*Math.sin(dx*10);const py=cy-Jy;if(px===0)ctxMom.moveTo(px,py);else ctxMom.lineTo(px,py);}ctxMom.stroke();
+    const beta=0.95;const alpha=0.5;const dx=(oX-cx)/100;const grad=100*dx+100*Math.cos(dx*10);oV=beta*oV-alpha*grad*0.001;oX+=oV;if(time%400===0){oX=20;oV=0;}
+    const Jc=50*Math.pow((oX-cx)/100,2)+10*Math.sin((oX-cx)/100*10);const py=cy-Jc;
+    ctxMom.fillStyle='#ef4444';ctxMom.beginPath();ctxMom.arc(oX,py,8,0,Math.PI*2);ctxMom.fill();ctxMom.strokeStyle='#10b981';ctxMom.lineWidth=2;ctxMom.beginPath();ctxMom.moveTo(oX,py);ctxMom.lineTo(oX+oV*10,py);ctxMom.stroke();
+    ctxMom.fillStyle='white';ctxMom.fillText("Loss Landscape J(θ)",cx-50,h-10);ctxMom.fillStyle='#ef4444';ctxMom.fillText(`Gradient Descent with Momentum (Adam/RMSProp)`,10,20);ctxMom.fillText("It acts exactly like a heavy ball rolling with physical friction.",10,40);
+}
+const canvasUncS=document.getElementById('canvas-uncertsynth');const ctxUncS=canvasUncS?canvasUncS.getContext('2d'):null;const slUS=document.getElementById('slider-uncertsynth');
+function drawUncertSynth(){
+    if(!canvasUncS)return;const w=canvasUncS.width=canvasUncS.offsetWidth;const h=canvasUncS.height=300;ctxUncS.clearRect(0,0,w,h);
+    const B=parseFloat(slUS.value);document.getElementById('slider-uncertsynth-val').innerText=B;
+    const cx1=w*0.3;const cx2=w*0.75;const cy=h/2;ctxUncS.strokeStyle='#334155';ctxUncS.lineWidth=1;
+    ctxUncS.beginPath();ctxUncS.moveTo(0,cy);ctxUncS.lineTo(w,cy);ctxUncS.stroke();ctxUncS.beginPath();ctxUncS.moveTo(w/2+20,0);ctxUncS.lineTo(w/2+20,h);ctxUncS.stroke();
+    const bW=(B/500)*150;ctxUncS.fillStyle='rgba(59,130,246,0.4)';ctxUncS.fillRect(cx1-bW/2,cy-80,bW,80);ctxUncS.strokeStyle='#3b82f6';ctxUncS.lineWidth=2;ctxUncS.strokeRect(cx1-bW/2,cy-80,bW,80);
+    ctxUncS.fillStyle='white';ctxUncS.fillText("Frequency Domain (Δf = Bandwidth)",10,30);ctxUncS.beginPath();ctxUncS.moveTo(cx1-bW/2,cy-90);ctxUncS.lineTo(cx1+bW/2,cy-90);ctxUncS.stroke();ctxUncS.fillText("Δf",cx1-10,cy-100);
+    const pW=(500/B)*10;ctxUncS.beginPath();ctxUncS.strokeStyle='#ef4444';ctxUncS.lineWidth=3;
+    for(let px=w/2+20;px<w;px++){const x=(px-cx2)/pW;let yv=1;if(x!==0)yv=Math.sin(Math.PI*x)/(Math.PI*x);const py=cy-80*yv;if(px===w/2+20)ctxUncS.moveTo(px,py);else ctxUncS.lineTo(px,py);}ctxUncS.stroke();
+    ctxUncS.fillStyle='white';ctxUncS.fillText("Time Domain Pulse (Δt)",w/2+40,30);ctxUncS.strokeStyle='#ef4444';ctxUncS.beginPath();ctxUncS.moveTo(cx2-pW,cy+30);ctxUncS.lineTo(cx2+pW,cy+30);ctxUncS.stroke();
+    ctxUncS.fillStyle='#ef4444';ctxUncS.fillText("Δt (Resolution)",cx2-40,cy+50);ctxUncS.fillStyle='#10b981';ctxUncS.font="bold 16px Arial";ctxUncS.fillText("Δt Δf ≳ 1",w/2-35,h-30);ctxUncS.font="14px Arial";
+}
+const canvasRet=document.getElementById('canvas-retarded');const ctxRet=canvasRet?canvasRet.getContext('2d'):null;const retH=[];
+function drawRetarded(){
+    if(!canvasRet)return;const w=canvasRet.width=canvasRet.offsetWidth;const h=canvasRet.height=300;ctxRet.clearRect(0,0,w,h);
+    const cx=w/2;const cy=h/2;const cs=3.0;const px=cx+80*Math.sin(time*0.03);const py=cy+40*Math.sin(time*0.06);retH.push({x:px,y:py,t:time});if(retH.length>100)retH.shift();
+    ctxRet.lineWidth=1;
+    for(let i=0;i<retH.length;i+=10){
+        const pst=retH[i];const age=time-pst.t;const rad=age*cs;ctxRet.strokeStyle=`rgba(59,130,246,${Math.max(0,1-age/100)})`;ctxRet.beginPath();ctxRet.arc(pst.x,pst.y,rad,0,Math.PI*2);ctxRet.stroke();
+        if(i%30===0){ctxRet.beginPath();ctxRet.strokeStyle='rgba(239,68,68,0.3)';ctxRet.setLineDash([2,2]);ctxRet.moveTo(px,py);ctxRet.lineTo(pst.x,pst.y);ctxRet.stroke();ctxRet.setLineDash([]);}
+    }
+    ctxRet.fillStyle='#ef4444';ctxRet.beginPath();ctxRet.arc(px,py,6,0,Math.PI*2);ctxRet.fill();ctxRet.fillStyle='white';ctxRet.fillText("Current Charge (q)",px+10,py);ctxRet.fillStyle='#3b82f6';ctxRet.fillText("Field ripples originate from (t - R/c)",10,20);
+}
+const canvasGrn=document.getElementById('canvas-greens');const ctxGrn=canvasGrn?canvasGrn.getContext('2d'):null;let grnP=[];
+function drawGreens(){
+    if(!canvasGrn)return;const w=canvasGrn.width=canvasGrn.offsetWidth;const h=canvasGrn.height=300;ctxGrn.clearRect(0,0,w,h);
+    const cx=w/2;const cy=h/2;if(time%60===0)grnP.push({r:0});ctxGrn.lineWidth=2;
+    for(let i=grnP.length-1;i>=0;i--){const p=grnP[i];p.r+=2;const a=Math.max(0,1-p.r/150);if(a<=0){grnP.splice(i,1);continue;}ctxGrn.strokeStyle=`rgba(16,185,129,${a})`;ctxGrn.beginPath();ctxGrn.arc(cx,cy,p.r,0,Math.PI*2);ctxGrn.stroke();}
+    ctxGrn.fillStyle='#f59e0b';ctxGrn.beginPath();ctxGrn.arc(cx,cy,5+3*Math.abs(Math.sin(time*0.1)),0,Math.PI*2);ctxGrn.fill();ctxGrn.fillStyle='white';ctxGrn.fillText("Point Source: δ(r-r') [The Impulse]",cx+15,cy-10);ctxGrn.fillStyle='#10b981';ctxGrn.fillText("Green's Response: G(r) = e^(ikr) / 4πr",10,20);
+}
+const canvasVar=document.getElementById('canvas-variational');const ctxVar=canvasVar?canvasVar.getContext('2d'):null;
+function drawVariational(){
+    if(!canvasVar)return;const w=canvasVar.width=canvasVar.offsetWidth;const h=canvasVar.height=300;ctxVar.clearRect(0,0,w,h);
+    const cx=w/2;ctxVar.fillStyle='rgba(51,65,85,0.5)';ctxVar.fillRect(0,h/2,cx-10,h/2);ctxVar.strokeStyle='#334155';ctxVar.beginPath();ctxVar.moveTo(0,h/2);ctxVar.lineTo(cx-10,h/2);ctxVar.stroke();
+    const p1={x:20,y:20};const p2={x:cx-40,y:h-20};const oX=p1.x+(p2.x-p1.x)*0.6;const sX=oX+40*Math.sin(time*0.05);
+    ctxVar.strokeStyle='rgba(59,130,246,0.3)';ctxVar.lineWidth=1;ctxVar.beginPath();ctxVar.moveTo(p1.x,p1.y);ctxVar.lineTo(sX,h/2);ctxVar.lineTo(p2.x,p2.y);ctxVar.stroke();
+    ctxVar.strokeStyle='#3b82f6';ctxVar.lineWidth=3;ctxVar.beginPath();ctxVar.moveTo(p1.x,p1.y);ctxVar.lineTo(oX,h/2);ctxVar.lineTo(p2.x,p2.y);ctxVar.stroke();
+    ctxVar.fillStyle='white';ctxVar.beginPath();ctxVar.arc(p1.x,p1.y,4,0,Math.PI*2);ctxVar.fill();ctxVar.beginPath();ctxVar.arc(p2.x,p2.y,4,0,Math.PI*2);ctxVar.fill();ctxVar.fillText("Physics: δS = 0 (Least Time)",10,20);
+    const rS=cx+20;const rW=w-rS;ctxVar.beginPath();ctxVar.strokeStyle='#64748b';ctxVar.lineWidth=3;
+    for(let px=rS;px<w;px++){const dx=(px-(rS+rW/2))/50;const py=h/2+80*(dx*dx);if(px===rS)ctxVar.moveTo(px,py);else ctxVar.lineTo(px,py);}ctxVar.stroke();
+    const adx=1.5*Math.cos(time*0.05)*Math.exp(-time*0.005%2);const bX=rS+rW/2+adx*50;const bY=h/2+80*(adx*adx);
+    ctxVar.fillStyle='#ef4444';ctxVar.beginPath();ctxVar.arc(bX,bY,6,0,Math.PI*2);ctxVar.fill();ctxVar.fillStyle='white';ctxVar.fillText("AI: ∇J = 0 (Least Error)",rS,20);ctxVar.fillText("Both Nature and Math inherently optimize.",rS,h-20);
+}
+const canvasNoe=document.getElementById('canvas-noether');const ctxNoe=canvasNoe?canvasNoe.getContext('2d'):null;
+function drawNoether(){
+    if(!canvasNoe)return;const w=canvasNoe.width=canvasNoe.offsetWidth;const h=canvasNoe.height=300;ctxNoe.clearRect(0,0,w,h);
+    const cx=w/2;const cy=h/2;const a=120;const b=60;ctxNoe.strokeStyle='#334155';ctxNoe.lineWidth=2;ctxNoe.beginPath();ctxNoe.ellipse(cx,cy,a,b,0,0,Math.PI*2);ctxNoe.stroke();
+    const fX=cx-Math.sqrt(a*a-b*b);ctxNoe.fillStyle='#f59e0b';ctxNoe.beginPath();ctxNoe.arc(fX,cy,8,0,Math.PI*2);ctxNoe.fill();
+    const E1=time*0.02;const p1x=cx+a*Math.cos(E1);const p1y=cy+b*Math.sin(E1);const E2=E1-0.4;const p2x=cx+a*Math.cos(E2);const p2y=cy+b*Math.sin(E2);
+    ctxNoe.fillStyle='rgba(16,185,129,0.3)';ctxNoe.beginPath();ctxNoe.moveTo(fX,cy);ctxNoe.lineTo(p1x,p1y);ctxNoe.lineTo(p2x,p2y);ctxNoe.fill();
+    ctxNoe.fillStyle='#3b82f6';ctxNoe.beginPath();ctxNoe.arc(p1x,p1y,6,0,Math.PI*2);ctxNoe.fill();
+    ctxNoe.fillStyle='white';ctxNoe.fillText("Rotational Symmetry ➔ Conservation of Angular Momentum",10,20);ctxNoe.fillStyle='#10b981';ctxNoe.fillText("Swept Area (L / 2m) is perfectly Constant over Time",10,40);ctxNoe.fillStyle='#ef4444';ctxNoe.fillText("Time Invariance ➔ Conservation of Energy (Stable Frequencies)",10,h-20);
+}
+const canvasFish=document.getElementById('canvas-fisher');const ctxFish=canvasFish?canvasFish.getContext('2d'):null;const slFish=document.getElementById('slider-fisher');
+function drawFisher(){
+    if(!canvasFish)return;const w=canvasFish.width=canvasFish.offsetWidth;const h=canvasFish.height=300;ctxFish.clearRect(0,0,w,h);drawGrid(ctxFish,w,h);
+    const cert=parseFloat(slFish.value);const vr=1.0/(cert+0.1);const fI=1.0/vr;document.getElementById('val-fisher-i').innerText=fI.toFixed(1);
+    const cx=w/2;const cy=h-40;ctxFish.beginPath();ctxFish.strokeStyle='#3b82f6';ctxFish.lineWidth=3;ctxFish.fillStyle='rgba(59,130,246,0.2)';
+    for(let px=0;px<w;px++){const x=(px-cx)/50;const p=Math.exp(-Math.pow(x,2)/(2*vr))/Math.sqrt(2*Math.PI*vr);const py=cy-p*150;if(px===0)ctxFish.moveTo(px,py);else ctxFish.lineTo(px,py);}
+    ctxFish.stroke();ctxFish.lineTo(w,cy);ctxFish.lineTo(0,cy);ctxFish.fill();
+    const pY=cy-(1/Math.sqrt(2*Math.PI*vr))*150;ctxFish.beginPath();ctxFish.strokeStyle='#ef4444';ctxFish.lineWidth=2;
+    for(let dx=-30;dx<=30;dx++){const py=pY+(fI*dx*dx)*0.1;if(py>cy)continue;if(dx===-30)ctxFish.moveTo(cx+dx,py);else ctxFish.lineTo(cx+dx,py);}ctxFish.stroke();
+    ctxFish.fillStyle='white';ctxFish.fillText("Probability Distribution p(x|θ)",10,20);ctxFish.fillStyle='#ef4444';ctxFish.fillText(`Red Curvature = Fisher Information (I = ${fI.toFixed(1)})`,10,40);ctxFish.fillStyle='#10b981';ctxFish.fillText(`Cramér-Rao Bound (Min Error) ≥ ${(1/fI).toFixed(2)}`,10,60);
+}
+function animate(){
+    time+=1;drawPreface();drawEM();drawMultipath();drawBreathing();drawDoppler();drawPhasors();drawStandingWaves();drawFourier();drawLocalization();drawDiffraction();drawAttenuation();drawAI();drawPolarization();drawRefraction();drawBeats();drawBeamforming();drawBrewster();drawSkinEffect();drawAoA();drawNoise();drawFSeries();drawSHM();draw3DSpheres();drawDeterminant();drawResonance();drawPoynting();drawFresnel();drawRCS();drawDipole();drawNyquist();drawConvolution();drawResolution();drawMaxwell();drawWaveEq();drawEnergyDensity();drawReciprocity();drawShannon();drawSVD();drawKalman();drawScattering();drawUncertainty();drawEigenmodes();drawHelmholtz();drawMIMO();drawBayes();drawMomentum();drawUncertSynth();drawRetarded();drawGreens();drawVariational();drawNoether();drawFisher();requestAnimationFrame(animate);
+}
+window.onload=function(){animate();};
+</script>
+</body>
+</html>
