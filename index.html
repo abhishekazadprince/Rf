@@ -56,6 +56,14 @@
             plugins: [ function({ addBase, theme }) { addBase({ 'h1, h2, h3, h4': { fontFamily: theme('fontFamily.sans') }, 'p, blockquote': { fontFamily: theme('fontFamily.serif') } }) } ]
         }
     </script>
+    
+    <!-- UI Controllers logic placed in head to avoid Reference Errors before body loads -->
+    <script>
+        function toggleTheme() { document.documentElement.classList.toggle('dark'); localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light'; }
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark');
+        function toggleMenu() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('overlay').classList.toggle('hidden'); }
+        function closeMenu() { if(window.innerWidth < 768) { document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('overlay').classList.add('hidden'); } }
+    </script>
 
     <!-- Synchronous KaTeX Loading -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
@@ -109,7 +117,7 @@
 <body class="text-slate-800 dark:text-slate-200 antialiased flex h-screen overflow-hidden bg-paper dark:bg-darkpaper selection:bg-blue-200 selection:text-blue-900 dark:selection:bg-blue-900 dark:selection:text-blue-100 font-feature-settings">
 
     <div id="progress-bar"></div>
-    <div id="overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden z-40 transition-opacity" onclick="toggleMenu()"></div>
+    <div id="overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden z-40 transition-opacity" onclick="closeMenu()"></div>
 
     <aside id="sidebar" class="w-72 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-r border-slate-200/50 dark:border-slate-800/50 h-full flex flex-col fixed md:relative shrink-0 overflow-y-auto z-50 transition-transform duration-300 ease-out shadow-2xl md:shadow-none">
         <div class="p-6 pt-8 border-b border-slate-200/50 dark:border-slate-800/50 bg-gradient-to-b from-slate-50 to-transparent dark:from-slate-900 dark:to-transparent">
@@ -1203,9 +1211,7 @@
                             "The ultimate goal of physics is not to build better radios, but to map the invariant structure of the universe. In doing so, we accidentally built machines that can see through walls."
                         </p>
                         <div class="h-px w-24 bg-gradient-to-r from-transparent via-blue-500 to-transparent mx-auto mb-8"></div>
-                        <h4 class="text-blue-300 tracking-widest uppercase text-sm font-bold opacity-80">
-                            End of Treatise
-                        </h4>
+                        <h4 class="text-blue-300 tracking-widest uppercase text-sm font-bold opacity-80">End of Treatise</h4>
                     </div>
                 </div>
             </section>
@@ -1214,940 +1220,640 @@
             <section id="glossary" class="mb-32 reveal border-t border-slate-200 dark:border-slate-800 pt-16">
                 <h2 class="text-blue-500 dark:text-blue-400 font-bold text-xs mb-3 font-sans tracking-[0.25em] uppercase">Definitions</h2>
                 <h1 class="text-3xl md:text-4xl font-extrabold font-sans mb-10 text-slate-900 dark:text-white tracking-tight">Glossary</h1>
-                
                 <dl class="space-y-6 text-slate-700 dark:text-slate-300">
-                    <div class="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                        <dt class="font-bold text-lg text-slate-900 dark:text-white mb-2 font-sans">Retarded Potential</dt>
-                        <dd class="font-serif">The mathematical concept that the electromagnetic field at a given point in space depends on the state of the source at an earlier time ($t - R/c$), accounting for the finite speed of light.</dd>
-                    </div>
-                    <div class="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                        <dt class="font-bold text-lg text-slate-900 dark:text-white mb-2 font-sans">CSI (Channel State Information)</dt>
-                        <dd class="font-serif">In modern WiFi, the complex matrix containing the amplitude and phase shifts of all subcarriers across all MIMO antenna pairs, used by AI to deduce physical geometry.</dd>
-                    </div>
-                    <div class="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                        <dt class="font-bold text-lg text-slate-900 dark:text-white mb-2 font-sans">Inverse Scattering Problem</dt>
-                        <dd class="font-serif">The profound mathematical challenge of deducing the physical shape, location, and dielectric properties of an unseen object based purely on how it scatters an incoming wave.</dd>
-                    </div>
-                    <div class="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                        <dt class="font-bold text-lg text-slate-900 dark:text-white mb-2 font-sans">Singular Value Decomposition (SVD)</dt>
-                        <dd class="font-serif">A linear algebra operation that factorizes the messy multipath channel matrix into mathematically orthogonal (independent) parallel communication pipelines.</dd>
-                    </div>
-                    <div class="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                        <dt class="font-bold text-lg text-slate-900 dark:text-white mb-2 font-sans">Cramér-Rao Lower Bound</dt>
-                        <dd class="font-serif">The absolute theoretical minimum variance (error) that any unbiased estimator can achieve, physically limiting the accuracy of AI based on the Fisher Information of the noisy signal.</dd>
-                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm"><dt class="font-bold text-lg text-slate-900 dark:text-white mb-2 font-sans">Retarded Potential</dt><dd class="font-serif">The mathematical concept that the electromagnetic field at a given point in space depends on the state of the source at an earlier time ($t - R/c$), accounting for the finite speed of light.</dd></div>
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm"><dt class="font-bold text-lg text-slate-900 dark:text-white mb-2 font-sans">CSI (Channel State Information)</dt><dd class="font-serif">In modern WiFi, the complex matrix containing the amplitude and phase shifts of all subcarriers across all MIMO antenna pairs, used by AI to deduce physical geometry.</dd></div>
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm"><dt class="font-bold text-lg text-slate-900 dark:text-white mb-2 font-sans">Inverse Scattering Problem</dt><dd class="font-serif">The profound mathematical challenge of deducing the physical shape, location, and dielectric properties of an unseen object based purely on how it scatters an incoming wave.</dd></div>
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm"><dt class="font-bold text-lg text-slate-900 dark:text-white mb-2 font-sans">Singular Value Decomposition (SVD)</dt><dd class="font-serif">A linear algebra operation that factorizes the messy multipath channel matrix into mathematically orthogonal (independent) parallel communication pipelines.</dd></div>
+                    <div class="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm"><dt class="font-bold text-lg text-slate-900 dark:text-white mb-2 font-sans">Cramér-Rao Lower Bound</dt><dd class="font-serif">The absolute theoretical minimum variance (error) that any unbiased estimator can achieve, physically limiting the accuracy of AI based on the Fisher Information of the noisy signal.</dd></div>
                 </dl>
             </section>
         </article>
     </main>
 
-    <!-- Scripts -->
     <script>
-        // --- SAFE DOM UPDATER ---
-        const setVal = (id, val) => {
-            const el = document.getElementById(id);
-            if (el) el.innerText = val;
-        };
+        // MACROS & SHORTCUTS to prevent code truncation
+        const M=Math, PI=M.PI, cos=M.cos, sin=M.sin, hypot=M.hypot, exp=M.exp, pow=M.pow, sqrt=M.sqrt, log2=M.log2, log=M.log, asin=M.asin, abs=M.abs, rnd=M.random;
+        const flr = M.floor, max = M.max, min = M.min;
+        const $ = id => document.getElementById(id);
+        const v = (id, d) => parseFloat($(id)?.value || d);
+        const sV = (id, val) => { if($(id)) $(id).innerText = val; };
+        const line = (ctx, x1, y1, x2, y2) => { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); };
+        const circ = (ctx, x, y, r, f, s) => { ctx.beginPath(); ctx.arc(x, y, r, 0, PI*2); if(f){ctx.fillStyle=f; ctx.fill();} if(s){ctx.strokeStyle=s; ctx.stroke();} };
+        const txt = (ctx, str, x, y, font, col) => { if(font) ctx.font=font; if(col) ctx.fillStyle=col; ctx.fillText(str, x, y); };
+        const rect = (ctx, x, y, w, h, f, s) => { ctx.beginPath(); ctx.rect(x,y,w,h); if(f){ctx.fillStyle=f; ctx.fill();} if(s){ctx.strokeStyle=s; ctx.stroke();} };
+        const wave = (ctx, st, en, stp, fn) => { ctx.beginPath(); for(let x=st; x<=en; x+=stp) { if(x===st) ctx.moveTo(x, fn(x)); else ctx.lineTo(x, fn(x)); } ctx.stroke(); };
+        const plot = (ctx, st, en, stp, fx, fy) => { ctx.beginPath(); for(let i=st; i<=en; i+=stp){ if(i===st) ctx.moveTo(fx(i),fy(i)); else ctx.lineTo(fx(i),fy(i)); } ctx.stroke(); };
 
-        // --- UI & THEME LOGIC ---
-        const canvasContexts = {};
-        
-        function toggleTheme() {
-            document.documentElement.classList.toggle('dark');
-            localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-        }
-        
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-
-        function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('-translate-x-full');
-            document.getElementById('overlay').classList.toggle('hidden');
-        }
-        function closeMenu() {
-            if(window.innerWidth < 768) { document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('overlay').classList.add('hidden'); }
-        }
-        if(window.innerWidth < 768) document.getElementById('sidebar').classList.add('-translate-x-full');
-
-        const sections = document.querySelectorAll('section[id]');
-        const navLinks = document.querySelectorAll('.sidebar-link');
-        const mainContent = document.getElementById('main-content');
-        const progressBar = document.getElementById('progress-bar');
-        
+        const sections = document.querySelectorAll('section[id]'); const navLinks = document.querySelectorAll('.sidebar-link'); const mainContent = $('main-content'); const progressBar = $('progress-bar');
         mainContent.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => { if (mainContent.scrollTop >= section.offsetTop - 200) current = section.getAttribute('id'); });
-            navLinks.forEach(link => {
-                link.classList.remove('sidebar-active');
-                if (link.getAttribute('href').substring(1) === current) link.classList.add('sidebar-active');
-            });
+            let current = ''; sections.forEach(section => { if (mainContent.scrollTop >= section.offsetTop - 200) current = section.getAttribute('id'); });
+            navLinks.forEach(link => { link.classList.remove('sidebar-active'); if (link.getAttribute('href').substring(1) === current) link.classList.add('sidebar-active'); });
             progressBar.style.width = `${(mainContent.scrollTop / (mainContent.scrollHeight - mainContent.clientHeight)) * 100}%`;
         });
 
-        // REVEAL LOGIC (Threshold 0 fixes mobile bugs for tall content)
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
-        }, { threshold: 0, rootMargin: "0px 0px -50px 0px" });
+        const revealObserver = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('active'); }); }, { threshold: 0, rootMargin: "0px 0px -50px 0px" });
         document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-        // --- PERFORMANCE: CANVAS ENGINE ---
         const simVis = {};
-        const simObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                const canvas = entry.target.querySelector('canvas');
-                if(canvas) simVis[canvas.id] = entry.isIntersecting;
-            });
-        }, { threshold: 0.0, rootMargin: "150px" });
+        const simObserver = new IntersectionObserver((entries) => { entries.forEach(e => { const canvas = e.target.querySelector('canvas'); if(canvas) simVis[canvas.id] = e.isIntersecting; }); }, { threshold: 0.0, rootMargin: "150px" });
         document.querySelectorAll('.simulation-container').forEach(c => simObserver.observe(c));
 
-        function isDark() { return document.documentElement.classList.contains('dark'); }
-        
+        const isDark = () => document.documentElement.classList.contains('dark');
         function prepCanvas(id) {
-            const canvas = document.getElementById(id);
-            if (!canvas) return null;
-            const w = canvas.offsetWidth; const h = canvas.offsetHeight;
-            if(canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, w, h);
-            
-            // Special backgrounds
-            if(id === 'canvas-hook' || id === 'canvas-preface') {
-                return { ctx, w, h, tc: 'white' };
-            }
-
-            ctx.fillStyle = isDark() ? '#0f1423' : '#f8fafc';
-            ctx.fillRect(0, 0, w, h);
-            
-            ctx.strokeStyle = isDark() ? 'rgba(51, 65, 85, 0.4)' : 'rgba(226, 232, 240, 0.8)';
-            ctx.lineWidth = 1;
-            for(let x=0; x<w; x+=50) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
-            for(let y=0; y<h; y+=50) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
-            
-            return { ctx, w, h, tc: isDark() ? 'white' : '#1e293b' };
+            const cvs = $(id); if (!cvs) return null;
+            const w = cvs.offsetWidth, h = cvs.offsetHeight;
+            if(cvs.width !== w || cvs.height !== h) { cvs.width = w; cvs.height = h; }
+            const ctx = cvs.getContext('2d'); ctx.clearRect(0, 0, w, h);
+            if(id === 'canvas-hook' || id === 'canvas-preface') return { ctx, w, h, tc: 'white' };
+            rect(ctx, 0, 0, w, h, isDark() ? '#0f1423' : '#f8fafc');
+            ctx.strokeStyle = isDark() ? 'rgba(51, 65, 85, 0.4)' : 'rgba(226, 232, 240, 0.8)'; ctx.lineWidth = 1;
+            for(let x=0; x<w; x+=50) line(ctx, x, 0, x, h);
+            for(let y=0; y<h; y+=50) line(ctx, 0, y, w, y);
+            return { ctx, w, h, tc: isDark() ? '#f8fafc' : '#1e293b' };
         }
 
-        // GLOBAL SIMULATION STATE
-        let time = 0;
-        const brHist = [];
-        let aiS = {r: false, tx: 0, ty: 0, gx: 0, gy: 0, lr: 0.05};
-        const retH = [];
-        let grnP = [];
-        let oX = 20; let oV = 0;
-        let kalE = 0; let kalP = 1.0;
-        let cosmicStars = []; // Added for realistic starry night sky
-
-        // --- SIMULATION FUNCTIONS ---
+        let time = 0; const brHist = []; let aiS = {r: false, tx: 0, ty: 0, gx: 0, gy: 0, lr: 0.05}; const retH = []; let grnP = []; let oX = 20; let oV = 0; let kalE = 0; let kalP = 1.0; let cosmicStars = [];
 
         function drawHook() {
-            const c = prepCanvas('canvas-hook'); if(!c) return;
-            const {ctx, w, h} = c;
-            
-            // Deep sleek background
-            const grad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, w);
-            grad.addColorStop(0, '#0f172a'); grad.addColorStop(1, '#020617');
-            ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
-            
-            const routerX = w*0.15; const wallX = w*0.35; 
-            
-            // Walking animation phase
-            const walkCycle = time * 0.05;
-            const humanX = w*0.65 + 30*Math.sin(walkCycle*0.5); 
-            const cy = h/2;
-            
-            // Solid Wall
-            ctx.fillStyle = 'rgba(51, 65, 85, 0.8)'; ctx.fillRect(wallX, 0, 24, h);
-            ctx.fillStyle = 'rgba(30, 41, 59, 0.9)'; ctx.fillRect(wallX+20, 0, 4, h); // shadow depth
-            ctx.fillStyle = '#94a3b8'; ctx.font = "bold 12px Outfit"; 
-            ctx.save(); ctx.translate(wallX+16, cy+40); ctx.rotate(-Math.PI/2); ctx.fillText("SOLID WALL", 0, 0); ctx.restore();
-            
-            // Realistic WiFi Router
-            ctx.fillStyle = '#1e293b'; ctx.beginPath(); ctx.roundRect(routerX-20, cy-8, 40, 16, 4); ctx.fill();
-            ctx.strokeStyle = '#64748b'; ctx.lineWidth=3; ctx.lineCap='round';
-            ctx.beginPath(); ctx.moveTo(routerX-12, cy-8); ctx.lineTo(routerX-18, cy-30); ctx.stroke(); // Ant 1
-            ctx.beginPath(); ctx.moveTo(routerX+12, cy-8); ctx.lineTo(routerX+18, cy-30); ctx.stroke(); // Ant 2
-            ctx.beginPath(); ctx.moveTo(routerX, cy-8); ctx.lineTo(routerX, cy-35); ctx.stroke(); // Ant 3
-            
-            // Blinking Status LEDs
-            ctx.fillStyle = (time%40 < 20) ? '#10b981' : '#047857'; ctx.beginPath(); ctx.arc(routerX-10, cy, 2, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.arc(routerX, cy, 2, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = 'white'; ctx.font="12px Outfit"; ctx.fillText("Transceiver", routerX-30, cy+25);
-
-            // Emitted Waves (Forward)
-            ctx.strokeStyle = 'rgba(59, 130, 246, 0.6)'; ctx.lineWidth = 2.5;
-            for(let r=10; r<w*0.8; r+=40) {
-                const wr = (time*4 + r) % (w*0.8);
-                ctx.beginPath(); ctx.arc(routerX, cy, wr, -Math.PI/2.5, Math.PI/2.5); ctx.stroke();
-            }
-
-            // Human Silhouette (Animated Walking)
-            const legAngle = Math.sin(walkCycle) * 0.6;
-            const armAngle = -Math.sin(walkCycle) * 0.6;
-            ctx.strokeStyle = '#f59e0b'; ctx.fillStyle = '#f59e0b'; ctx.lineWidth = 4; ctx.lineCap = 'round';
-            ctx.beginPath(); ctx.arc(humanX, cy - 25, 8, 0, Math.PI*2); ctx.fill(); // Head
-            ctx.beginPath(); ctx.moveTo(humanX, cy - 15); ctx.lineTo(humanX, cy + 15); ctx.stroke(); // Spine
-            ctx.beginPath(); ctx.moveTo(humanX, cy - 10); ctx.lineTo(humanX - 12*Math.sin(armAngle), cy - 10 + 15*Math.cos(armAngle)); ctx.stroke(); // Arm 1
-            ctx.beginPath(); ctx.moveTo(humanX, cy - 10); ctx.lineTo(humanX + 12*Math.sin(armAngle), cy - 10 + 15*Math.cos(armAngle)); ctx.stroke(); // Arm 2
-            ctx.beginPath(); ctx.moveTo(humanX, cy + 15); ctx.lineTo(humanX - 15*Math.sin(legAngle), cy + 15 + 20*Math.cos(legAngle)); ctx.stroke(); // Leg 1
-            ctx.beginPath(); ctx.moveTo(humanX, cy + 15); ctx.lineTo(humanX + 15*Math.sin(legAngle), cy + 15 + 20*Math.cos(legAngle)); ctx.stroke(); // Leg 2
-            
-            // Scattered Waves (Messy, returning)
-            ctx.strokeStyle = 'rgba(245, 158, 11, 0.5)'; ctx.lineWidth = 1.5;
-            for(let r=10; r<w*0.5; r+=25) {
-                const wr = (time*3 + r) % (w*0.5);
-                if(humanX - wr > routerX - 50) {
-                    ctx.beginPath(); ctx.arc(humanX, cy, wr, Math.PI*0.7, Math.PI*1.3); ctx.stroke();
-                }
-            }
-
-            // AI Neural Net & Pose Output (Sleek HUD on the right)
-            const hudX = w - 160; const hudY = cy - 60;
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.6)'; ctx.strokeStyle = 'rgba(16, 185, 129, 0.5)'; ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.roundRect(hudX, hudY, 140, 120, 8); ctx.fill(); ctx.stroke();
-            
-            ctx.fillStyle = '#10b981'; ctx.font = "bold 10px JetBrains Mono"; 
-            ctx.fillText("AI POSE ENGINE", hudX+10, hudY+20);
-            ctx.fillStyle = 'rgba(16, 185, 129, 0.8)';
-            ctx.fillText("DATA... OK", hudX+10, hudY+35);
-            ctx.fillText(`CONF: ${(95 + 4*Math.sin(time*0.1)).toFixed(1)}%`, hudX+10, hudY+50);
-            
-            // Draw AI Skeleton matching the human inside the HUD
-            const skelX = hudX + 100; const skelY = hudY + 60;
-            ctx.strokeStyle = '#10b981'; ctx.fillStyle = '#10b981'; ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.arc(skelX, skelY - 15, 5, 0, Math.PI*2); ctx.fill(); // Head
-            ctx.beginPath(); ctx.moveTo(skelX, skelY - 10); ctx.lineTo(skelX, skelY + 10); ctx.stroke(); // Spine
-            // Joints
-            ctx.beginPath(); ctx.arc(skelX - 8*Math.sin(armAngle), skelY - 5 + 10*Math.cos(armAngle), 2, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(skelX + 8*Math.sin(armAngle), skelY - 5 + 10*Math.cos(armAngle), 2, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.moveTo(skelX, skelY - 5); ctx.lineTo(skelX - 8*Math.sin(armAngle), skelY - 5 + 10*Math.cos(armAngle)); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(skelX, skelY - 5); ctx.lineTo(skelX + 8*Math.sin(armAngle), skelY - 5 + 10*Math.cos(armAngle)); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(skelX, skelY + 10); ctx.lineTo(skelX - 10*Math.sin(legAngle), skelY + 10 + 15*Math.cos(legAngle)); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(skelX, skelY + 10); ctx.lineTo(skelX + 10*Math.sin(legAngle), skelY + 10 + 15*Math.cos(legAngle)); ctx.stroke();
+            const c=prepCanvas('canvas-hook');if(!c)return;const{ctx,w,h}=c;
+            const grad=ctx.createRadialGradient(w/2,h/2,0,w/2,h/2,w);grad.addColorStop(0,'#0f172a');grad.addColorStop(1,'#020617');
+            rect(ctx,0,0,w,h,grad);
+            const rX=w*0.15, wX=w*0.35, wC=time*0.05, hX=w*0.65+30*sin(wC*0.5), cy=h/2;
+            rect(ctx,wX,0,24,h,'rgba(51,65,85,0.8)'); rect(ctx,wX+20,0,4,h,'rgba(30,41,59,0.9)');
+            ctx.save(); ctx.translate(wX+16,cy+40); ctx.rotate(-PI/2); txt(ctx,"SOLID WALL",0,0,"bold 12px Outfit","#94a3b8"); ctx.restore();
+            ctx.beginPath(); ctx.roundRect(rX-20,cy-8,40,16,4); ctx.fillStyle='#1e293b'; ctx.fill();
+            ctx.strokeStyle='#64748b'; ctx.lineWidth=3; ctx.lineCap='round';
+            line(ctx,rX-12,cy-8,rX-18,cy-30); line(ctx,rX+12,cy-8,rX+18,cy-30); line(ctx,rX,cy-8,rX,cy-35);
+            circ(ctx,rX-10,cy,2,(time%40<20)?'#10b981':'#047857'); circ(ctx,rX,cy,2,'#3b82f6');
+            txt(ctx,"Transceiver",rX-30,cy+25,"12px Outfit",'white');
+            ctx.strokeStyle='rgba(59,130,246,0.6)'; ctx.lineWidth=2.5;
+            for(let r=10;r<w*0.8;r+=40){ ctx.beginPath(); ctx.arc(rX,cy,(time*4+r)%(w*0.8),-PI/2.5,PI/2.5); ctx.stroke(); }
+            const lA=sin(wC)*0.6, aA=-sin(wC)*0.6;
+            ctx.strokeStyle='#f59e0b'; ctx.fillStyle='#f59e0b'; ctx.lineWidth=4; ctx.lineCap='round';
+            circ(ctx,hX,cy-25,8,'#f59e0b'); line(ctx,hX,cy-15,hX,cy+15);
+            line(ctx,hX,cy-10,hX-12*sin(aA),cy-10+15*cos(aA)); line(ctx,hX,cy-10,hX+12*sin(aA),cy-10+15*cos(aA));
+            line(ctx,hX,cy+15,hX-15*sin(lA),cy+15+20*cos(lA)); line(ctx,hX,cy+15,hX+15*sin(lA),cy+15+20*cos(lA));
+            ctx.strokeStyle='rgba(245,158,11,0.5)'; ctx.lineWidth=1.5;
+            for(let r=10;r<w*0.5;r+=25){ const wr=(time*3+r)%(w*0.5); if(hX-wr>rX-50){ ctx.beginPath(); ctx.arc(hX,cy,wr,PI*0.7,PI*1.3); ctx.stroke(); } }
+            const hdX=w-160, hdY=cy-60; ctx.lineWidth=1;
+            ctx.beginPath(); ctx.roundRect(hdX,hdY,140,120,8); ctx.fillStyle='rgba(15,23,42,0.6)'; ctx.fill(); ctx.strokeStyle='rgba(16,185,129,0.5)'; ctx.stroke();
+            txt(ctx,"AI POSE ENGINE",hdX+10,hdY+20,"bold 10px JetBrains Mono",'#10b981');
+            txt(ctx,"DATA... OK",hdX+10,hdY+35,"",'rgba(16,185,129,0.8)');
+            txt(ctx,`CONF: ${(95+4*sin(time*0.1)).toFixed(1)}%`,hdX+10,hdY+50,"",'#10b981');
+            const sX=hdX+100, sY=hdY+60; ctx.strokeStyle='#10b981'; ctx.lineWidth=2;
+            circ(ctx,sX,sY-15,5,'#10b981'); line(ctx,sX,sY-10,sX,sY+10);
+            circ(ctx,sX-8*sin(aA),sY-5+10*cos(aA),2,'#10b981'); circ(ctx,sX+8*sin(aA),sY-5+10*cos(aA),2,'#10b981');
+            line(ctx,sX,sY-5,sX-8*sin(aA),sY-5+10*cos(aA)); line(ctx,sX,sY-5,sX+8*sin(aA),sY-5+10*cos(aA));
+            line(ctx,sX,sY+10,sX-10*sin(lA),sY+10+15*cos(lA)); line(ctx,sX,sY+10,sX+10*sin(lA),sY+10+15*cos(lA));
         }
 
         function drawPreface() {
-            const c = prepCanvas('canvas-preface'); if(!c) return;
-            const {ctx, w, h} = c;
-            
-            // Magical Jungle Night Sky Background
-            const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
-            bgGrad.addColorStop(0, '#000000');
-            bgGrad.addColorStop(0.5, '#0a0a2a');
-            bgGrad.addColorStop(1, '#021024');
-            ctx.fillStyle = bgGrad; ctx.fillRect(0,0,w,h);
-
-            // Generate permanent stars if empty
-            if (cosmicStars.length === 0) {
-                for(let i=0; i<400; i++) {
-                    cosmicStars.push({
-                        x: Math.random() * w, y: Math.random() * h,
-                        s: Math.random() * 1.5 + 0.5,
-                        o: Math.random() * Math.PI * 2, // phase offset
-                        spd: Math.random() * 0.05 + 0.01
-                    });
-                }
-            }
-
-            // Draw twinkling stars
-            cosmicStars.forEach(star => {
-                const twinkle = 0.5 + 0.5 * Math.sin(time * star.spd + star.o);
-                ctx.fillStyle = `rgba(255, 255, 255, ${twinkle})`;
-                ctx.beginPath(); ctx.arc(star.x, star.y, star.s, 0, Math.PI*2); ctx.fill();
-            });
-
-            const speed = parseFloat(document.getElementById('slider-cosmic-c')?.value || "3");
-
-            // Earth (glow and atmosphere)
-            const cx = w*0.85; const cy = h/2;
-            const earthGlow = ctx.createRadialGradient(cx, cy, 20, cx, cy, 60);
-            earthGlow.addColorStop(0, 'rgba(59, 130, 246, 0.4)'); earthGlow.addColorStop(1, 'rgba(59, 130, 246, 0)');
-            ctx.fillStyle = earthGlow; ctx.beginPath(); ctx.arc(cx, cy, 60, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#1e3a8a'; ctx.beginPath(); ctx.arc(cx, cy, 22, 0, Math.PI*2); ctx.fill(); // dark ocean
-            ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.arc(cx, cy, 20, 0, Math.PI*2); ctx.fill(); // bright ocean
-            // Landmass hint
-            ctx.fillStyle = '#10b981'; ctx.beginPath(); ctx.arc(cx-5, cy-5, 8, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(cx+8, cy+5, 10, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = 'white'; ctx.font = "bold 14px Outfit"; ctx.fillText("Earth", cx-18, cy+45);
-
-            // Distant Star
-            const sx = w*0.1; const sy = h/2 + 50*Math.sin(time*0.01);
-            const starGlow = ctx.createRadialGradient(sx, sy, 5, sx, sy, 30);
-            starGlow.addColorStop(0, 'rgba(252, 211, 77, 0.8)'); starGlow.addColorStop(1, 'rgba(252, 211, 77, 0)');
-            ctx.fillStyle = starGlow; ctx.beginPath(); ctx.arc(sx, sy, 30, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#fcd34d'; ctx.beginPath(); ctx.arc(sx, sy, 6, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = 'white'; ctx.fillText("Distant Star", sx-35, sy+35);
-
-            // Wave packet / Retarded Potential
-            const dist = cx - sx; const t = (time*speed) % dist; const px = sx + t;
-            
-            // Retarded trajectory mathematically correct
-            const t_emit = time - t/speed; const py = h/2 + 50*Math.sin(t_emit*0.01);
-
-            // Trail
-            ctx.strokeStyle = 'rgba(252, 211, 77, 0.3)'; ctx.lineWidth = 1.5; ctx.setLineDash([4,6]);
-            ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(cx, cy); ctx.stroke(); ctx.setLineDash([]);
-
-            // Photon pulse
-            ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(px, py, 4, 0, Math.PI*2); ctx.fill();
-            ctx.strokeStyle = 'rgba(252, 211, 77, 0.9)'; ctx.lineWidth = 2;
-            ctx.beginPath();
-            for(let i=-25; i<=25; i+=2){
-                const wx = px+i; const wy = py + 20*Math.cos(i*0.4)*Math.exp(-Math.pow(i/12,2));
-                if(i===-25) ctx.moveTo(wx, wy); else ctx.lineTo(wx, wy);
-            }
-            ctx.stroke();
-
-            // Label attached to traveling packet
-            ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.font = "12px JetBrains Mono";
-            ctx.fillText(`Delay: ${(t/speed).toFixed(1)}s`, px-30, py-30);
+            const c=prepCanvas('canvas-preface');if(!c)return;const{ctx,w,h}=c;
+            const bgGrad=ctx.createLinearGradient(0,0,0,h);bgGrad.addColorStop(0,'#000000');bgGrad.addColorStop(0.5,'#0a0a2a');bgGrad.addColorStop(1,'#021024');rect(ctx,0,0,w,h,bgGrad);
+            if(cosmicStars.length===0){for(let i=0;i<400;i++) cosmicStars.push({x:rnd()*w,y:rnd()*h,s:rnd()*1.5+0.5,o:rnd()*PI*2,spd:rnd()*0.05+0.01});}
+            cosmicStars.forEach(s=>{circ(ctx,s.x,s.y,s.s,`rgba(255,255,255,${0.5+0.5*sin(time*s.spd+s.o)})`);});
+            const spd=v('slider-cosmic-c',3), cx=w*0.85, cy=h/2;
+            const eG=ctx.createRadialGradient(cx,cy,20,cx,cy,60);eG.addColorStop(0,'rgba(59,130,246,0.4)');eG.addColorStop(1,'rgba(59,130,246,0)');
+            circ(ctx,cx,cy,60,eG); circ(ctx,cx,cy,22,'#1e3a8a'); circ(ctx,cx,cy,20,'#3b82f6');
+            circ(ctx,cx-5,cy-5,8,'#10b981'); circ(ctx,cx+8,cy+5,10,'#10b981');
+            txt(ctx,"Earth",cx-18,cy+45,"bold 14px Outfit",'white');
+            const sx=w*0.1, sy=h/2+50*sin(time*0.01);
+            const sG=ctx.createRadialGradient(sx,sy,5,sx,sy,30);sG.addColorStop(0,'rgba(252,211,77,0.8)');sG.addColorStop(1,'rgba(252,211,77,0)');
+            circ(ctx,sx,sy,30,sG); circ(ctx,sx,sy,6,'#fcd34d'); txt(ctx,"Distant Star",sx-35,sy+35);
+            const dist=cx-sx, t=(time*spd)%dist, px=sx+t, py=h/2+50*sin((time-t/spd)*0.01);
+            ctx.strokeStyle='rgba(252,211,77,0.3)';ctx.lineWidth=1.5;ctx.setLineDash([4,6]);line(ctx,sx,sy,cx,cy);ctx.setLineDash([]);
+            circ(ctx,px,py,4,'#ffffff'); ctx.strokeStyle='rgba(252,211,77,0.9)';ctx.lineWidth=2;
+            ctx.beginPath(); for(let i=-25;i<=25;i+=2){ if(i===-25) ctx.moveTo(px+i, py+20*cos(i*0.4)*exp(-pow(i/12,2))); else ctx.lineTo(px+i, py+20*cos(i*0.4)*exp(-pow(i/12,2))); } ctx.stroke();
+            txt(ctx,`Delay: ${(t/spd).toFixed(1)}s`,px-30,py-30,"12px JetBrains Mono",'rgba(255,255,255,0.9)');
         }
 
         function drawEM() {
-            const c = prepCanvas('canvas-em'); if(!c) return; const {ctx, w, h, tc} = c;
-            const freqVal = document.getElementById('slider-freq')?.value || "5.0";
-            const freq = parseFloat(freqVal);
-            const rL = (3/freq)*0.1;
-            
-            setVal('slider-freq-val', freq.toFixed(1));
-            setVal('val-freq', freq.toFixed(1));
-            setVal('val-lambda-cm', (rL*100).toFixed(1));
-            
-            const lambda = 3/freq; const k = (2*Math.PI)/(lambda*50); const omega = freq*1.5;
-            ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 3;
-            for(let x=0; x<w; x++) { const y = h/2 + 60*Math.cos(k*x - omega*time*0.05); if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
-            ctx.stroke();
-            const x1 = (omega*time*0.05)/k; const x2 = x1 + (2*Math.PI)/k;
-            ctx.strokeStyle = '#10b981'; ctx.beginPath(); ctx.moveTo(x1%w, h/2+80); ctx.lineTo(x1%w, h/2+100); ctx.lineTo(x2%w, h/2+100); ctx.lineTo(x2%w, h/2+80); ctx.stroke();
-            ctx.fillStyle = '#10b981'; ctx.font = "16px Outfit"; ctx.fillText("λ", (x1%w + x2%w)/2 - 5, h/2+120);
+            const c=prepCanvas('canvas-em');if(!c)return;const{ctx,w,h,tc}=c;
+            const f=v('slider-freq',5.0), rL=(3/f)*0.1;
+            sV('slider-freq-val',f.toFixed(1));sV('val-freq',f.toFixed(1));sV('val-lambda-cm',(rL*100).toFixed(1));
+            const lam=3/f, k=(2*PI)/(lam*50), om=f*1.5;
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=3; wave(ctx, 0, w, 1, x => h/2+60*cos(k*x-om*time*0.05));
+            const x1=(om*time*0.05)/k, x2=x1+(2*PI)/k;
+            ctx.strokeStyle='#10b981'; ctx.beginPath(); ctx.moveTo(x1%w,h/2+80); ctx.lineTo(x1%w,h/2+100); ctx.lineTo(x2%w,h/2+100); ctx.lineTo(x2%w,h/2+80); ctx.stroke();
+            txt(ctx,"λ Wavelength",(x1%w+x2%w)/2-40,h/2+120,"16px Outfit","#10b981"); txt(ctx,"Time Domain Wave",20,30,"14px Outfit",tc);
         }
 
         function drawMultipath() {
-            const c = prepCanvas('canvas-multipath'); if(!c) return; const {ctx, w, h, tc} = c;
-            const pyR = parseFloat(document.getElementById('slider-person-y')?.value || "2.0") / 4;
-            const tx = {x: 50, y: h/2}; const rx = {x: w-50, y: h/2}; const p = {x: w/2, y: 50 + pyR*(h-100)};
-            const d1px = Math.abs(rx.x - tx.x); const d2px = Math.hypot(p.x - tx.x, p.y - tx.y) + Math.hypot(rx.x - p.x, rx.y - p.y);
-            
-            ctx.beginPath(); ctx.strokeStyle = isDark() ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'; ctx.lineWidth = 2; ctx.setLineDash([5,5]); ctx.moveTo(tx.x, tx.y); ctx.lineTo(rx.x, rx.y); ctx.stroke();
-            ctx.beginPath(); ctx.strokeStyle = '#ef4444'; ctx.setLineDash([]); ctx.moveTo(tx.x, tx.y); ctx.lineTo(p.x, p.y); ctx.lineTo(rx.x, rx.y); ctx.stroke();
-            ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.arc(tx.x, tx.y, 10, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#10b981'; ctx.beginPath(); ctx.arc(rx.x, rx.y, 10, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(p.x, p.y, 12, 0, Math.PI*2); ctx.fill();
-            
-            const sc = 5.0/d1px; const d1 = d1px*sc; const d2 = d2px*sc; const ph = (2*Math.PI*(d2-d1))/0.06; const int = Math.pow(Math.cos(ph/2), 2);
-            
-            setVal('val-dx', (d2-d1).toFixed(3)); setVal('val-intensity', int.toFixed(3));
+            const c=prepCanvas('canvas-multipath');if(!c)return;const{ctx,w,h,tc}=c;
+            const pyR=v('slider-person-y',2.0)/4, tx={x:50,y:h/2}, rx={x:w-50,y:h/2}, p={x:w/2,y:50+pyR*(h-100)};
+            const d1px=abs(rx.x-tx.x), d2px=hypot(p.x-tx.x,p.y-tx.y)+hypot(rx.x-p.x,rx.y-p.y);
+            ctx.strokeStyle=isDark()?'rgba(255,255,255,0.4)':'rgba(0,0,0,0.4)';ctx.lineWidth=2;ctx.setLineDash([5,5]);line(ctx,tx.x,tx.y,rx.x,rx.y);
+            ctx.strokeStyle='#ef4444';ctx.setLineDash([]); ctx.beginPath(); ctx.moveTo(tx.x,tx.y); ctx.lineTo(p.x,p.y); ctx.lineTo(rx.x,rx.y); ctx.stroke();
+            circ(ctx,tx.x,tx.y,10,'#3b82f6'); circ(ctx,rx.x,rx.y,10,'#10b981'); circ(ctx,p.x,p.y,12,'#f59e0b');
+            txt(ctx,"Tx",tx.x-20,tx.y+25,"12px Outfit",tc); txt(ctx,"Rx",rx.x-10,rx.y+25); txt(ctx,"Reflector",p.x-25,p.y-20);
+            txt(ctx,"Path d2",p.x+20,p.y+20,"",'#ef4444'); txt(ctx,"Path d1",w/2-20,h/2+20,"",isDark()?'#cbd5e1':'#64748b');
+            const d1=d1px*(5.0/d1px), d2=d2px*(5.0/d1px), ph=(2*PI*(d2-d1))/0.06;
+            sV('val-dx',(d2-d1).toFixed(3)); sV('val-intensity',pow(cos(ph/2),2).toFixed(3));
         }
 
         function drawBreathing() {
-            const c = prepCanvas('canvas-breathing'); if(!c) return; const {ctx, w, h, tc} = c;
-            const a = parseFloat(document.getElementById('slider-breath')?.value || "3.0");
-            
-            setVal('slider-breath-val', a.toFixed(1)); setVal('val-breath-d', a.toFixed(1));
-            const ph = (4*Math.PI*(a/1000))/0.06; setVal('val-breath-phase', ph.toFixed(3));
-            
-            const cPh = ph * Math.sin(time*0.05); brHist.push(Math.pow(Math.cos(cPh/2), 2)); if(brHist.length > w) brHist.shift();
-            ctx.beginPath(); ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 3;
-            for(let i=0; i<brHist.length; i++) { const y = h - (brHist[i]*h*0.8) - 10; if(i===0) ctx.moveTo(w-brHist.length+i, y); else ctx.lineTo(w-brHist.length+i, y); }
-            ctx.stroke();
+            const c=prepCanvas('canvas-breathing');if(!c)return;const{ctx,w,h,tc}=c;
+            const a=v('slider-breath',3.0); sV('slider-breath-val',a.toFixed(1)); sV('val-breath-d',a.toFixed(1));
+            const ph=(4*PI*(a/1000))/0.06; sV('val-breath-phase',ph.toFixed(3));
+            txt(ctx,"Amplitude |E| over Time",10,25,"14px Outfit",tc);
+            ctx.strokeStyle=isDark()?'rgba(255,255,255,0.2)':'rgba(0,0,0,0.2)';ctx.lineWidth=1;line(ctx,0,h-10,w,h-10);
+            brHist.push(pow(cos(ph*sin(time*0.05)/2),2)); if(brHist.length>w) brHist.shift();
+            ctx.strokeStyle='#f43f5e';ctx.lineWidth=3; plot(ctx,0,brHist.length-1,1, i=>w-brHist.length+i, i=>h-(brHist[i]*h*0.8)-10);
         }
 
         function drawDoppler() {
-            const c = prepCanvas('canvas-doppler'); if(!c) return; const {ctx, w, h, tc} = c;
-            const v = parseFloat(document.getElementById('slider-vel')?.value || "1.2");
-            
-            setVal('slider-vel-val', v.toFixed(1)); setVal('val-vel', v.toFixed(1)); setVal('val-doppler', ((2*v)/0.06).toFixed(1));
-            
-            const ktx = 0.1; const wtx = 0.5; const krx = ktx*(1 + v*0.2); const wrx = wtx*(1 + v*0.2);
-            ctx.lineWidth = 2; ctx.beginPath(); ctx.strokeStyle = '#3b82f6';
-            for(let x=0; x<w; x++) { const y = h/3 + 30*Math.sin(ktx*x - wtx*time*0.1); if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke();
-            ctx.beginPath(); ctx.strokeStyle = '#ef4444';
-            for(let x=0; x<w; x++) { const y = 2*h/3 + 30*Math.sin(krx*x + wrx*time*0.1); if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke();
+            const c=prepCanvas('canvas-doppler');if(!c)return;const{ctx,w,h,tc}=c;
+            const vel=v('slider-vel',1.2); sV('slider-vel-val',vel.toFixed(1)); sV('val-vel',vel.toFixed(1)); sV('val-doppler',((2*vel)/0.06).toFixed(1));
+            txt(ctx,"Transmitted (f0)",10,h/3-40,"14px Outfit",tc); txt(ctx,`Received (f0 ${vel>=0?'+':'-'} fD)`,10,2*h/3-40);
+            ctx.lineWidth=2; ctx.strokeStyle='#3b82f6'; wave(ctx,0,w,1, x=>h/3+30*sin(0.1*x-0.5*time*0.1));
+            ctx.strokeStyle='#ef4444'; wave(ctx,0,w,1, x=>2*h/3+30*sin(0.1*(1+vel*0.2)*x+0.5*(1+vel*0.2)*time*0.1));
         }
 
         function drawPhasors() {
-            const c = prepCanvas('canvas-phasor'); if(!c) return; const {ctx, w, h, tc} = c;
-            const cx = w/2; const cy = h/2; ctx.strokeStyle = tc; ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.stroke(); ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, h); ctx.stroke();
-            
-            const p = [{r: 40, w: 0.02, c: '#f59e0b'}, {r: 70, w: 0.01, c: '#3b82f6'}, {r: 50, w: 0.05, c: '#10b981'}];
-            let cX = cx; let cY = cy;
-            p.forEach(pt => {
-                const nX = cX + pt.r*Math.cos(time*pt.w); const nY = cY - pt.r*Math.sin(time*pt.w);
-                ctx.beginPath(); ctx.strokeStyle = pt.c; ctx.lineWidth = 3; ctx.moveTo(cX, cY); ctx.lineTo(nX, nY); ctx.stroke();
-                ctx.beginPath(); ctx.fillStyle = pt.c; ctx.arc(nX, nY, 5, 0, Math.PI*2); ctx.fill(); cX = nX; cY = nY;
+            const c=prepCanvas('canvas-phasor');if(!c)return;const{ctx,w,h,tc}=c;
+            const cx=w/2, cy=h/2; ctx.strokeStyle=tc;ctx.lineWidth=1; line(ctx,0,cy,w,cy); line(ctx,cx,0,cx,h);
+            txt(ctx,"Re",w-20,cy-10,"12px JetBrains Mono",tc); txt(ctx,"Im",cx+10,20);
+            const p=[{r:40,w:0.02,c:'#f59e0b',l:'A1'},{r:70,w:0.01,c:'#3b82f6',l:'A2'},{r:50,w:0.05,c:'#10b981',l:'A3'}];
+            let cX=cx, cY=cy;
+            p.forEach(pt=>{
+                const nX=cX+pt.r*cos(time*pt.w), nY=cY-pt.r*sin(time*pt.w);
+                ctx.strokeStyle=pt.c;ctx.lineWidth=3; line(ctx,cX,cY,nX,nY); circ(ctx,nX,nY,5,pt.c); txt(ctx,pt.l,nX+5,nY-5); cX=nX; cY=nY;
             });
-            ctx.beginPath(); ctx.strokeStyle = tc; ctx.lineWidth = 3; ctx.setLineDash([5,5]); ctx.moveTo(cx, cy); ctx.lineTo(cX, cY); ctx.stroke(); ctx.setLineDash([]);
+            ctx.strokeStyle=tc;ctx.lineWidth=3;ctx.setLineDash([5,5]); line(ctx,cx,cy,cX,cY); ctx.setLineDash([]);
+            txt(ctx,"Resultant S_total",cX+10,cY+15,"bold 14px Outfit",tc);
         }
 
         function drawStandingWaves() {
-            const c = prepCanvas('canvas-standing'); if(!c) return; const {ctx, w, h, tc} = c;
-            const nVal = document.getElementById('slider-harmonic')?.value || "3";
-            const n = parseInt(nVal);
-            
-            setVal('slider-harmonic-val', n);
-            
-            const k = (n*Math.PI)/w; const amp = 60;
-            ctx.fillStyle = isDark() ? '#475569' : '#94a3b8'; ctx.fillRect(0,0,10,h); ctx.fillRect(w-10,0,10,h);
-            ctx.beginPath(); ctx.strokeStyle = 'rgba(16,185,129,0.3)'; ctx.setLineDash([5,5]);
-            for(let x=0; x<=w; x++) { const y = h/2 + amp*Math.sin(k*x); if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
-            for(let x=w; x>=0; x--) { const y = h/2 - amp*Math.sin(k*x); if(x===w) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
-            ctx.stroke(); ctx.setLineDash([]); ctx.beginPath(); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 3;
-            for(let x=0; x<=w; x++) { const y = h/2 + amp*Math.sin(k*x)*Math.cos(time*0.1); if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke();
+            const c=prepCanvas('canvas-standing');if(!c)return;const{ctx,w,h,tc}=c;
+            const n=parseInt(v('slider-harmonic',3)); sV('slider-harmonic-val',n);
+            const k=(n*PI)/w, amp=60;
+            rect(ctx,0,0,10,h,isDark()?'#475569':'#94a3b8'); rect(ctx,w-10,0,10,h);
+            txt(ctx,"Standing Wave Cavity",20,30,"14px Outfit",tc);
+            ctx.strokeStyle='rgba(16,185,129,0.3)';ctx.setLineDash([5,5]); wave(ctx,0,w,1, x=>h/2+amp*sin(k*x)); plot(ctx,w,0,-1, x=>x, x=>h/2-amp*sin(k*x)); ctx.setLineDash([]);
+            ctx.strokeStyle='#10b981';ctx.lineWidth=3; wave(ctx,0,w,1, x=>h/2+amp*sin(k*x)*cos(time*0.1));
+            ctx.font="10px Outfit"; ctx.fillStyle='#ef4444'; for(let i=0;i<=n;i++){ const nx=(i/n)*w; circ(ctx,nx,h/2,4,'#ef4444'); if(i>0&&i<n) txt(ctx,"Node",nx-12,h/2+20); }
         }
 
         function drawFourier() {
-            const c = prepCanvas('canvas-fourier'); if(!c) return; const {ctx, w, h, tc} = c;
-            const f1 = parseFloat(document.getElementById('slider-f1')?.value || "1.0"); 
-            const f2 = parseFloat(document.getElementById('slider-f2')?.value || "5.0");
-            
-            setVal('val-f1', f1.toFixed(1)); setVal('val-f2', f2.toFixed(1));
-            
-            ctx.beginPath(); ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2;
-            for(let x=0; x<w; x++) { const t = (x/w)*10 - (time*0.05); const yv = Math.sin(2*Math.PI*f1*t) + 0.5*Math.sin(2*Math.PI*f2*t); const y = h/4 + 25*yv; if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
-            ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, 3*h/4); ctx.lineTo(w, 3*h/4); ctx.strokeStyle = isDark() ? '#475569' : '#cbd5e1'; ctx.stroke();
-            const xf1 = (f1/12.0)*w; const xf2 = (f2/12.0)*w;
-            ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 4; ctx.moveTo(xf1, 3*h/4); ctx.lineTo(xf1, 3*h/4 - 60); ctx.stroke();
-            ctx.beginPath(); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 4; ctx.moveTo(xf2, 3*h/4); ctx.lineTo(xf2, 3*h/4 - 30); ctx.stroke();
+            const c=prepCanvas('canvas-fourier');if(!c)return;const{ctx,w,h,tc}=c;
+            const f1=v('slider-f1',1.0), f2=v('slider-f2',5.0);
+            sV('val-f1',f1.toFixed(1)); sV('val-f2',f2.toFixed(1));
+            txt(ctx,"Time Domain x(t)",10,20,"12px Outfit",tc); txt(ctx,"Freq Domain X(f)",10,h/2+20);
+            ctx.strokeStyle='#a855f7';ctx.lineWidth=2; wave(ctx,0,w,1, x=>h/4+25*(sin(2*PI*f1*(x/w*10-time*0.05))+0.5*sin(2*PI*f2*(x/w*10-time*0.05))));
+            ctx.strokeStyle=isDark()?'#475569':'#cbd5e1'; line(ctx,0,3*h/4,w,3*h/4);
+            const xf1=(f1/12.0)*w, xf2=(f2/12.0)*w;
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=4; line(ctx,xf1,3*h/4,xf1,3*h/4-60);
+            ctx.strokeStyle='#ef4444'; line(ctx,xf2,3*h/4,xf2,3*h/4-30);
+            txt(ctx,"Breath",xf1-15,3*h/4-70,"","#3b82f6"); txt(ctx,"Walk",xf2-10,3*h/4-40,"","#ef4444");
         }
 
         function drawLocalization() {
-            const c = prepCanvas('canvas-localization'); if(!c) return; const {ctx, w, h, tc} = c;
-            const tx = parseFloat(document.getElementById('slider-loc-x')?.value || "0.5") * w; 
-            const ty = parseFloat(document.getElementById('slider-loc-y')?.value || "0.5") * h;
-            const ant1 = {x: 30, y: 30, c: '#f87171'}; const ant2 = {x: w-30, y: 30, c: '#60a5fa'}; const ant3 = {x: w/2, y: h-30, c: '#34d399'}; const pls = (time%60)/60;
-            
-            [{a: ant1, r: Math.hypot(tx-ant1.x, ty-ant1.y)}, {a: ant2, r: Math.hypot(tx-ant2.x, ty-ant2.y)}, {a: ant3, r: Math.hypot(tx-ant3.x, ty-ant3.y)}].forEach(s => {
-                ctx.beginPath(); ctx.strokeStyle = s.a.c; ctx.lineWidth = 2; ctx.arc(s.a.x, s.a.y, s.r, 0, 2*Math.PI); ctx.stroke();
-                ctx.beginPath(); ctx.strokeStyle = s.a.c + '66'; ctx.lineWidth = 1; ctx.arc(s.a.x, s.a.y, s.r*pls, 0, 2*Math.PI); ctx.stroke();
-                ctx.fillStyle = s.a.c; ctx.beginPath(); ctx.arc(s.a.x, s.a.y, 8, 0, 2*Math.PI); ctx.fill();
-            });
-            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(tx, ty, 8, 0, 2*Math.PI); ctx.fill();
+            const c=prepCanvas('canvas-localization');if(!c)return;const{ctx,w,h,tc}=c;
+            const tx=v('slider-loc-x',0.5)*w, ty=v('slider-loc-y',0.5)*h;
+            const ants=[{x:30,y:30,c:'#f87171',l:'Ant 1'},{x:w-30,y:30,c:'#60a5fa',l:'Ant 2'},{x:w/2,y:h-30,c:'#34d399',l:'Ant 3'}];
+            ants.forEach(a=>{ a.r=hypot(tx-a.x, ty-a.y); circ(ctx,a.x,a.y,a.r,"",a.c); circ(ctx,a.x,a.y,a.r*((time%60)/60),"",a.c+'66'); circ(ctx,a.x,a.y,8,a.c); txt(ctx,a.l,a.x-15,a.y+20,"12px Outfit",tc); });
+            circ(ctx,tx,ty,8,'#f59e0b'); txt(ctx,"Target (Intersection)",tx+15,ty+5);
         }
 
         function drawDiffraction() {
-            const c = prepCanvas('canvas-diffraction'); if(!c) return; const {ctx, w, h, tc} = c;
-            const a = parseFloat(document.getElementById('slider-slit')?.value || "6.0");
-            setVal('slider-slit-val', a.toFixed(1));
-            let sT = 6.0/a; if(sT > 1) sT = 1; const th = Math.asin(sT);
-            
-            const cx = w/2; const cy = h/2; ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2;
-            for(let i=0; i<cx; i+=20) { const wx = (time+i)%cx; ctx.beginPath(); ctx.moveTo(wx, 0); ctx.lineTo(wx, h); ctx.stroke(); }
-            ctx.fillStyle = isDark() ? '#475569' : '#94a3b8'; ctx.fillRect(cx-5, 0, 10, cy-(a*5)/2); ctx.fillRect(cx-5, cy+(a*5)/2, 10, h-(cy+(a*5)/2));
-            ctx.strokeStyle = '#10b981';
-            for(let r=10; r<cx; r+=20) { const wR = (time+r)%(cx+50); if(wR>0) { ctx.beginPath(); ctx.globalAlpha = Math.max(0, 1-wR/cx); ctx.arc(cx, cy, wR, -th, th); ctx.stroke(); } }
-            ctx.globalAlpha = 1.0;
+            const c=prepCanvas('canvas-diffraction');if(!c)return;const{ctx,w,h,tc}=c;
+            const a=v('slider-slit',6.0); sV('slider-slit-val',a.toFixed(1));
+            const th=asin(min(6.0/a,1)), cx=w/2, cy=h/2;
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=2; for(let i=0;i<cx;i+=20) line(ctx,(time+i)%cx,0,(time+i)%cx,h);
+            const wf=isDark()?'#475569':'#94a3b8'; rect(ctx,cx-5,0,10,cy-(a*5)/2,wf); rect(ctx,cx-5,cy+(a*5)/2,10,h-(cy+(a*5)/2),wf);
+            ctx.strokeStyle='#10b981'; for(let r=10;r<cx;r+=20){const wR=(time+r)%(cx+50);if(wR>0){ctx.globalAlpha=max(0,1-wR/cx); ctx.beginPath();ctx.arc(cx,cy,wR,-th,th);ctx.stroke();}} ctx.globalAlpha=1.0;
+            txt(ctx,"Incident Plane Waves",20,30,"14px Outfit",tc); txt(ctx,"Diffracted Spherical Wavelets",cx+20,30);
         }
 
         function drawAttenuation() {
-            const c = prepCanvas('canvas-attenuation'); if(!c) return; const {ctx, w, h, tc} = c;
-            const r = parseFloat(document.getElementById('slider-dist')?.value || "3.0");
-            setVal('slider-dist-val', r.toFixed(1));
-            const int = 100/(r*r);
-            
-            ctx.beginPath(); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3;
-            for(let x=1; x<=10; x+=0.1) { const py = h - ((100/(x*x))/100*(h-40)); if(x===1) ctx.moveTo((x/10)*w, py); else ctx.lineTo((x/10)*w, py); }
-            ctx.stroke(); const cPx = (r/10)*w; const cPy = h - (int/100*(h-40));
-            ctx.beginPath(); ctx.setLineDash([5,5]); ctx.strokeStyle = tc; ctx.moveTo(cPx, h); ctx.lineTo(cPx, cPy); ctx.lineTo(0, cPy); ctx.stroke(); ctx.setLineDash([]);
-            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(cPx, cPy, 8, 0, Math.PI*2); ctx.fill();
+            const c=prepCanvas('canvas-attenuation');if(!c)return;const{ctx,w,h,tc}=c;
+            const r=v('slider-dist',3.0); sV('slider-dist-val',r.toFixed(1)); const int=100/(r*r);
+            txt(ctx,"Power Drop-off ∝ 1/r²",20,30,"14px Outfit",tc);
+            ctx.strokeStyle='#ef4444';ctx.lineWidth=3; wave(ctx,1,10,0.1, x=>h-((100/(x*x))/100*(h-40)));
+            const cPx=(r/10)*w, cPy=h-(int/100*(h-40));
+            ctx.strokeStyle=tc;ctx.setLineDash([5,5]); ctx.beginPath();ctx.moveTo(cPx,h);ctx.lineTo(cPx,cPy);ctx.lineTo(0,cPy);ctx.stroke();ctx.setLineDash([]);
+            circ(ctx,cPx,cPy,8,'#f59e0b'); txt(ctx,`Power: ${int.toFixed(1)}%`,cPx+15,cPy-10);
         }
 
-        document.getElementById('btn-run-ai')?.addEventListener('click', () => {
-            const canvasAI = document.getElementById('canvas-ai'); if(!canvasAI) return;
-            aiS.tx = 50 + Math.random()*(canvasAI.offsetWidth-100); aiS.ty = 50 + Math.random()*200; aiS.gx = 20; aiS.gy = 20; aiS.r = true;
-        });
-
+        $('btn-run-ai')?.addEventListener('click',()=>{const cAI=$('canvas-ai');if(!cAI)return;aiS.tx=50+rnd()*(cAI.offsetWidth-100);aiS.ty=50+rnd()*200;aiS.gx=20;aiS.gy=20;aiS.r=true;});
         function drawAI() {
-            const c = prepCanvas('canvas-ai'); if(!c) return; const {ctx, w, h, tc} = c;
-            if(aiS.tx === 0) { aiS.tx = w*0.7; aiS.ty = h*0.7; }
-            for(let r=300; r>0; r-=40) { ctx.beginPath(); ctx.fillStyle = isDark() ? `rgba(30,41,59,${0.1+(300-r)/1000})` : `rgba(226,232,240,${0.1+(300-r)/1000})`; ctx.arc(aiS.tx, aiS.ty, r, 0, Math.PI*2); ctx.fill(); }
-            ctx.fillStyle = '#10b981'; ctx.beginPath(); ctx.arc(aiS.tx, aiS.ty, 6, 0, Math.PI*2); ctx.fill();
-            if(aiS.r) {
-                const dx = aiS.tx - aiS.gx; const dy = aiS.ty - aiS.gy; const err = Math.hypot(dx,dy); aiS.gx += dx*aiS.lr; aiS.gy += dy*aiS.lr;
-                const errLabel = document.getElementById('val-ai-error');
-                if(errLabel) {
-                    if(err < 1.0) { aiS.r = false; errLabel.innerText = "Converged!"; errLabel.className = "font-bold text-green-500 bg-white dark:bg-slate-800 px-2 py-1 rounded"; }
-                    else { errLabel.innerText = err.toFixed(1); errLabel.className = "font-bold text-amber-500 bg-white dark:bg-slate-800 px-2 py-1 rounded"; }
-                }
+            const c=prepCanvas('canvas-ai');if(!c)return;const{ctx,w,h,tc}=c;
+            if(aiS.tx===0){aiS.tx=w*0.7;aiS.ty=h*0.7;} txt(ctx,"Loss Landscape J(θ)",10,20,"14px Outfit",tc);
+            for(let r=300;r>0;r-=40) circ(ctx,aiS.tx,aiS.ty,r,isDark()?`rgba(30,41,59,${0.1+(300-r)/1000})`:`rgba(226,232,240,${0.1+(300-r)/1000})`);
+            circ(ctx,aiS.tx,aiS.ty,6,'#10b981'); txt(ctx,"Global Minimum (True Pose)",aiS.tx+15,aiS.ty+5);
+            if(aiS.r){
+                const dx=aiS.tx-aiS.gx, dy=aiS.ty-aiS.gy, err=hypot(dx,dy); aiS.gx+=dx*aiS.lr; aiS.gy+=dy*aiS.lr;
+                const eL=$('val-ai-error'); if(eL){if(err<1.0){aiS.r=false;eL.innerText="Converged!";eL.className="font-bold text-green-500 bg-white dark:bg-slate-800 px-2 py-1 rounded";}else{eL.innerText=err.toFixed(1);eL.className="font-bold text-amber-500 bg-white dark:bg-slate-800 px-2 py-1 rounded";}}
             }
-            ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(aiS.gx, aiS.gy, 8, 0, Math.PI*2); ctx.fill();
+            circ(ctx,aiS.gx,aiS.gy,8,'#ef4444'); txt(ctx,"Gradient Step θ",aiS.gx+15,aiS.gy-10);
         }
 
         function drawPolarization() {
-            const c = prepCanvas('canvas-polarization'); if(!c) return; const {ctx, w, h, tc} = c;
-            const thD = parseFloat(document.getElementById('slider-theta')?.value || "0"); const th = thD*Math.PI/180;
-            setVal('slider-theta-val', thD + "°");
-            const int = Math.pow(Math.cos(th), 2)*100;
-            
-            const cx = w/2; const cy = h/2; const R = 80;
-            ctx.strokeStyle = isDark() ? '#94a3b8' : '#64748b'; ctx.lineWidth = 2; ctx.setLineDash([5,5]); ctx.beginPath(); ctx.moveTo(cx - 150*Math.sin(th), cy + 150*Math.cos(th)); ctx.lineTo(cx + 150*Math.sin(th), cy - 150*Math.cos(th)); ctx.stroke(); ctx.setLineDash([]);
-            const Em = R*Math.cos(time*0.1); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - Em); ctx.stroke();
-            const Ep = Em*Math.cos(th); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Ep*Math.sin(th), cy - Ep*Math.cos(th)); ctx.stroke();
-            
-            ctx.fillStyle = tc; ctx.font = "14px Outfit"; ctx.fillText("Vertical Tx Field", cx+10, cy-R-10); ctx.fillText("Tilted Rx Antenna", cx + 150*Math.sin(th)-20, cy - 150*Math.cos(th)-10);
-            ctx.fillStyle = isDark() ? '#1e293b' : '#e2e8f0'; ctx.fillRect(10, h-30, 200, 20); ctx.fillStyle = '#10b981'; ctx.fillRect(10, h-30, 2*int, 20); ctx.strokeStyle = tc; ctx.strokeRect(10, h-30, 200, 20); ctx.fillStyle = tc; ctx.fillText(`Power: ${int.toFixed(0)}%`, 220, h-15);
+            const c=prepCanvas('canvas-polarization');if(!c)return;const{ctx,w,h,tc}=c;
+            const thD=v('slider-theta',0), th=thD*PI/180; sV('slider-theta-val',thD+"°"); const int=pow(cos(th),2)*100;
+            const cx=w/2, cy=h/2, R=80;
+            ctx.strokeStyle=isDark()?'#94a3b8':'#64748b';ctx.lineWidth=2;ctx.setLineDash([5,5]); line(ctx,cx-150*sin(th),cy+150*cos(th),cx+150*sin(th),cy-150*cos(th)); ctx.setLineDash([]);
+            const Em=R*cos(time*0.1), Ep=Em*cos(th);
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=4; line(ctx,cx,cy,cx,cy-Em);
+            ctx.strokeStyle='#10b981';ctx.lineWidth=6; line(ctx,cx,cy,cx+Ep*sin(th),cy-Ep*cos(th));
+            txt(ctx,"Vertical Tx Field",cx+10,cy-R-10,"14px Outfit",tc); txt(ctx,"Tilted Rx Antenna",cx+150*sin(th)-20,cy-150*cos(th)-10);
+            rect(ctx,10,h-30,200,20,isDark()?'#1e293b':'#e2e8f0',tc); rect(ctx,10,h-30,2*int,20,'#10b981'); txt(ctx,`Power: ${int.toFixed(0)}%`,220,h-15);
         }
 
         function drawRefraction() {
-            const c = prepCanvas('canvas-refraction'); if(!c) return; const {ctx, w, h, tc} = c;
-            const n2 = parseFloat(document.getElementById('slider-n2')?.value || "1.5");
-            setVal('slider-n2-val', n2.toFixed(1));
-            const th1 = Math.PI/4; const th2 = Math.asin((1.0*Math.sin(th1))/n2);
-            
-            ctx.fillStyle = isDark() ? '#334155' : '#cbd5e1'; ctx.fillRect(w/2, 0, w/2, h); ctx.fillStyle = tc; ctx.font = "16px Outfit"; ctx.fillText("Air (n=1)", w/4-20, 30); ctx.fillText(`Wall (n=${n2.toFixed(1)})`, 3*w/4-30, 30);
-            const cx = w/2; const cy = h/2; ctx.strokeStyle = tc; ctx.lineWidth = 1; ctx.setLineDash([5,5]); ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.stroke(); ctx.setLineDash([]);
-            
-            ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(cx - 150*Math.cos(th1), cy - 150*Math.sin(th1)); ctx.lineTo(cx, cy); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + 150*Math.cos(th2), cy + 150*Math.sin(th2)); ctx.stroke();
-            
-            const l1 = 20; const l2 = l1/n2; ctx.strokeStyle = 'rgba(59,130,246,0.5)'; ctx.lineWidth = 2;
-            for(let i=0; i<150; i+=l1) { const off = (i - (time%l1)); const wx = cx - off*Math.cos(th1); const wy = cy - off*Math.sin(th1); ctx.beginPath(); ctx.moveTo(wx - 50*Math.sin(th1), wy + 50*Math.cos(th1)); ctx.lineTo(wx + 50*Math.sin(th1), wy - 50*Math.cos(th1)); ctx.stroke(); }
-            for(let i=0; i<150; i+=l2) { const off = (i + (time/n2%l2)); const wx = cx + off*Math.cos(th2); const wy = cy + off*Math.sin(th2); ctx.beginPath(); ctx.moveTo(wx - 50*Math.sin(th2), wy + 50*Math.cos(th2)); ctx.lineTo(wx + 50*Math.sin(th2), wy - 50*Math.cos(th2)); ctx.stroke(); }
+            const c=prepCanvas('canvas-refraction');if(!c)return;const{ctx,w,h,tc}=c;
+            const n2=v('slider-n2',1.5); sV('slider-n2-val',n2.toFixed(1));
+            const th1=PI/4, th2=asin((1.0*sin(th1))/n2), cx=w/2, cy=h/2;
+            rect(ctx,w/2,0,w/2,h,isDark()?'#334155':'#cbd5e1'); txt(ctx,"Air (n=1)",w/4-20,30,"16px Outfit",tc); txt(ctx,`Wall (n=${n2.toFixed(1)})`,3*w/4-30,30);
+            ctx.strokeStyle=tc;ctx.setLineDash([5,5]); line(ctx,0,cy,w,cy); ctx.setLineDash([]);
+            ctx.strokeStyle='#ef4444';ctx.lineWidth=3; ctx.beginPath();ctx.moveTo(cx-150*cos(th1),cy-150*sin(th1));ctx.lineTo(cx,cy);ctx.lineTo(cx+150*cos(th2),cy+150*sin(th2));ctx.stroke();
+            txt(ctx,"θ1 (Incident)",cx-70,cy-15,"12px Outfit"); txt(ctx,"θ2 (Refracted)",cx+20,cy+30);
+            ctx.strokeStyle='rgba(59,130,246,0.5)';ctx.lineWidth=2;
+            for(let i=0;i<150;i+=20){const off=i-(time%20), wx=cx-off*cos(th1), wy=cy-off*sin(th1); line(ctx,wx-50*sin(th1),wy+50*cos(th1),wx+50*sin(th1),wy-50*cos(th1));}
+            for(let i=0;i<150;i+=20/n2){const off=i+(time/n2%(20/n2)), wx=cx+off*cos(th2), wy=cy+off*sin(th2); line(ctx,wx-50*sin(th2),wy+50*cos(th2),wx+50*sin(th2),wy-50*cos(th2));}
         }
 
         function drawBeats() {
-            const c = prepCanvas('canvas-beats'); if(!c) return; const {ctx, w, h, tc} = c;
-            const dF = parseFloat(document.getElementById('slider-beat')?.value || "0.5");
-            setVal('slider-beat-val', dF.toFixed(1));
-            const f1 = 5.0; const f2 = f1 + dF;
-            
-            ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2;
-            for(let x=0; x<w; x++) { const t = (x/w)*2 - (time*0.01); const yv = Math.sin(2*Math.PI*f1*t) + Math.sin(2*Math.PI*f2*t); const y = h/2 + 40*yv; if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke();
-            if(dF > 0) {
-                ctx.beginPath(); ctx.strokeStyle = 'rgba(239,68,68,0.5)'; ctx.lineWidth = 3; ctx.setLineDash([10,5]);
-                for(let x=0; x<w; x++) { const t = (x/w)*2 - (time*0.01); const ev = 2*Math.cos(2*Math.PI*(dF/2)*t); const y = h/2 + 40*ev; if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke();
-                ctx.beginPath(); for(let x=0; x<w; x++) { const t = (x/w)*2 - (time*0.01); const ev = -2*Math.cos(2*Math.PI*(dF/2)*t); const y = h/2 + 40*ev; if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke(); ctx.setLineDash([]);
-            }
+            const c=prepCanvas('canvas-beats');if(!c)return;const{ctx,w,h,tc}=c;
+            const dF=v('slider-beat',0.5); sV('slider-beat-val',dF.toFixed(1));
+            txt(ctx,`Beat Freq Envelope = |f1 - f2| = ${dF.toFixed(1)} Hz`,10,20,"14px Outfit",tc);
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=2; wave(ctx,0,w,1, x=>h/2+40*(sin(2*PI*5.0*(x/w*2-time*0.01))+sin(2*PI*(5.0+dF)*(x/w*2-time*0.01))));
+            if(dF>0){ctx.strokeStyle='rgba(239,68,68,0.5)';ctx.lineWidth=3;ctx.setLineDash([10,5]); wave(ctx,0,w,1, x=>h/2+40*(2*cos(2*PI*(dF/2)*(x/w*2-time*0.01)))); wave(ctx,0,w,1, x=>h/2+40*(-2*cos(2*PI*(dF/2)*(x/w*2-time*0.01)))); ctx.setLineDash([]);}
         }
 
         function drawBeamforming() {
-            const c = prepCanvas('canvas-beamforming'); if(!c) return; const {ctx, w, h, tc} = c;
-            const aD = parseFloat(document.getElementById('slider-beam')?.value || "0"); const a = aD*Math.PI/180;
-            setVal('slider-beam-val', aD + "°");
-            const cx = w/2; const cy = h-20; const N = 4; const d = Math.PI;
-            
-            for(let i=0; i<N; i++) { const x = cx - (N*10)/2 + i*10 + 5; ctx.fillStyle = '#10b981'; ctx.beginPath(); ctx.arc(x, cy, 4, 0, Math.PI*2); ctx.fill(); }
-            ctx.fillStyle = tc; ctx.font = "14px Outfit"; ctx.fillText("Phased Antenna Array", cx-70, cy-15);
-            ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 3;
-            for(let th=0; th<=Math.PI; th+=0.02) {
-                const psi = d*Math.cos(th) + a; let AF = 0; if(Math.abs(psi) < 0.001) AF = 1; else AF = Math.abs(Math.sin(N*psi/2)/(N*Math.sin(psi/2)));
-                const r = AF*(h-60); const px = cx + r*Math.cos(th); const py = cy - r*Math.sin(th); if(th===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
-            }
-            ctx.stroke();
+            const c=prepCanvas('canvas-beamforming');if(!c)return;const{ctx,w,h,tc}=c;
+            const aD=v('slider-beam',0), a=aD*PI/180; sV('slider-beam-val',aD+"°");
+            const cx=w/2, cy=h-20, N=4, d=PI;
+            for(let i=0;i<N;i++) circ(ctx,cx-20+i*10+5,cy,4,'#10b981');
+            txt(ctx,"Phased Antenna Array",cx-70,cy-15,"14px Outfit",tc);
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=3; plot(ctx,0,PI,0.02, th=>{const psi=d*cos(th)+a, r=(abs(psi)<0.001?1:abs(sin(N*psi/2)/(N*sin(psi/2))))*(h-60); return cx+r*cos(th);}, th=>{const psi=d*cos(th)+a, r=(abs(psi)<0.001?1:abs(sin(N*psi/2)/(N*sin(psi/2))))*(h-60); return cy-r*sin(th);});
+            const sX=cx+(h-60)*cos(PI/2-a/(d)), sY=cy-(h-60)*sin(PI/2-a/(d));
+            ctx.strokeStyle='#f59e0b';ctx.setLineDash([5,5]); line(ctx,cx,cy,sX,sY); ctx.setLineDash([]); txt(ctx,"Main Lobe",sX-20,sY-10);
         }
 
         function drawBrewster() {
-            const c = prepCanvas('canvas-brewster'); if(!c) return; const {ctx, w, h, tc} = c;
-            const thID = parseFloat(document.getElementById('slider-brewster')?.value || "45"); const thI = thID*Math.PI/180;
-            setVal('slider-brewster-val', thID + "°");
-            const n1 = 1.0; const n2 = 1.5; ctx.beginPath(); ctx.strokeStyle = isDark() ? '#475569' : '#cbd5e1'; ctx.lineWidth = 2;
-            
-            for(let a=0; a<=90; a++) {
-                const ti = a*Math.PI/180; const tt = Math.asin((n1/n2)*Math.sin(ti));
-                let num = n1*Math.cos(tt) - n2*Math.cos(ti); let den = n1*Math.cos(tt) + n2*Math.cos(ti); let Rp = Math.pow(num/den, 2);
-                const x = (a/90)*w; const y = h-20 - (Rp*(h-40)); if(a===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-            }
-            ctx.stroke();
-            const thT = Math.asin((n1/n2)*Math.sin(thI)); let cN = n1*Math.cos(thT) - n2*Math.cos(thI); let cD = n1*Math.cos(thT) + n2*Math.cos(thI); let cRp = Math.pow(cN/cD, 2);
-            const cx = (thID/90)*w; const cy = h-20 - (cRp*(h-40));
-            ctx.beginPath(); ctx.setLineDash([5,5]); ctx.strokeStyle = tc; ctx.moveTo(cx, h); ctx.lineTo(cx, cy); ctx.lineTo(0, cy); ctx.stroke(); ctx.setLineDash([]);
-            ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#10b981'; ctx.font = "12px Outfit"; ctx.fillText("Brewster's Angle (Zero Reflection)", (56.3/90)*w - 40, h-5);
+            const c=prepCanvas('canvas-brewster');if(!c)return;const{ctx,w,h,tc}=c;
+            const thID=v('slider-brewster',45), thI=thID*PI/180; sV('slider-brewster-val',thID+"°");
+            const n1=1.0, n2=1.5; ctx.strokeStyle=isDark()?'#475569':'#cbd5e1';ctx.lineWidth=2;
+            txt(ctx,"Reflected Power (p-polarization)",20,30,"14px Outfit",tc);
+            plot(ctx,0,90,1, a=>(a/90)*w, a=>{const ti=a*PI/180, tt=asin(sin(ti)/1.5), num=cos(tt)-1.5*cos(ti), den=cos(tt)+1.5*cos(ti); return h-20-pow(num/den,2)*(h-40);});
+            const thT=asin(sin(thI)/1.5), cRp=pow((cos(thT)-1.5*cos(thI))/(cos(thT)+1.5*cos(thI)),2), cx=(thID/90)*w, cy=h-20-cRp*(h-40);
+            ctx.strokeStyle=tc;ctx.setLineDash([5,5]); ctx.beginPath();ctx.moveTo(cx,h);ctx.lineTo(cx,cy);ctx.lineTo(0,cy);ctx.stroke();ctx.setLineDash([]);
+            circ(ctx,cx,cy,6,'#ef4444'); txt(ctx,"Brewster's Angle θ_B (Zero Reflection)",(56.3/90)*w-40,h-5,"12px Outfit",'#10b981');
         }
 
         function drawSkinEffect() {
-            const c = prepCanvas('canvas-skin'); if(!c) return; const {ctx, w, h, tc} = c;
-            const sig = parseFloat(document.getElementById('slider-skin')?.value || "5");
-            const delta = (1/Math.sqrt(sig))*50; const bX = w*0.25;
-            
-            ctx.fillStyle = 'rgba(244,63,94,0.1)'; ctx.fillRect(bX, 0, w, h); ctx.strokeStyle = '#f43f5e'; ctx.beginPath(); ctx.moveTo(bX, 0); ctx.lineTo(bX, h); ctx.stroke();
-            ctx.fillStyle = tc; ctx.font = "14px Outfit"; ctx.fillText("Air", 10, 30); ctx.fillText("Human Tissue (Lossy)", bX+10, 30);
-            ctx.beginPath(); ctx.strokeStyle = isDark() ? '#94a3b8' : '#64748b'; ctx.setLineDash([5,5]); ctx.lineWidth = 2;
-            for(let x=bX; x<w; x++) { const z = x-bX; const env = (h/3)*Math.exp(-z/delta); if(x===bX) ctx.moveTo(x, h/2-env); else ctx.lineTo(x, h/2-env); }
-            for(let x=bX; x<w; x++) { const z = x-bX; const env = (h/3)*Math.exp(-z/delta); if(x===bX) ctx.moveTo(x, h/2+env); else ctx.lineTo(x, h/2+env); }
-            ctx.stroke(); ctx.setLineDash([]);
-            ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 3; const ka = 0.1; const kt = 0.15; const wF = 0.5;
-            for(let x=0; x<w; x++) { let y = 0; if(x<bX) y = h/2 + (h/3)*Math.cos(ka*x - wF*time*0.1); else { const z = x-bX; const amp = (h/3)*Math.exp(-z/delta); y = h/2 + amp*Math.cos(kt*z - wF*time*0.1); } if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
-            ctx.stroke();
+            const c=prepCanvas('canvas-skin');if(!c)return;const{ctx,w,h,tc}=c;
+            const sig=v('slider-skin',5), delta=(1/sqrt(sig))*50, bX=w*0.25;
+            rect(ctx,bX,0,w,h,'rgba(244,63,94,0.1)'); ctx.strokeStyle='#f43f5e'; line(ctx,bX,0,bX,h);
+            txt(ctx,"Air",10,30,"14px Outfit",tc); txt(ctx,"Human Tissue (Lossy)",bX+10,30);
+            ctx.strokeStyle=isDark()?'#94a3b8':'#64748b';ctx.setLineDash([5,5]);ctx.lineWidth=2;
+            plot(ctx,bX,w,1, x=>x, x=>h/2-(h/3)*exp(-(x-bX)/delta)); plot(ctx,bX,w,1, x=>x, x=>h/2+(h/3)*exp(-(x-bX)/delta)); ctx.setLineDash([]);
+            txt(ctx,"Exponential Decay Envelope e^(-z/δ)",bX+20,h/2-60);
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=3;
+            wave(ctx,0,w,1, x=>x<bX ? h/2+(h/3)*cos(0.1*x-0.5*time*0.1) : h/2+((h/3)*exp(-(x-bX)/delta))*cos(0.15*(x-bX)-0.5*time*0.1));
         }
 
         function drawAoA() {
-            const c = prepCanvas('canvas-aoa'); if(!c) return; const {ctx, w, h, tc} = c;
-            const thD = parseFloat(document.getElementById('slider-aoa')?.value || "30"); const th = thD*Math.PI/180;
-            setVal('slider-aoa-val', thD + "°");
-            const L = 100; const lambda = 40; const dD = L*Math.sin(th);
-            
-            const cx = w/2; const cy = h-50; const a1 = {x: cx-L/2, y: cy}; const a2 = {x: cx+L/2, y: cy};
-            ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.arc(a1.x, a1.y, 6, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(a2.x, a2.y, 6, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.strokeStyle = tc; ctx.setLineDash([2,2]); ctx.moveTo(a1.x, a1.y); ctx.lineTo(a2.x, a2.y); ctx.stroke(); ctx.setLineDash([]);
-            
-            ctx.strokeStyle = 'rgba(16,185,129,0.5)'; ctx.lineWidth = 2;
-            for(let i=0; i<300; i+=lambda) { const off = (i - (time%lambda)); const nx = Math.sin(th); const ny = Math.cos(th); const wx = cx - off*nx; const wy = cy - off*ny; const vx = Math.cos(th); const vy = -Math.sin(th); ctx.beginPath(); ctx.moveTo(wx - 200*vx, wy - 200*vy); ctx.lineTo(wx + 200*vx, wy + 200*vy); ctx.stroke(); }
-            
-            if(Math.abs(thD) > 5) {
-                ctx.beginPath(); ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3;
-                if(th > 0) { ctx.moveTo(a1.x, a1.y); ctx.lineTo(a2.x - dD*Math.sin(th), a2.y - dD*Math.cos(th)); ctx.moveTo(a2.x, a2.y); ctx.lineTo(a2.x - dD*Math.sin(th), a2.y - dD*Math.cos(th)); }
-                else { const aD = Math.abs(dD); ctx.moveTo(a2.x, a2.y); ctx.lineTo(a1.x + aD*Math.sin(Math.abs(th)), a1.y - aD*Math.cos(Math.abs(th))); ctx.moveTo(a1.x, a1.y); ctx.lineTo(a1.x + aD*Math.sin(Math.abs(th)), a1.y - aD*Math.cos(Math.abs(th))); }
-                ctx.stroke(); ctx.fillStyle = '#f59e0b'; ctx.font = "bold 14px Outfit"; ctx.fillText(`Δd = ${Math.abs(dD).toFixed(1)}`, cx-30, cy-30);
+            const c=prepCanvas('canvas-aoa');if(!c)return;const{ctx,w,h,tc}=c;
+            const thD=v('slider-aoa',30), th=thD*PI/180; sV('slider-aoa-val',thD+"°");
+            const dD=100*sin(th), cx=w/2, cy=h-50, a1={x:cx-50,y:cy}, a2={x:cx+50,y:cy};
+            circ(ctx,a1.x,a1.y,6,'#3b82f6'); circ(ctx,a2.x,a2.y,6,'#ef4444');
+            ctx.strokeStyle=tc;ctx.setLineDash([2,2]); line(ctx,a1.x,a1.y,a2.x,a2.y); ctx.setLineDash([]);
+            txt(ctx,"Antenna Spacing L",cx-50,cy+25,"14px Outfit",tc);
+            ctx.strokeStyle='rgba(16,185,129,0.5)';ctx.lineWidth=2;
+            for(let i=0;i<300;i+=40){const off=i-(time%40), wx=cx-off*sin(th), wy=cy-off*cos(th); line(ctx,wx-200*cos(th),wy+200*sin(th),wx+200*cos(th),wy-200*sin(th));}
+            if(abs(thD)>5){
+                ctx.strokeStyle='#f59e0b';ctx.lineWidth=3; ctx.beginPath();
+                if(th>0){ ctx.moveTo(a1.x,a1.y);ctx.lineTo(a2.x-dD*sin(th),a2.y-dD*cos(th));ctx.moveTo(a2.x,a2.y);ctx.lineTo(a2.x-dD*sin(th),a2.y-dD*cos(th)); }
+                else { const aD=abs(dD); ctx.moveTo(a2.x,a2.y);ctx.lineTo(a1.x+aD*sin(abs(th)),a1.y-aD*cos(abs(th)));ctx.moveTo(a1.x,a1.y);ctx.lineTo(a1.x+aD*sin(abs(th)),a1.y-aD*cos(abs(th))); }
+                ctx.stroke(); txt(ctx,`Path Diff Δd = ${abs(dD).toFixed(1)}`,cx-30,cy-30,"bold 14px Outfit",'#f59e0b');
             }
         }
 
-        function getG(m,s) { let u=0, v=0; while(u===0) u=Math.random(); while(v===0) v=Math.random(); return s*Math.sqrt(-2.0*Math.log(u))*Math.cos(2.0*Math.PI*v)+m; }
-        
+        const getG=(m,s)=>{let u=0,v=0;while(u===0)u=rnd();while(v===0)v=rnd();return s*sqrt(-2.0*log(u))*cos(2.0*PI*v)+m;}
         function drawNoise() {
-            const c = prepCanvas('canvas-noise'); if(!c) return; const {ctx, w, h, tc} = c;
-            const sig = parseFloat(document.getElementById('slider-noise')?.value || "0.2");
-            const a = 50; const f = 0.05; ctx.beginPath(); ctx.strokeStyle = 'rgba(239,68,68,0.8)'; ctx.lineWidth = 2;
-            for(let x=0; x<w; x+=3) { const ty = Math.sin(x*f - time*0.1); const n = getG(0,sig); const y = h/2 + a*(ty+n); if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke();
-            ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 4;
-            for(let x=0; x<w; x++) { const ty = Math.sin(x*f - time*0.1); const y = h/2 + a*ty; if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke();
+            const c=prepCanvas('canvas-noise');if(!c)return;const{ctx,w,h,tc}=c;
+            const sig=v('slider-noise',0.2); ctx.strokeStyle='rgba(239,68,68,0.8)';ctx.lineWidth=2;
+            wave(ctx,0,w,3, x=>h/2+50*(sin(x*0.05-time*0.1)+getG(0,sig)));
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=4; wave(ctx,0,w,1, x=>h/2+50*sin(x*0.05-time*0.1));
+            txt(ctx,"True Signal",10,30,"14px Outfit",'#3b82f6'); txt(ctx,"Measured (Signal + Gaussian Noise N(0,σ²))",10,50,"",'#ef4444');
         }
 
         function drawFSeries() {
-            const c = prepCanvas('canvas-fseries'); if(!c) return; const {ctx, w, h, tc} = c;
-            const N = parseInt(document.getElementById('slider-fseries')?.value || "3");
-            setVal('slider-fseries-val', N);
-            const f = 0.02; const a = 60; ctx.strokeStyle = tc; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, h/2); ctx.lineTo(w, h/2); ctx.stroke();
-            for(let n=1; n<=N; n+=2) { ctx.beginPath(); ctx.strokeStyle = `rgba(59,130,246,${1/(n+1)})`; ctx.lineWidth = 1; for(let x=0; x<w; x++) { const yv = (4/(n*Math.PI))*Math.sin(n*(x*f - time*0.05)); const y = h/2 + a*yv; if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke(); }
-            ctx.beginPath(); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 3;
-            for(let x=0; x<w; x++) { let sy=0; for(let n=1; n<=N; n+=2) { sy += (4/(n*Math.PI))*Math.sin(n*(x*f - time*0.05)); } const y = h/2 + a*sy; if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke();
+            const c=prepCanvas('canvas-fseries');if(!c)return;const{ctx,w,h,tc}=c;
+            const N=parseInt(v('slider-fseries',3)); sV('slider-fseries-val',N);
+            ctx.strokeStyle=tc;ctx.lineWidth=1; line(ctx,0,h/2,w,h/2);
+            for(let n=1;n<=N;n+=2){ ctx.strokeStyle=`rgba(59,130,246,${1/(n+1)})`; wave(ctx,0,w,1, x=>h/2+60*(4/(n*PI))*sin(n*(x*0.02-time*0.05))); }
+            ctx.strokeStyle='#10b981';ctx.lineWidth=3; wave(ctx,0,w,1, x=>{let sy=0;for(let n=1;n<=N;n+=2)sy+=(4/(n*PI))*sin(n*(x*0.02-time*0.05)); return h/2+60*sy;});
+            txt(ctx,"Synthesized Square Wave (Gait)",10,30,"14px Outfit",tc);
         }
 
         function drawSHM() {
-            const c = prepCanvas('canvas-shm'); if(!c) return; const {ctx, w, h, tc} = c;
-            const wr = parseFloat(document.getElementById('slider-shm')?.value || "1.0");
-            setVal('slider-shm-val', wr.toFixed(1));
-            const h3 = h/3; const A = 30; ctx.strokeStyle = tc; ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(0, h3/2); ctx.lineTo(w, h3/2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, h3+h3/2); ctx.lineTo(w, h3+h3/2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, 2*h3+h3/2); ctx.lineTo(w, 2*h3+h3/2); ctx.stroke();
-            
-            ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2; for(let x=0; x<w; x++) { const t = (x/w)*10 - time*0.05; const y = h3/2 - A*Math.sin(wr*t); if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke();
-            ctx.beginPath(); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; for(let x=0; x<w; x++) { const t = (x/w)*10 - time*0.05; const y = h3 + h3/2 - (A*0.8)*Math.cos(wr*t); if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke();
-            ctx.beginPath(); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; for(let x=0; x<w; x++) { const t = (x/w)*10 - time*0.05; const y = 2*h3 + h3/2 - (A*0.6)*-Math.sin(wr*t); if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke();
-            const sX = w/2; ctx.beginPath(); ctx.strokeStyle = isDark() ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'; ctx.setLineDash([5,5]); ctx.moveTo(sX, 0); ctx.lineTo(sX, h); ctx.stroke(); ctx.setLineDash([]);
+            const c=prepCanvas('canvas-shm');if(!c)return;const{ctx,w,h,tc}=c;
+            const wr=v('slider-shm',1.0); sV('slider-shm-val',wr.toFixed(1));
+            const h3=h/3; ctx.strokeStyle=tc;ctx.lineWidth=1; line(ctx,0,h3/2,w,h3/2); line(ctx,0,h3+h3/2,w,h3+h3/2); line(ctx,0,2*h3+h3/2,w,2*h3+h3/2);
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=2; wave(ctx,0,w,1, x=>h3/2-30*sin(wr*(x/w*10-time*0.05)));
+            ctx.strokeStyle='#10b981'; wave(ctx,0,w,1, x=>h3+h3/2-24*cos(wr*(x/w*10-time*0.05)));
+            ctx.strokeStyle='#ef4444'; wave(ctx,0,w,1, x=>2*h3+h3/2+18*sin(wr*(x/w*10-time*0.05)));
+            ctx.strokeStyle=isDark()?'rgba(255,255,255,0.3)':'rgba(0,0,0,0.3)';ctx.setLineDash([5,5]); line(ctx,w/2,0,w/2,h); ctx.setLineDash([]);
+            txt(ctx,"Position x(t)",10,20,"14px Outfit",'#3b82f6'); txt(ctx,"Velocity v(t)",10,h3+20,"",'#10b981'); txt(ctx,"Acceleration a(t)",10,2*h3+20,"",'#ef4444');
         }
 
-        function project3D(x,y,z,cx,cy,rotZ,tiltX,scale) {
-            const x1 = x * Math.cos(rotZ) - y * Math.sin(rotZ);
-            const y1 = x * Math.sin(rotZ) + y * Math.cos(rotZ);
-            const y2 = y1 * Math.cos(tiltX) - z * Math.sin(tiltX);
-            return { px: cx + x1 * scale, py: cy + y2 * scale };
-        }
+        const p3D=(x,y,z,cx,cy,rZ,tX,s)=>({px:cx+(x*cos(rZ)-y*sin(rZ))*s,py:cy+((x*sin(rZ)+y*cos(rZ))*cos(tX)-z*sin(tX))*s});
 
         function draw3DSpheres() {
-            const c = prepCanvas('canvas-3dspheres'); if(!c) return; const {ctx, w, h, tc} = c;
-            const zT = parseFloat(document.getElementById('slider-3d')?.value || "1.5");
-            setVal('slider-3d-val', zT.toFixed(1));
-            const cx = w/2; const cy = h/2 + 20; const isoX = (x,y,z) => cx + (x-y)*Math.cos(Math.PI/6); const isoY = (x,y,z) => cy + (x+y)*Math.sin(Math.PI/6) - z*30;
-            
-            ctx.strokeStyle = tc; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(isoX(0,0,0), isoY(0,0,0)); ctx.lineTo(isoX(150,0,0), isoY(150,0,0)); ctx.stroke(); ctx.beginPath(); ctx.moveTo(isoX(0,0,0), isoY(0,0,0)); ctx.lineTo(isoX(0,150,0), isoY(0,150,0)); ctx.stroke(); ctx.beginPath(); ctx.moveTo(isoX(0,0,0), isoY(0,0,0)); ctx.lineTo(isoX(0,0,4), isoY(0,0,4)); ctx.stroke();
-            
-            const tX = 80, tY = 80, tZ = zT; const px = isoX(tX,tY,tZ); const py = isoY(tX,tY,tZ);
-            const ants = [{x: 120, y: 20, z: 0, c: '#f87171'}, {x: 20, y: 120, z: 0, c: '#60a5fa'}, {x: 30, y: 30, z: 0, c: '#34d399'}];
-            ants.forEach(a => {
-                const ax = isoX(a.x, a.y, a.z); const ay = isoY(a.x, a.y, a.z); ctx.fillStyle = a.c; ctx.beginPath(); ctx.arc(ax, ay, 6, 0, Math.PI*2); ctx.fill();
-                const r = Math.sqrt(Math.pow(tX-a.x, 2) + Math.pow(tY-a.y, 2) + Math.pow(tZ-a.z, 2)); ctx.strokeStyle = a.c + '40'; ctx.lineWidth = 2;
-                for(let ang=0; ang<Math.PI; ang+=Math.PI/4) { ctx.beginPath(); for(let th=0; th<=Math.PI*2; th+=0.2) { const sx = a.x + r*Math.cos(th); const sy = a.y + r*Math.sin(th)*Math.cos(ang); const sz = a.z + r*Math.sin(th)*Math.sin(ang); const ppx = isoX(sx, sy, sz); const ppy = isoY(sx, sy, sz); if(th===0) ctx.moveTo(ppx, ppy); else ctx.lineTo(ppx, ppy); } ctx.stroke(); }
+            const c=prepCanvas('canvas-3dspheres');if(!c)return;const{ctx,w,h,tc}=c;
+            const zT=v('slider-3d',1.5); sV('slider-3d-val',zT.toFixed(1));
+            const cx=w/2, cy=h/2+20, iX=(x,y,z)=>cx+(x-y)*cos(PI/6), iY=(x,y,z)=>cy+(x+y)*sin(PI/6)-z*30;
+            ctx.strokeStyle=tc;ctx.lineWidth=2; line(ctx,iX(0,0,0),iY(0,0,0),iX(150,0,0),iY(150,0,0)); line(ctx,iX(0,0,0),iY(0,0,0),iX(0,150,0),iY(0,150,0)); line(ctx,iX(0,0,0),iY(0,0,0),iX(0,0,4),iY(0,0,4));
+            const tX=80,tY=80,tZ=zT, px=iX(tX,tY,tZ), py=iY(tX,tY,tZ);
+            const ants=[{x:120,y:20,z:0,c:'#f87171'},{x:20,y:120,z:0,c:'#60a5fa'},{x:30,y:30,z:0,c:'#34d399'}];
+            ants.forEach(a=>{
+                circ(ctx,iX(a.x,a.y,a.z),iY(a.x,a.y,a.z),6,a.c);
+                const r=sqrt(pow(tX-a.x,2)+pow(tY-a.y,2)+pow(tZ-a.z,2)); ctx.strokeStyle=a.c+'40';ctx.lineWidth=2;
+                for(let ang=0;ang<PI;ang+=PI/4){ ctx.beginPath(); for(let th=0;th<=PI*2;th+=0.2){ const ppx=iX(a.x+r*cos(th), a.y+r*sin(th)*cos(ang), a.z+r*sin(th)*sin(ang)), ppy=iY(a.x+r*cos(th), a.y+r*sin(th)*cos(ang), a.z+r*sin(th)*sin(ang)); if(th===0) ctx.moveTo(ppx,ppy); else ctx.lineTo(ppx,ppy); } ctx.stroke(); }
             });
-            ctx.beginPath(); ctx.strokeStyle = tc; ctx.setLineDash([4,4]); ctx.moveTo(isoX(tX,tY,0), isoY(tX,tY,0)); ctx.lineTo(px, py); ctx.stroke(); ctx.setLineDash([]);
-            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(px, py, 8, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle=tc;ctx.setLineDash([4,4]); line(ctx,iX(tX,tY,0),iY(tX,tY,0),px,py); ctx.setLineDash([]);
+            circ(ctx,px,py,8,'#f59e0b'); txt(ctx,"Intersection = Target (x,y,z)",px+15,py);
         }
 
         function drawDeterminant() {
-            const c = prepCanvas('canvas-det'); if(!c) return; const {ctx, w, h, tc} = c;
-            const thD = parseFloat(document.getElementById('slider-det')?.value || "90"); const th = thD*Math.PI/180; const det = Math.sin(th);
-            const cx = w/2 - 50; const cy = h - 50; const sc = 100;
-            
-            ctx.strokeStyle = 'rgba(59,130,246,0.3)'; ctx.lineWidth = 2;
-            for(let i=-2; i<=5; i++) { for(let j=-2; j<=2; j++) { const t1x = cx + (i*1 + j*Math.cos(th))*sc; const t1y = cy - (i*0 + j*Math.sin(th))*sc; const t2x = cx + ((i+1)*1 + j*Math.cos(th))*sc; const t2y = cy - ((i+1)*0 + j*Math.sin(th))*sc; const t3x = cx + (i*1 + (j+1)*Math.cos(th))*sc; const t3y = cy - (i*0 + (j+1)*Math.sin(th))*sc; ctx.beginPath(); ctx.moveTo(t1x, t1y); ctx.lineTo(t2x, t2y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(t1x, t1y); ctx.lineTo(t3x, t3y); ctx.stroke(); } }
-            
-            ctx.beginPath(); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 4; ctx.moveTo(cx, cy); ctx.lineTo(cx+sc, cy); ctx.stroke();
-            const v2x = cx + Math.cos(th)*sc; const v2y = cy - Math.sin(th)*sc; ctx.beginPath(); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 4; ctx.moveTo(cx, cy); ctx.lineTo(v2x, v2y); ctx.stroke();
-            ctx.fillStyle = 'rgba(245,158,11,0.3)'; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx+sc, cy); ctx.lineTo(cx+sc + Math.cos(th)*sc, cy - Math.sin(th)*sc); ctx.lineTo(v2x, v2y); ctx.fill();
-            
-            if(det < 0.1) { ctx.fillStyle = '#ef4444'; ctx.font = "bold 16px Outfit"; ctx.fillText("MATRIX SINGULAR: Cannot Solve Inverse!", cx-50, cy-100); }
+            const c=prepCanvas('canvas-det');if(!c)return;const{ctx,w,h,tc}=c;
+            const th=v('slider-det',90)*PI/180, det=sin(th), cx=w/2-50, cy=h-50, sc=100;
+            ctx.strokeStyle='rgba(59,130,246,0.3)';ctx.lineWidth=2;
+            for(let i=-2;i<=5;i++){for(let j=-2;j<=2;j++){ line(ctx,cx+(i+j*cos(th))*sc, cy-(j*sin(th))*sc, cx+(i+1+j*cos(th))*sc, cy-(j*sin(th))*sc); line(ctx,cx+(i+j*cos(th))*sc, cy-(j*sin(th))*sc, cx+(i+(j+1)*cos(th))*sc, cy-((j+1)*sin(th))*sc); }}
+            ctx.strokeStyle='#ef4444';ctx.lineWidth=4; line(ctx,cx,cy,cx+sc,cy);
+            const v2x=cx+cos(th)*sc, v2y=cy-sin(th)*sc; ctx.strokeStyle='#10b981'; line(ctx,cx,cy,v2x,v2y);
+            ctx.fillStyle='rgba(245,158,11,0.3)'; ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+sc,cy);ctx.lineTo(cx+sc+cos(th)*sc,cy-sin(th)*sc);ctx.lineTo(v2x,v2y);ctx.fill();
+            txt(ctx,`Det(H) = Area = ${det.toFixed(2)}`,cx+sc/2-30,cy-sc/2,"14px Outfit",tc);
+            if(det<0.1) txt(ctx,"MATRIX SINGULAR: AI goes blind!",cx-50,cy-100,"bold 16px Outfit",'#ef4444');
         }
 
         function drawResonance() {
-            const c = prepCanvas('canvas-lcr'); if(!c) return; const {ctx, w, h, tc} = c;
-            const C = parseFloat(document.getElementById('slider-lcr')?.value || "1.0"); const L = 1.0; const f0 = 5.0/Math.sqrt(L*C);
-            const R = 0.5; ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 3;
-            for(let x=0; x<w; x++) { const f = (x/w)*10; if(f===0) continue; const XL = 2*Math.PI*f*L; const XC = 1/(2*Math.PI*f*C); const Z = Math.sqrt(R*R + Math.pow(XL-XC, 2)); const I = 1/Z; const y = h - (I*(h-50)*0.5); if(x===1) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke();
-            const px = (f0/10)*w; ctx.beginPath(); ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2; ctx.setLineDash([5,5]); ctx.moveTo(px, h); ctx.lineTo(px, 20); ctx.stroke(); ctx.setLineDash([]);
-            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(px, h/2, 6, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = tc; ctx.font = "14px Outfit"; ctx.fillText(`Resonant Freq: ${f0.toFixed(2)} GHz`, px+10, 40);
+            const c=prepCanvas('canvas-lcr');if(!c)return;const{ctx,w,h,tc}=c;
+            const C=v('slider-lcr',1.0), f0=5.0/sqrt(C);
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=3; wave(ctx,1,w,1, x=>h-(1/sqrt(0.25+pow(2*PI*(x/w*10)-1/(2*PI*(x/w*10)*C),2))*(h-50)*0.5));
+            const px=(f0/10)*w; ctx.strokeStyle='#f59e0b';ctx.lineWidth=2;ctx.setLineDash([5,5]); line(ctx,px,h,px,20); ctx.setLineDash([]);
+            circ(ctx,px,h/2,6,'#f59e0b'); txt(ctx,`Resonant Freq: ${f0.toFixed(2)} GHz`,px+10,40,"14px Outfit",tc);
         }
 
         function drawPoynting() {
-            const c = prepCanvas('canvas-poynting'); if(!c) return; const {ctx, w, h, tc} = c;
-            const cx = 50; const cy = h/2; const isoX = (x,y,z) => cx+x-0.5*z; const isoY = (x,y,z) => cy-y+0.3*z;
-            ctx.strokeStyle = tc; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(isoX(0,0,0), isoY(0,0,0)); ctx.lineTo(isoX(w-100,0,0), isoY(w-100,0,0)); ctx.stroke(); ctx.beginPath(); ctx.moveTo(isoX(0,-100,0), isoY(0,-100,0)); ctx.lineTo(isoX(0,100,0), isoY(0,100,0)); ctx.stroke(); ctx.beginPath(); ctx.moveTo(isoX(0,0,-150), isoY(0,0,-150)); ctx.lineTo(isoX(0,0,150), isoY(0,0,150)); ctx.stroke();
-            
-            const k = 0.05; const wF = 0.1; const A = 60; ctx.lineWidth = 2;
-            for(let x=0; x<w-150; x+=10) { const ph = k*x - wF*time; const E = A*Math.cos(ph); const H = A*Math.cos(ph); ctx.strokeStyle = '#3b82f6'; ctx.beginPath(); ctx.moveTo(isoX(x,0,0), isoY(x,0,0)); ctx.lineTo(isoX(x,E,0), isoY(x,E,0)); ctx.stroke(); ctx.strokeStyle = '#ef4444'; ctx.beginPath(); ctx.moveTo(isoX(x,0,0), isoY(x,0,0)); ctx.lineTo(isoX(x,0,H), isoY(x,0,H)); ctx.stroke(); }
-            const xH = (time*2)%(w-150); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(isoX(xH,0,0), isoY(xH,0,0)); ctx.lineTo(isoX(xH+40,0,0), isoY(xH+40,0,0)); ctx.stroke();
+            const c=prepCanvas('canvas-poynting');if(!c)return;const{ctx,w,h,tc}=c;
+            const cx=50, cy=h/2, iX=(x,z)=>cx+x-0.5*z, iY=(y,z)=>cy-y+0.3*z;
+            ctx.strokeStyle=tc;ctx.lineWidth=1; line(ctx,iX(0,0),iY(0,0),iX(w-100,0),iY(0,0)); line(ctx,iX(0,0),iY(-100,0),iX(0,0),iY(100,0)); line(ctx,iX(0,-150),iY(0,-150),iX(0,150),iY(0,150));
+            ctx.lineWidth=2;
+            for(let x=0;x<w-150;x+=10){const E=60*cos(0.05*x-0.1*time); ctx.strokeStyle='#3b82f6'; line(ctx,iX(x,0),iY(0,0),iX(x,0),iY(E,0)); ctx.strokeStyle='#ef4444'; line(ctx,iX(x,0),iY(0,0),iX(x,E),iY(0,E));}
+            const xH=(time*2)%(w-150); ctx.strokeStyle='#10b981';ctx.lineWidth=4; line(ctx,iX(xH,0),iY(0,0),iX(xH+40,0),iY(0,0));
+            txt(ctx,"E-Field",20,30,"14px Outfit",'#3b82f6'); txt(ctx,"H-Field",20,50,"",'#ef4444'); txt(ctx,"S = E x H",20,70,"",'#10b981');
         }
 
         function drawFresnel() {
-            const c = prepCanvas('canvas-fresnel'); if(!c) return; const {ctx, w, h, tc} = c;
-            const n1 = 1.0; const n2 = parseFloat(document.getElementById('slider-fresnel')?.value || "1.5");
-            setVal('slider-fresnel-val', n2.toFixed(1));
-            const r = (n1-n2)/(n1+n2); const cx = w/2;
-            ctx.fillStyle = isDark() ? '#1e293b' : '#e2e8f0'; ctx.fillRect(0,0,cx,h); ctx.fillStyle = isDark() ? '#334155' : '#cbd5e1'; ctx.fillRect(cx,0,cx,h);
-            const amp = 80; const k1 = 0.1; const k2 = k1*n2; const wF = 0.2;
-            ctx.beginPath(); ctx.strokeStyle = 'rgba(59,130,246,0.7)'; ctx.lineWidth = 3; for(let x=0; x<=cx; x++) { const y = h/2 + amp*Math.cos(k1*x - wF*time); if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke();
-            ctx.beginPath(); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; for(let x=0; x<=cx; x++) { const y = h/2 + (amp*Math.abs(r))*Math.cos(-k1*x - wF*time + (r<0?Math.PI:0)); if(x===0) ctx.moveTo(cx-x,y); else ctx.lineTo(cx-x,y); } ctx.stroke();
-            ctx.beginPath(); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 3; for(let x=0; x<=cx; x++) { const ta = amp*(1+r); const y = h/2 + ta*Math.cos(k2*x - wF*time); if(x===0) ctx.moveTo(cx+x,y); else ctx.lineTo(cx+x,y); } ctx.stroke();
+            const c=prepCanvas('canvas-fresnel');if(!c)return;const{ctx,w,h,tc}=c;
+            const n2=v('slider-fresnel',1.5); sV('slider-fresnel-val',n2.toFixed(1));
+            const r=(1-n2)/(1+n2), cx=w/2;
+            rect(ctx,0,0,cx,h,isDark()?'#1e293b':'#e2e8f0'); rect(ctx,cx,0,cx,h,isDark()?'#334155':'#cbd5e1');
+            txt(ctx,"Air (n=1.0)",20,30,"14px Outfit",tc); txt(ctx,`Wall (n=${n2.toFixed(1)})`,cx+20,30);
+            ctx.strokeStyle='rgba(59,130,246,0.7)';ctx.lineWidth=3; wave(ctx,0,cx,1, x=>h/2+80*cos(0.1*x-0.2*time));
+            ctx.strokeStyle='#ef4444'; wave(ctx,0,cx,1, x=>h/2+80*abs(r)*cos(-0.1*(cx-x)-0.2*time+(r<0?PI:0)));
+            ctx.strokeStyle='#10b981'; wave(ctx,0,cx,1, x=>h/2+80*(1+r)*cos(0.1*n2*x-0.2*time));
         }
 
         function drawRCS() {
-            const c = prepCanvas('canvas-rcs'); if(!c) return; const {ctx, w, h, tc} = c;
-            const sig = parseFloat(document.getElementById('slider-rcs')?.value || "1.0");
-            setVal('slider-rcs-val', sig.toFixed(1));
-            ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 3;
-            for(let px=10; px<w; px++) { const R = (px/w)*10; if(R<0.5) continue; const Pr = (1000*sig)/Math.pow(R,4); let py = h-Pr; if(py>h) py=h; if(px===10) ctx.moveTo(px, Math.max(0,py)); else ctx.lineTo(px, Math.max(0,py)); } ctx.stroke();
+            const c=prepCanvas('canvas-rcs');if(!c)return;const{ctx,w,h,tc}=c;
+            const sig=v('slider-rcs',1.0); sV('slider-rcs-val',sig.toFixed(1));
+            txt(ctx,"Signal Power P_r ∝ 1/R⁴",20,30,"14px Outfit",tc);
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=3; wave(ctx,10,w,1, x=>max(0,h-(1000*sig)/pow(x/w*10,4)));
         }
 
         function drawDipole() {
-            const c = prepCanvas('canvas-dipole'); if(!c) return; const {ctx, w, h, tc} = c;
-            const L = parseFloat(document.getElementById('slider-dipole')?.value || "3.0");
-            const cx = w/2; const cy = h/2; const pL = L*40; ctx.fillStyle = isDark() ? '#64748b' : '#94a3b8'; ctx.fillRect(cx-5, cy-pL/2, 10, pL);
-            const k = 2*Math.PI/6.0; const I0 = 80; ctx.beginPath(); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3;
-            for(let zp=-pL/2; zp<=pL/2; zp++) { const zc = zp/40; const cA = I0*Math.sin(k*(L/2 - Math.abs(zc)))*Math.sin(time*0.1); const px = cx+cA; const py = cy+zp; if(zp===-pL/2) ctx.moveTo(px,py); else ctx.lineTo(px,py); } ctx.stroke();
+            const c=prepCanvas('canvas-dipole');if(!c)return;const{ctx,w,h,tc}=c;
+            const L=v('slider-dipole',3.0), cx=w/2, cy=h/2, pL=L*40;
+            rect(ctx,cx-5,cy-pL/2,10,pL,isDark()?'#64748b':'#94a3b8');
+            ctx.strokeStyle='#ef4444';ctx.lineWidth=3; plot(ctx,-pL/2,pL/2,1, zp=>cx+80*sin((2*PI/6)*(L/2-abs(zp/40)))*sin(time*0.1), zp=>cy+zp);
+            txt(ctx,"Antenna Standing Current I(z)",cx+20,30,"14px Outfit",tc);
         }
 
         function drawNyquist() {
-            const c = prepCanvas('canvas-nyquist'); if(!c) return; const {ctx, w, h, tc} = c;
-            const fs = parseFloat(document.getElementById('slider-nyq')?.value || "5.0");
-            setVal('slider-nyq-val', fs.toFixed(1));
-            const fsig = 2.0; const amp = 60; ctx.beginPath(); ctx.strokeStyle = 'rgba(59,130,246,0.4)'; ctx.lineWidth = 2;
-            for(let px=0; px<w; px++) { const t = px/w*2; const y = h/2 - amp*Math.cos(2*Math.PI*fsig*t - time*0.05); if(px===0) ctx.moveTo(px,y); else ctx.lineTo(px,y); } ctx.stroke();
-            const nS = Math.floor(2*fs); const smp = []; for(let i=0; i<=nS; i++) { const t = i/fs; const px = (t/2)*w; if(px>w) break; const y = h/2 - amp*Math.cos(2*Math.PI*fsig*t - time*0.05); smp.push({x:px, y:y}); }
-            ctx.beginPath(); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; for(let i=0; i<smp.length; i++) { if(i===0) ctx.moveTo(smp[i].x, smp[i].y); else ctx.lineTo(smp[i].x, smp[i].y); } ctx.stroke();
-            ctx.fillStyle = tc; smp.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, 4, 0, Math.PI*2); ctx.fill(); });
+            const c=prepCanvas('canvas-nyquist');if(!c)return;const{ctx,w,h,tc}=c;
+            const fs=v('slider-nyq',5.0); sV('slider-nyq-val',fs.toFixed(1));
+            ctx.strokeStyle='rgba(59,130,246,0.4)';ctx.lineWidth=2; wave(ctx,0,w,1, x=>h/2-60*cos(4*PI*x/w-time*0.05));
+            ctx.strokeStyle='#ef4444';ctx.lineWidth=3; plot(ctx,0,flr(2*fs),1, i=>(i/fs/2)*w, i=>h/2-60*cos(4*PI*(i/fs)-time*0.05));
+            for(let i=0;i<=flr(2*fs);i++) if((i/fs/2)*w <= w) circ(ctx,(i/fs/2)*w,h/2-60*cos(4*PI*(i/fs)-time*0.05),4,tc);
+            txt(ctx,`Sample Rate: ${fs} Hz (Signal: 2Hz)`,20,30,"14px Outfit",tc); if(fs<4.0) txt(ctx,"ALIASING WARNING",20,50,"",'#ef4444');
         }
 
         function drawConvolution() {
-            const c = prepCanvas('canvas-convolution'); if(!c) return; const {ctx, w, h, tc} = c; const h3 = h/3;
-            ctx.strokeStyle = isDark() ? '#334155' : '#cbd5e1'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, h3-20); ctx.lineTo(w, h3-20); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, 2*h3-20); ctx.lineTo(w, 2*h3-20); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, 3*h3-20); ctx.lineTo(w, 3*h3-20); ctx.stroke();
-            const sX = (time*2)%(w+100) - 50; const pW = 60; ctx.fillStyle = 'rgba(59,130,246,0.5)'; ctx.fillRect(sX, h3-70, pW, 50); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2; ctx.strokeRect(sX, h3-70, pW, 50);
-            const ech = [{x:100, a:50}, {x:180, a:30}, {x:250, a:20}]; ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3;
-            ech.forEach(e => { ctx.beginPath(); ctx.moveTo(e.x, 2*h3-20); ctx.lineTo(e.x, 2*h3-20-e.a); ctx.stroke(); ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(e.x, 2*h3-20-e.a, 4, 0, Math.PI*2); ctx.fill(); });
-            ctx.beginPath(); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2;
-            for(let px=0; px<w; px++) { let yv = 0; ech.forEach(e => { if(px >= e.x && px <= e.x+pW) yv += e.a; }); const py = 3*h3-20-yv; if(px===0) ctx.moveTo(px,py); else ctx.lineTo(px,py); } ctx.stroke();
+            const c=prepCanvas('canvas-convolution');if(!c)return;const{ctx,w,h,tc}=c;const h3=h/3;
+            ctx.strokeStyle=isDark()?'#334155':'#cbd5e1';ctx.lineWidth=1; line(ctx,0,h3-20,w,h3-20); line(ctx,0,2*h3-20,w,2*h3-20); line(ctx,0,3*h3-20,w,3*h3-20);
+            txt(ctx,"Input Signal x(τ)",10,h3-40,"12px Outfit",tc); txt(ctx,"Room Impulse Response h(t-τ)",10,2*h3-40); txt(ctx,"Received Signal y(t) = x*h",10,3*h3-40);
+            const sX=(time*2)%(w+100)-50; rect(ctx,sX,h3-70,60,50,'rgba(59,130,246,0.5)','#3b82f6');
+            const ech=[{x:100,a:50},{x:180,a:30},{x:250,a:20}]; ctx.strokeStyle='#f59e0b';ctx.lineWidth=3;
+            ech.forEach(e=>{ line(ctx,e.x,2*h3-20,e.x,2*h3-20-e.a); circ(ctx,e.x,2*h3-20-e.a,4,'#f59e0b'); });
+            ctx.strokeStyle='#10b981';ctx.lineWidth=2; wave(ctx,0,w,1, x=>{let yv=0;ech.forEach(e=>{if(x>=e.x&&x<=e.x+60)yv+=e.a;});return 3*h3-20-yv;});
         }
 
         function drawResolution() {
-            const c = prepCanvas('canvas-resolution'); if(!c) return; const {ctx, w, h, tc} = c;
-            const B = parseFloat(document.getElementById('slider-res')?.value || "20");
-            setVal('slider-res-val', B);
-            const cx = w/2; const t1 = cx-50; const t2 = cx+50; const pW = (500/B)*15;
-            ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 3;
-            for(let px=0; px<w; px++) { const p1 = 60*Math.exp(-Math.pow((px-t1)/pW, 2)); const p2 = 60*Math.exp(-Math.pow((px-t2)/pW, 2)); const py = h-30-(p1+p2); if(px===0) ctx.moveTo(px,py); else ctx.lineTo(px,py); } ctx.stroke();
+            const c=prepCanvas('canvas-resolution');if(!c)return;const{ctx,w,h,tc}=c;
+            const B=v('slider-res',20); sV('slider-res-val',B);
+            txt(ctx,`Bandwidth: ${B} MHz | Resolution ΔR`,20,30,"14px Outfit",tc);
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=3; wave(ctx,0,w,1, x=>h-30-60*(exp(-pow((x-(w/2-50))/((500/B)*15),2))+exp(-pow((x-(w/2+50))/((500/B)*15),2))));
         }
 
         function drawMaxwell() {
-            const c = prepCanvas('canvas-maxwell'); if(!c) return; const {ctx, w, h, tc} = c;
-            const cx1 = w/4; const cx2 = 3*w/4; const cy = h/2; const qO = Math.sin(time*0.05);
-            ctx.fillStyle = qO>0 ? 'rgba(239,68,68,0.5)' : 'rgba(59,130,246,0.5)'; ctx.beginPath(); ctx.arc(cx1, cy, 15, 0, Math.PI*2); ctx.fill();
-            for(let a=0; a<Math.PI*2; a+=Math.PI/4) { const dir = qO>0 ? 1 : -1; const rE = 20 + 40*Math.abs(qO); ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2; if(dir>0) { ctx.moveTo(cx1+20*Math.cos(a), cy+20*Math.sin(a)); ctx.lineTo(cx1+rE*Math.cos(a), cy+rE*Math.sin(a)); } else { ctx.moveTo(cx1+60*Math.cos(a), cy+60*Math.sin(a)); ctx.lineTo(cx1+20*Math.cos(a), cy+20*Math.sin(a)); } ctx.stroke(); }
-            
-            const bO = Math.cos(time*0.05); ctx.fillStyle = bO>0 ? 'rgba(16,185,129,0.3)' : 'rgba(16,185,129,0.8)'; ctx.beginPath(); ctx.arc(cx2, cy, 20+10*bO, 0, Math.PI*2); ctx.fill();
-            const rC = 50; ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2; ctx.arc(cx2, cy, rC, 0, Math.PI*2); ctx.stroke();
-            for(let a=0; a<Math.PI*2; a+=Math.PI/2) { const px = cx2+rC*Math.cos(a); const py = cy+rC*Math.sin(a); const vx = Math.sin(a)*bO*15; const vy = -Math.cos(a)*bO*15; ctx.beginPath(); ctx.strokeStyle = tc; ctx.lineWidth = 3; ctx.moveTo(px,py); ctx.lineTo(px+vx, py+vy); ctx.stroke(); }
+            const c=prepCanvas('canvas-maxwell');if(!c)return;const{ctx,w,h,tc}=c;
+            const cx1=w/4, cx2=3*w/4, cy=h/2, qO=sin(time*0.05), bO=cos(time*0.05);
+            txt(ctx,"Gauss: Divergence ∇·E",cx1-60,30,"14px Outfit",tc); txt(ctx,"Faraday/Ampere: Curl ∇×B",cx2-80,30);
+            circ(ctx,cx1,cy,15,qO>0?'rgba(239,68,68,0.5)':'rgba(59,130,246,0.5)');
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=2; for(let a=0;a<PI*2;a+=PI/4){if(qO>0)line(ctx,cx1+20*cos(a),cy+20*sin(a),cx1+(20+40*abs(qO))*cos(a),cy+(20+40*abs(qO))*sin(a));else line(ctx,cx1+60*cos(a),cy+60*sin(a),cx1+20*cos(a),cy+20*sin(a));}
+            circ(ctx,cx2,cy,20+10*bO,bO>0?'rgba(16,185,129,0.3)':'rgba(16,185,129,0.8)','#3b82f6');
+            ctx.strokeStyle=tc;ctx.lineWidth=3; for(let a=0;a<PI*2;a+=PI/2) line(ctx,cx2+50*cos(a),cy+50*sin(a),cx2+50*cos(a)+sin(a)*bO*15,cy+50*sin(a)-cos(a)*bO*15);
         }
 
         function drawWaveEq() {
-            const c = prepCanvas('canvas-waveeq'); if(!c) return; const {ctx, w, h, tc} = c;
-            const cy = h/2; ctx.strokeStyle = tc; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.stroke();
-            const k = 0.02; const wF = 0.05; const A = 60; ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 3;
-            for(let x=0; x<w; x++) { const y = cy - A*Math.cos(k*x - wF*time); if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke();
-            const pX = ((wF*time)/k) % (Math.PI*2/k);
-            ctx.beginPath(); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; ctx.arc(pX, cy-A+20, 20, Math.PI, 0); ctx.stroke();
-            ctx.beginPath(); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.moveTo(pX, cy-A); ctx.lineTo(pX, cy-A+40); ctx.stroke();
+            const c=prepCanvas('canvas-waveeq');if(!c)return;const{ctx,w,h,tc}=c;
+            const cy=h/2; ctx.strokeStyle=tc;ctx.lineWidth=1; line(ctx,0,cy,w,cy);
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=3; wave(ctx,0,w,1, x=>cy-60*cos(0.02*x-0.05*time));
+            const pX=((0.05*time)/0.02)%(PI*2/0.02); ctx.strokeStyle='#ef4444';ctx.lineWidth=2; ctx.beginPath();ctx.arc(pX,cy-40,20,PI,0);ctx.stroke();
+            ctx.strokeStyle='#10b981'; line(ctx,pX,cy-60,pX,cy-20); txt(ctx,"∇²E = 1/c² (∂²E/∂t²)",20,30,"14px Outfit",tc);
         }
 
         function drawEnergyDensity() {
-            const c = prepCanvas('canvas-energydensity'); if(!c) return; const {ctx, w, h, tc} = c;
-            const cy = h*0.75; ctx.strokeStyle = tc; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0,cy); ctx.lineTo(w,cy); ctx.stroke();
-            const k = 0.05; const wF = 0.1; const A = 40; ctx.beginPath(); ctx.strokeStyle = 'rgba(59,130,246,0.5)'; ctx.lineWidth = 2; ctx.setLineDash([5,5]);
-            for(let x=0; x<w; x++) { const y = cy - A*Math.sin(k*x - wF*time); if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke(); ctx.setLineDash([]);
-            ctx.beginPath(); ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3;
-            for(let x=0; x<w; x++) { const val = Math.sin(k*x - wF*time); const u = cy - 2.5*A*(val*val); if(x===0) ctx.moveTo(x,u); else ctx.lineTo(x,u); } ctx.stroke();
+            const c=prepCanvas('canvas-energydensity');if(!c)return;const{ctx,w,h,tc}=c;
+            const cy=h*0.75; ctx.strokeStyle=tc;ctx.lineWidth=1; line(ctx,0,cy,w,cy);
+            ctx.strokeStyle='rgba(59,130,246,0.5)';ctx.lineWidth=2;ctx.setLineDash([5,5]); wave(ctx,0,w,1, x=>cy-40*sin(0.05*x-0.1*time)); ctx.setLineDash([]);
+            ctx.strokeStyle='#f59e0b';ctx.lineWidth=3; wave(ctx,0,w,1, x=>cy-100*pow(sin(0.05*x-0.1*time),2));
+            txt(ctx,"Total Energy Density (u = u_E + u_B)",20,30,"14px Outfit",tc);
         }
 
         function drawReciprocity() {
-            const c = prepCanvas('canvas-reciprocity'); if(!c) return; const {ctx, w, h, tc} = c;
-            const aA = {x: 50, y: h/2}; const aB = {x: w-50, y: h/2}; const sct = [{x: w/2, y: 50}, {x: w/3, y: h-50}, {x: 2*w/3, y: h-60}];
-            ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.arc(aA.x, aA.y, 8, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(aB.x, aB.y, 8, 0, Math.PI*2); ctx.fill();
-            sct.forEach(s => { ctx.fillStyle = isDark() ? '#64748b' : '#94a3b8'; ctx.beginPath(); ctx.arc(s.x, s.y, 6, 0, Math.PI*2); ctx.fill(); });
-            const iAB = Math.floor(time/100)%2 === 0; const tx = iAB ? aA : aB; const rx = iAB ? aB : aA; const txC = iAB ? '#3b82f6' : '#ef4444';
-            ctx.strokeStyle = txC; ctx.lineWidth = 2; ctx.beginPath(); ctx.setLineDash([10,10]); ctx.lineDashOffset = -time*(iAB?2:-2); ctx.moveTo(tx.x, tx.y); ctx.lineTo(rx.x, rx.y); ctx.stroke();
-            sct.forEach(s => { ctx.beginPath(); ctx.moveTo(tx.x, tx.y); ctx.lineTo(s.x, s.y); ctx.lineTo(rx.x, rx.y); ctx.stroke(); }); ctx.setLineDash([]);
+            const c=prepCanvas('canvas-reciprocity');if(!c)return;const{ctx,w,h,tc}=c;
+            const aA={x:50,y:h/2}, aB={x:w-50,y:h/2}, sct=[{x:w/2,y:50},{x:w/3,y:h-50},{x:2*w/3,y:h-60}];
+            circ(ctx,aA.x,aA.y,8,'#3b82f6'); circ(ctx,aB.x,aB.y,8,'#ef4444');
+            sct.forEach(s=>circ(ctx,s.x,s.y,6,isDark()?'#64748b':'#94a3b8'));
+            const iAB=flr(time/100)%2===0, tx=iAB?aA:aB, rx=iAB?aB:aA;
+            ctx.strokeStyle=iAB?'#3b82f6':'#ef4444';ctx.lineWidth=2;ctx.setLineDash([10,10]);ctx.lineDashOffset=-time*(iAB?2:-2); line(ctx,tx.x,tx.y,rx.x,rx.y);
+            sct.forEach(s=>{ctx.beginPath();ctx.moveTo(tx.x,tx.y);ctx.lineTo(s.x,s.y);ctx.lineTo(rx.x,rx.y);ctx.stroke();}); ctx.setLineDash([]);
+            txt(ctx,`Transmission H_${iAB?'AB':'BA'}`,w/2-50,30,"14px Outfit",tc);
         }
 
         function drawShannon() {
-            const c = prepCanvas('canvas-shannon'); if(!c) return; const {ctx, w, h, tc} = c;
-            const SNR = parseFloat(document.getElementById('slider-shannon-snr')?.value || "10");
-            setVal('slider-shannon-snr-val', SNR);
-            const B = 20; const C = B*Math.log2(1+SNR);
-            ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 3;
-            for(let x=0; x<=100; x++) { const cap = B*Math.log2(1+x); const px = (x/100)*w; const py = h - (cap/(B*Math.log2(1+100)))*(h-40); if(x===0) ctx.moveTo(px,py); else ctx.lineTo(px,py); } ctx.stroke();
-            const cX = (SNR/100)*w; const cY = h - (C/(B*Math.log2(1+100)))*(h-40);
-            ctx.beginPath(); ctx.strokeStyle = tc; ctx.setLineDash([5,5]); ctx.moveTo(cX, h); ctx.lineTo(cX, cY); ctx.lineTo(0, cY); ctx.stroke(); ctx.setLineDash([]);
-            ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(cX, cY, 6, 0, Math.PI*2); ctx.fill();
+            const c=prepCanvas('canvas-shannon');if(!c)return;const{ctx,w,h,tc}=c;
+            const SNR=v('slider-shannon-snr',10); sV('slider-shannon-snr-val',SNR);
+            txt(ctx,`Capacity C = B log₂(1+SNR) = ${(20*log2(1+SNR)).toFixed(1)} Mbps`,20,30,"14px Outfit",tc);
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=3; wave(ctx,0,100,1, x=>(x/100)*w, x=>h-(20*log2(1+x)/(20*log2(101)))*(h-40));
+            const cX=(SNR/100)*w, cY=h-(20*log2(1+SNR)/(20*log2(101)))*(h-40);
+            ctx.strokeStyle=tc;ctx.setLineDash([5,5]); ctx.beginPath();ctx.moveTo(cX,h);ctx.lineTo(cX,cY);ctx.lineTo(0,cY);ctx.stroke();ctx.setLineDash([]); circ(ctx,cX,cY,6,'#ef4444');
         }
 
         function drawSVD() {
-            const c = prepCanvas('canvas-svd'); if(!c) return; const {ctx, w, h, tc} = c;
-            const cx = w/2; const cy = h/2; ctx.strokeStyle = tc; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0,cy); ctx.lineTo(w,cy); ctx.stroke(); ctx.beginPath(); ctx.moveTo(cx,0); ctx.lineTo(cx,h); ctx.stroke();
-            const rB = 50; const s1 = 1.5 + 0.5*Math.sin(time*0.05); const s2 = 0.8 + 0.2*Math.cos(time*0.05); const ang = time*0.02;
-            ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2;
-            for(let a=0; a<=Math.PI*2; a+=0.05) { const x = Math.cos(a); const y = Math.sin(a); const sx = x*s1; const sy = y*s2; const fx = sx*Math.cos(ang) - sy*Math.sin(ang); const fy = sx*Math.sin(ang) + sy*Math.cos(ang); const px = cx+fx*rB; const py = cy-fy*rB; if(a===0) ctx.moveTo(px,py); else ctx.lineTo(px,py); } ctx.closePath(); ctx.stroke();
-            const a1x = cx + s1*rB*Math.cos(ang); const a1y = cy - s1*rB*Math.sin(ang); const a2x = cx - s2*rB*Math.sin(ang); const a2y = cy - s2*rB*Math.cos(ang);
-            ctx.beginPath(); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.moveTo(cx,cy); ctx.lineTo(a1x, a1y); ctx.stroke();
-            ctx.beginPath(); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 3; ctx.moveTo(cx,cy); ctx.lineTo(a2x, a2y); ctx.stroke();
+            const c=prepCanvas('canvas-svd');if(!c)return;const{ctx,w,h,tc}=c;
+            const cx=w/2, cy=h/2; ctx.strokeStyle=tc;ctx.lineWidth=1; line(ctx,0,cy,w,cy); line(ctx,cx,0,cx,h);
+            txt(ctx,"Singular Vectors U and V",20,30,"14px Outfit",tc);
+            const s1=1.5+0.5*sin(time*0.05), s2=0.8+0.2*cos(time*0.05), ang=time*0.02;
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=2; plot(ctx,0,PI*2,0.05, a=>cx+(cos(a)*s1*cos(ang)-sin(a)*s2*sin(ang))*50, a=>cy-(cos(a)*s1*sin(ang)+sin(a)*s2*cos(ang))*50);
+            ctx.strokeStyle='#ef4444';ctx.lineWidth=3; line(ctx,cx,cy,cx+s1*50*cos(ang),cy-s1*50*sin(ang));
+            ctx.strokeStyle='#10b981'; line(ctx,cx,cy,cx-s2*50*sin(ang),cy-s2*50*cos(ang));
         }
 
         function drawKalman() {
-            const c = prepCanvas('canvas-kalman'); if(!c) return; const {ctx, w, h, tc} = c;
-            const cy = h/2; const f = 0.02; const a = 80; const cX = (time%200)*(w/200); if(cX < 5) { kalE = 0; kalP = 1.0; }
-            const tY = Math.sin(time*f)*a; const ns = 20*Math.sqrt(-2.0*Math.log(Math.random()+0.001))*Math.cos(2.0*Math.PI*Math.random()); const z = tY+ns;
-            let pE = kalE; let pP = kalP+0.1; const R = 20; const K = pP/(pP+R); kalE = pE + K*(z-pE); kalP = (1-K)*pP;
-            ctx.fillStyle = 'rgba(239,68,68,0.5)'; ctx.beginPath(); ctx.arc(cX, cy-z, 4, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.arc(cX, cy-tY, 3, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#10b981'; ctx.beginPath(); ctx.arc(cX, cy-kalE, 5, 0, Math.PI*2); ctx.fill();
+            const c=prepCanvas('canvas-kalman');if(!c)return;const{ctx,w,h,tc}=c;
+            const cy=h/2, a=80, cX=(time%200)*(w/200); if(cX<5){kalE=0;kalP=1.0;}
+            txt(ctx,"Prediction (Physics)",10,20,"12px Outfit",tc); txt(ctx,"Measurement (RF Sensor)",10,40,"",'#ef4444'); txt(ctx,"Updated Posterior",10,60,"",'#10b981');
+            const tY=sin(time*0.02)*a, z=tY+20*sqrt(-2.0*log(rnd()+0.001))*cos(2.0*PI*rnd());
+            const K=(kalP+0.1)/(kalP+0.1+20); kalE=kalE+K*(z-kalE); kalP=(1-K)*(kalP+0.1);
+            circ(ctx,cX,cy-z,4,'rgba(239,68,68,0.5)'); circ(ctx,cX,cy-tY,3,'#3b82f6'); circ(ctx,cX,cy-kalE,5,'#10b981');
         }
 
         function drawScattering() {
-            const c = prepCanvas('canvas-scattering'); if(!c) return; const {ctx, w, h, tc} = c;
-            const cx = w/2; const cy = h/2; const L = 30; ctx.strokeStyle = 'rgba(59,130,246,0.4)'; ctx.lineWidth = 2;
-            for(let i=0; i<w/2; i+=L) { const wx = (i+(time%L)); if(wx<cx) { ctx.beginPath(); ctx.moveTo(wx,0); ctx.lineTo(wx,h); ctx.stroke(); } }
-            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(cx, cy, 10, 0, Math.PI*2); ctx.fill();
-            ctx.strokeStyle = '#ef4444';
-            for(let r=10; r<w; r+=L) { const wR = (r+(time%L)); ctx.globalAlpha = Math.max(0, 1-wR/(w/2)); ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, cy, wR, 0, Math.PI*2); ctx.stroke(); } ctx.globalAlpha = 1.0;
+            const c=prepCanvas('canvas-scattering');if(!c)return;const{ctx,w,h,tc}=c;
+            const cx=w/2, cy=h/2, L=30; ctx.strokeStyle='rgba(59,130,246,0.4)';ctx.lineWidth=2;
+            txt(ctx,"Incident Field",20,30,"14px Outfit",tc); txt(ctx,"Scattered Field",w/2+20,30,"",'#ef4444');
+            for(let i=0;i<w/2;i+=L){const wx=(i+(time%L));if(wx<cx) line(ctx,wx,0,wx,h);}
+            circ(ctx,cx,cy,10,'#f59e0b');
+            ctx.strokeStyle='#ef4444'; for(let r=10;r<w;r+=L){const wR=(r+(time%L));ctx.globalAlpha=max(0,1-wR/(w/2));ctx.lineWidth=3; ctx.beginPath();ctx.arc(cx,cy,wR,0,PI*2);ctx.stroke();} ctx.globalAlpha=1.0;
         }
 
         function drawUncertainty() {
-            const c = prepCanvas('canvas-uncertainty'); if(!c) return; const {ctx, w, h, tc} = c;
-            const dt = parseFloat(document.getElementById('slider-uncertainty')?.value || "1.0"); const df = 1/dt; const cx = w/2; const cyT = h/4; const cyF = 3*h/4;
-            ctx.strokeStyle = tc; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, cyT); ctx.lineTo(w, cyT); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, cyF); ctx.lineTo(w, cyF); ctx.stroke();
-            ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 3;
-            for(let px=0; px<w; px++) { const x = (px-cx)/50; const y = cyT - 60*Math.exp(-Math.pow(x/dt, 2)); if(px===0) ctx.moveTo(px,y); else ctx.lineTo(px,y); } ctx.stroke();
-            ctx.beginPath(); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3;
-            for(let px=0; px<w; px++) { const x = (px-cx)/50; const y = cyF - 60*Math.exp(-Math.pow(x/df, 2)); if(px===0) ctx.moveTo(px,y); else ctx.lineTo(px,y); } ctx.stroke();
+            const c=prepCanvas('canvas-uncertainty');if(!c)return;const{ctx,w,h,tc}=c;
+            const dt=v('slider-uncertainty',1.0), df=1/dt, cx=w/2, cyT=h/4, cyF=3*h/4;
+            ctx.strokeStyle=tc;ctx.lineWidth=1; line(ctx,0,cyT,w,cyT); line(ctx,0,cyF,w,cyF);
+            txt(ctx,"Time Domain (Pulse)",20,cyT-40,"12px Outfit",tc); txt(ctx,"Freq Domain (Bandwidth)",20,cyF-40);
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=3; wave(ctx,0,w,1, px=>cyT-60*exp(-pow((px-cx)/50/dt,2)));
+            ctx.strokeStyle='#ef4444';ctx.lineWidth=3; wave(ctx,0,w,1, px=>cyF-60*exp(-pow((px-cx)/50/df,2)));
         }
 
         function drawEigenmodes() {
-            const c = prepCanvas('canvas-eigenmodes'); if(!c) return; const {ctx, w, h, tc} = c;
-            const r = 15; const cl = 30; const dx = w/cl; const dy = h/r; const m = 2; const n = 3; const ph = time*0.1;
-            for(let yR=0; yR<=r; yR++) { for(let xC=0; xC<=cl; xC++) { const x = xC/cl; const y = yR/r; const z = Math.sin(m*Math.PI*x)*Math.sin(n*Math.PI*y)*Math.cos(ph); const px = xC*dx; const py = yR*dy; let fill = 'transparent'; if(z>0.1) fill = `rgba(239,68,68,${Math.abs(z)})`; else if(z<-0.1) fill = `rgba(59,130,246,${Math.abs(z)})`; ctx.fillStyle = fill; ctx.beginPath(); ctx.arc(px, py, 6*Math.abs(z)+2, 0, Math.PI*2); ctx.fill(); } }
+            const c=prepCanvas('canvas-eigenmodes');if(!c)return;const{ctx,w,h,tc}=c;
+            const r=15, cl=30, dx=w/cl, dy=h/r, ph=time*0.1;
+            txt(ctx,"Cavity Resonance Modes",20,30,"14px Outfit",tc);
+            for(let yR=0;yR<=r;yR++){for(let xC=0;xC<=cl;xC++){const z=sin(2*PI*(xC/cl))*sin(3*PI*(yR/r))*cos(ph); circ(ctx,xC*dx,yR*dy,6*abs(z)+2, z>0.1?`rgba(239,68,68,${abs(z)})` : z<-0.1?`rgba(59,130,246,${abs(z)})`:'transparent');}}
         }
 
         function drawHelmholtz() {
-            const c = prepCanvas('canvas-helmholtz'); if(!c) return; const {ctx, w, h, tc} = c;
-            const cy = h/2; ctx.strokeStyle = tc; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0,cy); ctx.lineTo(w,cy); ctx.stroke();
-            const L = w-40; const sX = 20; ctx.fillStyle = isDark() ? '#475569' : '#94a3b8'; ctx.fillRect(0,0,20,h); ctx.fillRect(w-20,0,20,h);
-            const cols = ['rgba(59,130,246,0.5)', 'rgba(16,185,129,0.6)', 'rgba(239,68,68,0.8)'];
-            for(let n=1; n<=3; n++) { ctx.beginPath(); ctx.strokeStyle = cols[n-1]; ctx.lineWidth = n===3?3:2; const k = (n*Math.PI)/L; for(let px=0; px<=L; px++) { const amp = 80*Math.cos(time*0.05*n); const y = cy - amp*Math.sin(k*px); if(px===0) ctx.moveTo(sX+px, y); else ctx.lineTo(sX+px, y); } ctx.stroke(); }
+            const c=prepCanvas('canvas-helmholtz');if(!c)return;const{ctx,w,h,tc}=c;
+            const cy=h/2, L=w-40; ctx.strokeStyle=tc;ctx.lineWidth=1; line(ctx,0,cy,w,cy);
+            rect(ctx,0,0,20,h,isDark()?'#475569':'#94a3b8'); rect(ctx,w-20,0,20,h,isDark()?'#475569':'#94a3b8');
+            txt(ctx,"Quantized Standing States",30,30,"14px Outfit",tc);
+            ['rgba(59,130,246,0.5)','rgba(16,185,129,0.6)','rgba(239,68,68,0.8)'].forEach((col, i) => { const n=i+1; ctx.strokeStyle=col;ctx.lineWidth=n===3?3:2; wave(ctx,0,L,1, px=>cy-80*cos(time*0.05*n)*sin((n*PI/L)*px), px=>20+px); }); // custom x mapping
         }
 
         function drawMIMO() {
-            const c = prepCanvas('canvas-mimo'); if(!c) return; const {ctx, w, h, tc} = c;
-            const N = 4; const txX = 50; const rxX = w-50; const spc = 50; const sY = (h-(N-1)*spc)/2; const tA = []; const rA = [];
-            for(let i=0; i<N; i++) { tA.push({x:txX, y:sY+i*spc}); rA.push({x:rxX, y:sY+i*spc}); ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.arc(txX, sY+i*spc, 6, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = '#10b981'; ctx.beginPath(); ctx.arc(rxX, sY+i*spc, 6, 0, Math.PI*2); ctx.fill(); }
-            for(let i=0; i<N; i++) { for(let j=0; j<N; j++) { ctx.beginPath(); ctx.strokeStyle = isDark() ? 'rgba(148,163,184,0.2)' : 'rgba(0,0,0,0.1)'; ctx.lineWidth = 1; ctx.moveTo(tA[i].x, tA[i].y); ctx.lineTo(rA[j].x, rA[j].y); ctx.stroke(); const pL = Math.hypot(rxX-txX, rA[j].y-tA[i].y); const off = (time*2+i*20+j*15)%pL; const uX = (rA[j].x-tA[i].x)/pL; const uY = (rA[j].y-tA[i].y)/pL; const dX = tA[i].x + off*uX; const dY = tA[i].y + off*uY; ctx.fillStyle = 'rgba(245,158,11,0.8)'; ctx.beginPath(); ctx.arc(dX, dY, 2, 0, Math.PI*2); ctx.fill(); } }
+            const c=prepCanvas('canvas-mimo');if(!c)return;const{ctx,w,h,tc}=c;
+            const txX=50, rxX=w-50, spc=50, sY=(h-3*spc)/2;
+            txt(ctx,"Tx Array",txX-20,sY-20,"12px Outfit",tc); txt(ctx,"Rx Array",rxX-20,sY-20); txt(ctx,"Multipath Matrix H",w/2-40,30);
+            for(let i=0;i<4;i++){ circ(ctx,txX,sY+i*spc,6,'#3b82f6'); circ(ctx,rxX,sY+i*spc,6,'#10b981'); }
+            for(let i=0;i<4;i++){for(let j=0;j<4;j++){ ctx.strokeStyle=isDark()?'rgba(148,163,184,0.2)':'rgba(0,0,0,0.1)';ctx.lineWidth=1; line(ctx,txX,sY+i*spc,rxX,sY+j*spc); const pL=hypot(rxX-txX, (sY+j*spc)-(sY+i*spc)), off=(time*2+i*20+j*15)%pL; circ(ctx, txX+off*((rxX-txX)/pL), sY+i*spc+off*(((sY+j*spc)-(sY+i*spc))/pL), 2, 'rgba(245,158,11,0.8)'); }}
         }
 
         function drawBayes() {
-            const c = prepCanvas('canvas-bayes'); if(!c) return; const {ctx, w, h, tc} = c;
-            const cy = h-40; ctx.strokeStyle = tc; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0,cy); ctx.lineTo(w,cy); ctx.stroke();
-            const sc = 2000; const m1 = w/2-40; const v1 = 1500;
-            ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2; for(let px=0; px<w; px++) { const y = cy - (1/Math.sqrt(2*Math.PI*v1))*Math.exp(-Math.pow(px-m1,2)/(2*v1))*sc*1.5; if(px===0) ctx.moveTo(px,y); else ctx.lineTo(px,y); } ctx.stroke();
-            const m2 = w/2+50 + 30*Math.sin(time*0.05); const v2 = 800;
-            ctx.beginPath(); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; for(let px=0; px<w; px++) { const y = cy - (1/Math.sqrt(2*Math.PI*v2))*Math.exp(-Math.pow(px-m2,2)/(2*v2))*sc*1.2; if(px===0) ctx.moveTo(px,y); else ctx.lineTo(px,y); } ctx.stroke();
-            const vP = 1/((1/v1)+(1/v2)); const mP = vP*((m1/v1)+(m2/v2));
-            ctx.beginPath(); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 4; ctx.fillStyle = 'rgba(16,185,129,0.2)';
-            for(let px=0; px<w; px++) { const y = cy - (1/Math.sqrt(2*Math.PI*vP))*Math.exp(-Math.pow(px-mP,2)/(2*vP))*sc*2.0; if(px===0) ctx.moveTo(px,y); else ctx.lineTo(px,y); }
-            ctx.stroke(); ctx.lineTo(w,cy); ctx.lineTo(0,cy); ctx.fill();
+            const c=prepCanvas('canvas-bayes');if(!c)return;const{ctx,w,h,tc}=c;
+            const cy=h-40; ctx.strokeStyle=tc;ctx.lineWidth=1; line(ctx,0,cy,w,cy);
+            txt(ctx,"Prior Belief",10,20,"12px Outfit",'#3b82f6'); txt(ctx,"Sensor Likelihood",10,35,"",'#ef4444'); txt(ctx,"Posterior",10,50,"",'#10b981');
+            const m1=w/2-40, v1=1500; ctx.strokeStyle='#3b82f6';ctx.lineWidth=2; wave(ctx,0,w,1, px=>cy-(1/sqrt(2*PI*v1))*exp(-pow(px-m1,2)/(2*v1))*3000);
+            const m2=w/2+50+30*sin(time*0.05), v2=800; ctx.strokeStyle='#ef4444'; wave(ctx,0,w,1, px=>cy-(1/sqrt(2*PI*v2))*exp(-pow(px-m2,2)/(2*v2))*2400);
+            const vP=1/((1/v1)+(1/v2)), mP=vP*((m1/v1)+(m2/v2));
+            ctx.strokeStyle='#10b981';ctx.lineWidth=4;ctx.fillStyle='rgba(16,185,129,0.2)';
+            ctx.beginPath(); for(let px=0;px<w;px++){ const y=cy-(1/sqrt(2*PI*vP))*exp(-pow(px-mP,2)/(2*vP))*4000; if(px===0)ctx.moveTo(px,y);else ctx.lineTo(px,y); } ctx.stroke(); ctx.lineTo(w,cy); ctx.lineTo(0,cy); ctx.fill();
         }
 
         function drawMomentum() {
-            const c = prepCanvas('canvas-momentum'); if(!c) return; const {ctx, w, h, tc} = c;
-            const cx = w/2; const cy = h-50; ctx.beginPath(); ctx.strokeStyle = isDark() ? '#64748b' : '#94a3b8'; ctx.lineWidth = 3;
-            for(let px=0; px<w; px++) { const dx = (px-cx)/100; const Jy = 50*(dx*dx) + 10*Math.sin(dx*10); const py = cy-Jy; if(px===0) ctx.moveTo(px,py); else ctx.lineTo(px,py); } ctx.stroke();
-            const beta = 0.95; const alpha = 0.5; const dx = (oX-cx)/100; const grad = 100*dx + 100*Math.cos(dx*10); oV = beta*oV - alpha*grad*0.001; oX += oV; if(time%400 === 0) { oX=20; oV=0; }
-            const Jc = 50*Math.pow((oX-cx)/100, 2) + 10*Math.sin((oX-cx)/100*10); const py = cy-Jc;
-            ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(oX, py, 8, 0, Math.PI*2); ctx.fill(); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(oX, py); ctx.lineTo(oX + oV*10, py); ctx.stroke();
+            const c=prepCanvas('canvas-momentum');if(!c)return;const{ctx,w,h,tc}=c;
+            const cx=w/2, cy=h-50; ctx.strokeStyle=isDark()?'#64748b':'#94a3b8';ctx.lineWidth=3;
+            txt(ctx,"Loss Valley J(θ)",20,30,"14px Outfit",tc); txt(ctx,"Optimizer Momentum",20,50);
+            wave(ctx,0,w,1, px=>cy-(50*pow((px-cx)/100,2)+10*sin(((px-cx)/100)*10)));
+            const dx=(oX-cx)/100; oV=0.95*oV-0.5*(100*dx+100*cos(dx*10))*0.001; oX+=oV; if(time%400===0){oX=20;oV=0;}
+            const py=cy-(50*pow((oX-cx)/100,2)+10*sin(((oX-cx)/100)*10));
+            circ(ctx,oX,py,8,'#ef4444'); ctx.strokeStyle='#10b981';ctx.lineWidth=2; line(ctx,oX,py,oX+oV*10,py);
         }
 
         function drawUncertSynth() {
-            const c = prepCanvas('canvas-uncertsynth'); if(!c) return; const {ctx, w, h, tc} = c;
-            const B = parseFloat(document.getElementById('slider-uncertsynth')?.value || "20");
-            setVal('slider-uncertsynth-val', B);
-            const cx1 = w*0.3; const cx2 = w*0.75; const cy = h/2; ctx.strokeStyle = tc; ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(0,cy); ctx.lineTo(w,cy); ctx.stroke(); ctx.beginPath(); ctx.moveTo(w/2+20,0); ctx.lineTo(w/2+20,h); ctx.stroke();
-            const bW = (B/500)*150; ctx.fillStyle = 'rgba(59,130,246,0.4)'; ctx.fillRect(cx1-bW/2, cy-80, bW, 80); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2; ctx.strokeRect(cx1-bW/2, cy-80, bW, 80);
-            const pW = (500/B)*10; ctx.beginPath(); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3;
-            for(let px=w/2+20; px<w; px++) { const x = (px-cx2)/pW; let yv = 1; if(x!==0) yv = Math.sin(Math.PI*x)/(Math.PI*x); const py = cy - 80*yv; if(px===w/2+20) ctx.moveTo(px,py); else ctx.lineTo(px,py); } ctx.stroke();
+            const c=prepCanvas('canvas-uncertsynth');if(!c)return;const{ctx,w,h,tc}=c;
+            const B=v('slider-uncertsynth',20); sV('slider-uncertsynth-val',B);
+            const cx1=w*0.3, cx2=w*0.75, cy=h/2; ctx.strokeStyle=tc;ctx.lineWidth=1;
+            line(ctx,0,cy,w,cy); line(ctx,w/2+20,0,w/2+20,h);
+            txt(ctx,"Synthesizing short pulse requires massive bandwidth",10,20,"12px Outfit",tc);
+            rect(ctx,cx1-(B/500)*75,cy-80,(B/500)*150,80,'rgba(59,130,246,0.4)','#3b82f6');
+            ctx.strokeStyle='#ef4444';ctx.lineWidth=3; wave(ctx,w/2+20,w,1, px=>cy-80*(px-cx2===0?1:sin(PI*(px-cx2)/((500/B)*10))/(PI*(px-cx2)/((500/B)*10))));
         }
 
         function drawRetarded() {
-            const c = prepCanvas('canvas-retarded'); if(!c) return; const {ctx, w, h, tc} = c;
-            const cx = w/2; const cy = h/2; const cs = 3.0; const px = cx + 80*Math.sin(time*0.03); const py = cy + 40*Math.sin(time*0.06); retH.push({x:px, y:py, t:time}); if(retH.length>100) retH.shift();
-            ctx.lineWidth = 1;
-            for(let i=0; i<retH.length; i+=10) {
-                const pst = retH[i]; const age = time-pst.t; const rad = age*cs; ctx.strokeStyle = `rgba(59,130,246,${Math.max(0, 1-age/100)})`; ctx.beginPath(); ctx.arc(pst.x, pst.y, rad, 0, Math.PI*2); ctx.stroke();
-                if(i%30===0) { ctx.beginPath(); ctx.strokeStyle = 'rgba(239,68,68,0.3)'; ctx.setLineDash([2,2]); ctx.moveTo(px, py); ctx.lineTo(pst.x, pst.y); ctx.stroke(); ctx.setLineDash([]); }
+            const c=prepCanvas('canvas-retarded');if(!c)return;const{ctx,w,h,tc}=c;
+            const cx=w/2, cy=h/2, px=cx+80*sin(time*0.03), py=cy+40*sin(time*0.06); retH.push({x:px,y:py,t:time}); if(retH.length>100) retH.shift();
+            txt(ctx,"Source Path",cx-30,cy-60,"14px Outfit",tc); txt(ctx,"Delayed Ripples",cx-40,cy+70);
+            ctx.lineWidth=1;
+            for(let i=0;i<retH.length;i+=10){
+                const pst=retH[i], age=time-pst.t; circ(ctx,pst.x,pst.y,age*3.0,"",`rgba(59,130,246,${max(0,1-age/100)})`);
+                if(i%30===0){ ctx.strokeStyle='rgba(239,68,68,0.3)';ctx.setLineDash([2,2]); line(ctx,px,py,pst.x,pst.y); ctx.setLineDash([]); }
             }
-            ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI*2); ctx.fill();
+            circ(ctx,px,py,6,'#ef4444');
         }
 
         function drawGreens() {
-            const c = prepCanvas('canvas-greens'); if(!c) return; const {ctx, w, h, tc} = c;
-            const cx = w/2; const cy = h/2; if(time%60===0) grnP.push({r:0}); ctx.lineWidth = 2;
-            for(let i=grnP.length-1; i>=0; i--) { const p = grnP[i]; p.r += 2; const a = Math.max(0, 1-p.r/150); if(a<=0) { grnP.splice(i,1); continue; } ctx.strokeStyle = `rgba(16,185,129,${a})`; ctx.beginPath(); ctx.arc(cx, cy, p.r, 0, Math.PI*2); ctx.stroke(); }
-            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(cx, cy, 5+3*Math.abs(Math.sin(time*0.1)), 0, Math.PI*2); ctx.fill();
+            const c=prepCanvas('canvas-greens');if(!c)return;const{ctx,w,h,tc}=c;
+            const cx=w/2, cy=h/2; if(time%60===0) grnP.push({r:0}); ctx.lineWidth=2;
+            txt(ctx,"Dirac Delta Impulse",cx-60,cy-60,"14px Outfit",tc); txt(ctx,"Green's Function Response G(r)",cx-100,cy+80);
+            for(let i=grnP.length-1;i>=0;i--){ const p=grnP[i]; p.r+=2; const a=max(0,1-p.r/150); if(a<=0){grnP.splice(i,1);continue;} circ(ctx,cx,cy,p.r,"",`rgba(16,185,129,${a})`); }
+            circ(ctx,cx,cy,5+3*abs(sin(time*0.1)),'#f59e0b');
         }
 
         function drawVariational() {
-            const c = prepCanvas('canvas-variational'); if(!c) return; const {ctx, w, h, tc} = c;
-            const cx = w/2; ctx.fillStyle = isDark() ? 'rgba(51,65,85,0.5)' : 'rgba(226,232,240,0.5)'; ctx.fillRect(0, h/2, cx-10, h/2); ctx.strokeStyle = tc; ctx.beginPath(); ctx.moveTo(0, h/2); ctx.lineTo(cx-10, h/2); ctx.stroke();
-            const p1 = {x: 20, y: 20}; const p2 = {x: cx-40, y: h-20}; const oX = p1.x + (p2.x-p1.x)*0.6; const sX = oX + 40*Math.sin(time*0.05);
-            ctx.strokeStyle = 'rgba(59,130,246,0.3)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(sX, h/2); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-            ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(oX, h/2); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(p1.x, p1.y, 4, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(p2.x, p2.y, 4, 0, Math.PI*2); ctx.fill();
-            
-            const rS = cx+20; const rW = w-rS; ctx.beginPath(); ctx.strokeStyle = isDark() ? '#64748b' : '#94a3b8'; ctx.lineWidth = 3;
-            for(let px=rS; px<w; px++) { const dx = (px-(rS+rW/2))/50; const py = h/2 + 80*(dx*dx); if(px===rS) ctx.moveTo(px,py); else ctx.lineTo(px,py); } ctx.stroke();
-            const adx = 1.5*Math.cos(time*0.05)*Math.exp(-time*0.005%2); const bX = rS + rW/2 + adx*50; const bY = h/2 + 80*(adx*adx);
-            ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(bX, bY, 6, 0, Math.PI*2); ctx.fill();
+            const c=prepCanvas('canvas-variational');if(!c)return;const{ctx,w,h,tc}=c;
+            const cx=w/2; rect(ctx,0,h/2,cx-10,h/2,isDark()?'rgba(51,65,85,0.5)':'rgba(226,232,240,0.5)'); ctx.strokeStyle=tc; line(ctx,0,h/2,cx-10,h/2);
+            const p1={x:20,y:20}, p2={x:cx-40,y:h-20}, oX=p1.x+(p2.x-p1.x)*0.6, sX=oX+40*sin(time*0.05);
+            ctx.strokeStyle='rgba(59,130,246,0.3)';ctx.lineWidth=1; ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(sX,h/2);ctx.lineTo(p2.x,p2.y);ctx.stroke();
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=3; ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(oX,h/2);ctx.lineTo(p2.x,p2.y);ctx.stroke();
+            circ(ctx,p1.x,p1.y,4,'#f59e0b'); circ(ctx,p2.x,p2.y,4,'#f59e0b');
+            const rS=cx+20; ctx.strokeStyle=isDark()?'#64748b':'#94a3b8';ctx.lineWidth=3; wave(ctx,rS,w,1, px=>h/2+80*pow((px-(rS+(w-rS)/2))/50,2));
+            circ(ctx, rS+(w-rS)/2+(1.5*cos(time*0.05)*exp(-time*0.005%2))*50, h/2+80*pow(1.5*cos(time*0.05)*exp(-time*0.005%2),2), 6, '#ef4444');
+            txt(ctx,"Fermat's Principle of Least Time",20,30,"14px Outfit",tc); txt(ctx,"Gradient Descent Optimization",cx+20,30);
         }
 
         function drawNoether() {
-            const c = prepCanvas('canvas-noether'); if(!c) return; const {ctx, w, h, tc} = c;
-            const cx = w/2; const cy = h/2; const a = 120; const b = 60; ctx.strokeStyle = isDark() ? '#475569' : '#cbd5e1'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(cx, cy, a, b, 0, 0, Math.PI*2); ctx.stroke();
-            const fX = cx - Math.sqrt(a*a - b*b); ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(fX, cy, 8, 0, Math.PI*2); ctx.fill();
-            const E1 = time*0.02; const p1x = cx + a*Math.cos(E1); const p1y = cy + b*Math.sin(E1); const E2 = E1-0.4; const p2x = cx + a*Math.cos(E2); const p2y = cy + b*Math.sin(E2);
-            ctx.fillStyle = 'rgba(16,185,129,0.3)'; ctx.beginPath(); ctx.moveTo(fX, cy); ctx.lineTo(p1x, p1y); ctx.lineTo(p2x, p2y); ctx.fill();
-            ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.arc(p1x, p1y, 6, 0, Math.PI*2); ctx.fill();
+            const c=prepCanvas('canvas-noether');if(!c)return;const{ctx,w,h,tc}=c;
+            const cx=w/2, cy=h/2, a=120, b=60; ctx.strokeStyle=isDark()?'#475569':'#cbd5e1';ctx.lineWidth=2; ctx.beginPath();ctx.ellipse(cx,cy,a,b,0,0,PI*2);ctx.stroke();
+            circ(ctx,cx-sqrt(a*a-b*b),cy,8,'#f59e0b');
+            const E1=time*0.02, p1x=cx+a*cos(E1), p1y=cy+b*sin(E1), E2=E1-0.4, p2x=cx+a*cos(E2), p2y=cy+b*sin(E2);
+            ctx.fillStyle='rgba(16,185,129,0.3)'; ctx.beginPath();ctx.moveTo(cx-sqrt(a*a-b*b),cy);ctx.lineTo(p1x,p1y);ctx.lineTo(p2x,p2y);ctx.fill();
+            circ(ctx,p1x,p1y,6,'#3b82f6');
+            txt(ctx,"Kepler's 2nd Law (Equal Areas in Equal Times)",20,30,"14px Outfit",tc); txt(ctx,"Conservation of Angular Momentum due to Rotational Symmetry",20,50);
         }
 
         function drawFisher() {
-            const c = prepCanvas('canvas-fisher'); if(!c) return; const {ctx, w, h, tc} = c;
-            const cert = parseFloat(document.getElementById('slider-fisher')?.value || "1.0"); const vr = 1.0/(cert+0.1); const fI = 1.0/vr;
-            const cx = w/2; const cy = h-40; ctx.beginPath(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 3; ctx.fillStyle = 'rgba(59,130,246,0.2)';
-            for(let px=0; px<w; px++) { const x = (px-cx)/50; const p = Math.exp(-Math.pow(x,2)/(2*vr))/Math.sqrt(2*Math.PI*vr); const py = cy - p*150; if(px===0) ctx.moveTo(px,py); else ctx.lineTo(px,py); }
-            ctx.stroke(); ctx.lineTo(w,cy); ctx.lineTo(0,cy); ctx.fill();
-            const pY = cy - (1/Math.sqrt(2*Math.PI*vr))*150; ctx.beginPath(); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2;
-            for(let dx=-30; dx<=30; dx++) { const py = pY + (fI*dx*dx)*0.1; if(py>cy) continue; if(dx===-30) ctx.moveTo(cx+dx,py); else ctx.lineTo(cx+dx,py); } ctx.stroke();
+            const c=prepCanvas('canvas-fisher');if(!c)return;const{ctx,w,h,tc}=c;
+            const vr=1.0/(v('slider-fisher',1.0)+0.1), fI=1.0/vr, cx=w/2, cy=h-40;
+            ctx.strokeStyle='#3b82f6';ctx.lineWidth=3;ctx.fillStyle='rgba(59,130,246,0.2)';
+            ctx.beginPath(); for(let px=0;px<w;px++){ const y=cy-exp(-pow((px-cx)/50,2)/(2*vr))/sqrt(2*PI*vr)*150; if(px===0)ctx.moveTo(px,y);else ctx.lineTo(px,y); }
+            ctx.stroke();ctx.lineTo(w,cy);ctx.lineTo(0,cy);ctx.fill();
+            ctx.strokeStyle='#ef4444';ctx.lineWidth=2; wave(ctx,-30,30,1, dx=>cy-(1/sqrt(2*PI*vr))*150+(fI*dx*dx)*0.1, dx=>cx+dx); // custom x mapping
+            txt(ctx,"Probability Distribution p(x|θ)",10,20,"14px Outfit",tc); txt(ctx,`Red Curvature = Fisher Information (I = ${fI.toFixed(1)})`,10,40,"",'#ef4444'); txt(ctx,`Cramér-Rao Bound (Min Error) ≥ ${(1/fI).toFixed(2)}`,10,60,"",'#10b981');
         }
 
-        // --- MASTER LOOP ---
         function animate() {
             time += 1;
             requestAnimationFrame(animate);
-            // Only draw canvases that are currently visible on screen (Massive Performance Boost)
             if(simVis['canvas-hook']) drawHook();
             if(simVis['canvas-preface']) drawPreface();
             if(simVis['canvas-em']) drawEM();
@@ -2203,17 +1909,9 @@
             if(simVis['canvas-fisher']) drawFisher();
         }
 
-        // Initialize KaTeX safely
         const initMath = () => {
             if (window.renderMathInElement && document.body) {
-                renderMathInElement(document.body, {
-                    delimiters: [ 
-                        {left: '$$', right: '$$', display: true}, 
-                        {left: '$', right: '$', display: false},
-                        {left: '\\(', right: '\\)', display: false},
-                        {left: '\\[', right: '\\]', display: true}
-                    ]
-                });
+                renderMathInElement(document.body, { delimiters: [ {left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false} ] });
             } else { setTimeout(initMath, 50); }
         };
 
